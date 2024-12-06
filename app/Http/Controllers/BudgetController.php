@@ -1,0 +1,202 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Budget;
+use App\Models\BudgetItem;
+use App\Models\Client;
+use App\Models\Company;
+use App\Models\Product;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
+
+class BudgetController extends Controller
+{
+    public function index()
+    {
+        $budgets = Budget::where('company_id', auth()->user()->company_id)->get();
+        $clients = Client::where('company_id', auth()->user()->company_id)->get();
+        return Inertia::render('Budgets/Index', [
+            'budgets' => $budgets,
+            'clients' => $clients
+        ]);
+    }
+
+    public function create()
+    {
+        $clients = Client::where('company_id', Auth::user()->company_id)->get();
+        $companies = Company::all();
+        $products = Product::where('company_id', Auth::user()->company_id)->get();
+        return Inertia::render('Budgets/Create', [
+            'clients' => $clients,
+            'companies' => $companies,
+            'products' => $products
+        ]);
+    }
+
+
+    //store function el company_id lo sacamos del modelo Auth::user()->company_id
+    public function store(Request $request)
+    {
+        try {
+            $request->validate([
+                'client_id' => 'required',
+                'date' => 'required|date',
+                'base_imponible' => 'required|numeric|min:0',
+                'iva' => 'nullable|numeric',
+                'name' => 'required|string|max:255',
+                'state' => 'required|string|in:draft,approved,rejected',
+            ]);
+
+            $data = $request->all();
+            $data['company_id'] = Auth::user()->company_id;
+
+            Budget::create($data);
+
+            return response()->json(['status' => 'success']);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
+        }
+    }
+
+    public function storeWithItems(Request $request)
+    {
+        // Validar los datos del request
+        $validated = $request->validate([
+            'date' => 'required|date',
+            'name' => 'required|string',
+            'base_imponible' => 'required|numeric',
+            'state' => 'required|string',
+            'client_id' => 'required|exists:clients,id',
+            'total' => 'required|numeric',
+            'iva' => 'required|numeric',
+            'monto_iva' => 'required|numeric',
+            'budgetItems' => 'required|array',
+            'budgetItems.*.product_id' => 'required|exists:products,id',
+            'budgetItems.*.quantity' => 'required|integer',
+            'budgetItems.*.discount' => 'required|numeric',
+            'budgetItems.*.unit_price' => 'required|numeric',
+            'budgetItems.*.total' => 'required|numeric',
+        ]);
+
+        // Crear el presupuesto
+        $data=$request->only('date','name','base_imponible','state','client_id','total','iva','monto_iva');
+        $data['company_id']=Auth::user()->company_id;
+        $budget = Budget::create($data);
+
+        // Crear los ítems de presupuesto
+        foreach ($validated['budgetItems'] as $item) {
+            BudgetItem::create([
+                'budget_id' => $budget->id,
+                'product_id' => $item['product_id'],
+                'quantity' => $item['quantity'],
+                'unit_price' => $item['unit_price'],
+                'discount' => $item['discount'],
+                'total' => $item['total'],
+            ]);
+        }
+
+        // Devolver respuesta adecuada
+        return Inertia::location(route('budgets.index'));
+    }
+
+
+    public function edit(Budget $budget)
+    {
+        $budgetItems = BudgetItem::where('budget_id', $budget->id)->get();
+        return Inertia::render('Budgets/Edit', [
+            'budget' => $budget,
+            'budgetItems' => $budgetItems,
+            'products' => Product::where('company_id', Auth::user()->company_id)->get(),
+            'clients' => Client::where('company_id', Auth::user()->company_id)->get(),
+        ]);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'client_id' => 'required',
+            'date' => 'required|date',
+            'base_imponible' => 'required|numeric|min:0',
+            'iva' => 'nullable|numeric',
+            'total'=>'required|numeric',
+            'monto_iva'=>'required|numeric',
+            'name' => 'required|string|max:255',
+            'state' => 'required|string|in:in_process,accepted,rejected',
+            'items' => 'required|array',
+            'items.*.product_id' => 'required|exists:products,id',
+            'items.*.quantity' => 'required|integer|min:1',
+            'items.*.discount' => 'required|numeric|min:0',
+            'items.*.unit_price' => 'required|numeric|min:0',
+            'items.*.total' => 'required|numeric|min:0',
+
+        ]);
+
+        $budget = Budget::findOrFail($id);
+
+        // Actualizar el presupuesto
+        $data = $request->only(['client_id', 'date', 'base_imponible', 'iva', 'name', 'state','total','monto_iva']);
+        $budget->update($data);
+
+        // Eliminar ítems existentes
+        BudgetItem::where('budget_id', $id)->delete();
+
+        // Crear nuevos ítems
+        foreach ($request->items as $item) {
+            BudgetItem::create([
+                'budget_id' => $id,
+                'product_id' => $item['product_id'],
+                'quantity' => $item['quantity'],
+                'unit_price' => $item['unit_price'],
+                'discount' => $item['discount'],
+                'total' => $item['total'],
+            ]);
+        }
+
+        return Inertia::location(route('budgets.index'));
+    }
+
+    public function destroy(Budget $budget)
+    {
+        // Eliminar los ítems relacionados
+        BudgetItem::where('budget_id', $budget->id)->delete();
+
+        // Eliminar el presupuesto
+        $budget->delete();
+
+        return Inertia::location(route('budgets.index'));
+    }
+
+
+
+    public function show(Budget $budget)
+    {
+        // Obtener los ítems relacionados con el presupuesto usando el modelo BudgetItem
+        $budgetItems = BudgetItem::where('budget_id', $budget->id)->get();
+
+        return Inertia::render('Budgets/Show', [
+            'budget' => $budget,
+            'budgetItems' => $budgetItems,
+            'products' => Product::where('company_id', Auth::user()->company_id)->get(),
+            'clients' => Client::where('company_id', Auth::user()->company_id)->get(),
+
+        ]);
+    }
+    public function print(Budget $budget)
+    {
+
+        $client = Client::find($budget->client_id);
+        $company = Company::find(Auth::user()->company_id);// Suponiendo que tienes un solo registro de la compañía.
+        $budgetItems = BudgetItem::where('budget_id',$budget->id)->get();
+        $products = Product::where('company_id', Auth::user()->company_id)->get();
+        return Inertia::render('Budgets/Print', [
+            'budget' => $budget,
+            'budgetItems' => $budgetItems,
+            'client' => $client,
+            'company' => $company,
+            'products' => $products
+        ]);
+    }
+
+}
