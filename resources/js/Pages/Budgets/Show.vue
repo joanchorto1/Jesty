@@ -33,6 +33,9 @@
                     <NavLink :href="route('budgets.edit', budget.id)" title="Editar Presupuesto">
                         <EditIcon class="w-6 h-6 text-gray-600" />
                     </NavLink>
+                    <NavLink :href="route('budgets.send', budget.id)" title="Enviar Presupesto">
+                        <SendIcon class="w-6 h-6 fill-gray-950 text-gray-600" />
+                    </NavLink>
                     <button @click="confirmDelete" title="Eliminar Presupuesto">
                         <DeleteIcon class="w-6 h-6 text-gray-600" />
                     </button>
@@ -76,6 +79,7 @@ import EditIcon from "@/Components/Icons/EditIcon.vue";
 import DeleteIcon from "@/Components/Icons/DeleteIcon.vue";
 import NavLink from "@/Components/NavLink.vue";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
+import SendIcon from "@/Components/Icons/SendIcon.vue";
 
 const props = defineProps({
     budget: Object,

@@ -65,6 +65,12 @@ Route::middleware(['route.features.access:1'])->group(function() {
     Route::get('/budgets/{budget}/print', [BudgetController::class, 'print'])->name('budgets.print');
 
 
+    //Envios por email
+
+    Route::get('/budgets/{budget}/send', [BudgetController::class, 'send'])->name('budgets.send');
+    Route::get('/invoices/{invoice}/send', [InvoiceController::class, 'send'])->name('invoices.send');
+
+
 //// Routes for Budget Items
 //    Route::resource('budgetItems', BudgetItemController::class)
 //        ->names([

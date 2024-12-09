@@ -2,13 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\BudgetMail;
+use App\Mail\InvoiceMail;
 use App\Models\Budget;
 use App\Models\BudgetItem;
 use App\Models\Client;
 use App\Models\Company;
+use App\Models\Invoice;
 use App\Models\Product;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 
 class BudgetController extends Controller
@@ -198,5 +203,41 @@ class BudgetController extends Controller
             'products' => $products
         ]);
     }
+
+    public function send($budgetId)
+    {
+        // Obtén los datos de la factura, la empresa y el cliente
+        $budget = Budget::findOrFail($budgetId);
+
+        // Personaliza los detalles del correo
+        $fromEmail = Auth::user()->email; // Email del remitente (empresa)
+        $client = Client::where('id', $budget->client_id)->first();
+        $toEmail =$client->email;  // Email del destinatario (cliente)
+        $company=Company::find(Auth::user()->company_id);
+        $fromName= $company->name;
+        // Enviar el correo
+        Mail::to($toEmail)
+            ->send(new BudgetMail($budget, $fromEmail, $fromName));
+
+        return Inertia::location(route('budgets.index'));
+
+    }
+
+    public function generateBudgetPdf($budgetId)
+    {
+        // Obtén los datos del budget
+        $budget = Budget::with('items', 'client', 'company')->findOrFail($budgetId);
+
+        // Genera el PDF usando una vista Blade
+        $pdf = Pdf::loadView('pdfs.budget', ['budget' => $budget, 'client' => $budget->client, 'company' => $budget->company]);
+
+        // Guarda temporalmente el PDF (opcional)
+        $filePath = storage_path("app/public/budget-{$budget->id}.pdf");
+        $pdf->save($filePath);
+
+//        return $filePath; // Devuelve la ruta del archivo generado
+        return $filePath;
+    }
+
 
 }

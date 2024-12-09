@@ -31,6 +31,9 @@ return [
 
     'env' => env('APP_ENV', 'production'),
 
+
+
+
     /*
     |--------------------------------------------------------------------------
     | Application Debug Mode
@@ -170,6 +173,8 @@ return [
         App\Providers\RouteServiceProvider::class,
         App\Providers\FortifyServiceProvider::class,
         App\Providers\JetstreamServiceProvider::class,
+        Barryvdh\DomPDF\ServiceProvider::class,
+
     ])->toArray(),
 
     /*

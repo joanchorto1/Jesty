@@ -33,10 +33,15 @@
                     <NavLink :href="route('invoices.copy', invoice.id)" title="Copiar Facturas">
                         <CopyIcon class="w-6 h-6 text-gray-600 fill-gray-950" />
                     </NavLink>
+                    <NavLink :href="route('invoices.send', invoice.id)" title="Enviar factura">
+                        <SendIcon class="w-6 h-6 fill-gray-950" />
+                    </NavLink>
                     <button @click="confirmDelete" title="Eliminar Factura">
                         <DeleteIcon class="w-6 h-6 text-gray-600" />
                     </button>
                 </div>
+
+
 
                 <!-- Tabla de items de la factura -->
                 <h2 class="text-xl font-semibold mt-6 mb-4">Items de la Factura</h2>
@@ -65,6 +70,7 @@
                 </table>
             </div>
         </div>
+
     </AppLayout>
 </template>
 
@@ -76,6 +82,8 @@ import EditIcon from "@/Components/Icons/EditIcon.vue";
 import DeleteIcon from "@/Components/Icons/DeleteIcon.vue";
 import NavLink from "@/Components/NavLink.vue";
 import CopyIcon from "@/Components/Icons/CopyIcon.vue";
+import SendIcon from "@/Components/Icons/SendIcon.vue";
+import {ref} from "vue";
 
 const props = defineProps({
     invoice: Object,
@@ -90,44 +98,10 @@ const confirmDelete = () => {
         Inertia.delete(route('invoices.destroy', props.invoice.id));
     }
 };
+
+
 </script>
 
 <style scoped>
-.icon-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background-color: #e5e7eb; /* Fondo gris */
-    transition: background-color 0.3s, color 0.3s;
-    cursor: pointer;
-    position: relative;
-}
 
-.icon-button:hover {
-    background-color: #d1d5db; /* Gris más oscuro al hacer hover */
-}
-
-.icon-button::after {
-    content: attr(title);
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    white-space: nowrap;
-    padding: 4px 8px;
-    background-color: #333;
-    color: #fff;
-    border-radius: 4px;
-    font-size: 12px;
-    opacity: 0;
-    transition: opacity 0.3s;
-    pointer-events: none;
-}
-
-.icon-button:hover::after {
-    opacity: 1;
-}
 </style>

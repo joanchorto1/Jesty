@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\InvoiceMail;
 use App\Models\Budget;
 use App\Models\BudgetItem;
 use App\Models\Income;
@@ -12,7 +13,10 @@ use App\Models\Company;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
+use Barryvdh\DomPDF\Facade\Pdf; // Importa DomPDF
+
 
 class InvoiceController extends Controller
 {
@@ -335,6 +339,43 @@ class InvoiceController extends Controller
         $product->stock = $product->stock + $quantity;
         $product->save();
     }
+
+    public function send($invoiceId)
+    {
+        // Obtén los datos de la factura, la empresa y el cliente
+        $invoice = Invoice::findOrFail($invoiceId);
+
+        // Personaliza los detalles del correo
+        $fromEmail = Auth::user()->email; // Email del remitente (empresa)
+        $client = Client::where('id', $invoice->client_id)->first();
+        $toEmail =$client->email;  // Email del destinatario (cliente)
+        $company=Company::find(Auth::user()->company_id);
+        $fromName= $company->name;
+        // Enviar el correo
+        Mail::to($toEmail)
+            ->send(new InvoiceMail($invoice, $fromEmail, $fromName));
+
+
+        return Inertia::location(route('invoices.index'));
+
+    }
+
+    public function generateInvoicePdf($invoiceId)
+    {
+        // Obtén los datos del invoice
+        $invoice = Invoice::with('items', 'client', 'company')->findOrFail($invoiceId);
+
+        // Genera el PDF usando una vista Blade
+        $pdf = Pdf::loadView('pdfs.invoice', ['invoice' => $invoice, 'client' => $invoice->client, 'company' => $invoice->company]);
+
+        // Guarda temporalmente el PDF (opcional)
+        $filePath = storage_path("app/public/invoice-{$invoice->id}.pdf");
+        $pdf->save($filePath);
+
+//        return $filePath; // Devuelve la ruta del archivo generado
+        return $filePath;
+    }
+
 
 
 }
