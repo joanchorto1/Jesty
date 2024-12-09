@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Factura #{{ $invoice->id }}</title>
+    <title>Presupuesto #{{ $invoice->id }}</title>
     <style>
         * {
             box-sizing: border-box;
@@ -80,7 +80,7 @@
 </head>
 <body>
 <header>
-    <h1>Factura #{{ $invoice->id }}</h1>
+    <h1>Presupuesto #{{ $invoice->id }}</h1>
     <p><strong>Fecha:</strong> {{ $invoice->date }}</p>
     @if($invoice->due_date)
         <p><strong>Vencimiento:</strong> {{ $invoice->due_date }}</p>
