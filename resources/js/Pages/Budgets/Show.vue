@@ -1,7 +1,7 @@
 <template>
     <AppLayout>
         <div class="items-center justify-start bg-white min-h-screen w-full flex flex-col">
-            <div class="container mt-10 p-6 bg-white rounded-lg ">
+            <div class="container mt-10 p-6 bg-white rounded-lg">
                 <h1 class="text-2xl text-blue-500 font-bold mb-6">Detalles del Presupuesto</h1>
 
                 <!-- Información del cliente y presupuesto -->
@@ -33,9 +33,9 @@
                     <NavLink :href="route('budgets.edit', budget.id)" title="Editar Presupuesto">
                         <EditIcon class="w-6 h-6 text-gray-600" />
                     </NavLink>
-                    <NavLink :href="route('budgets.send', budget.id)" title="Enviar Presupesto">
+                    <button @click="sendBudget" title="Enviar Presupesto">
                         <SendIcon class="w-6 h-6 fill-gray-950 text-gray-600" />
-                    </NavLink>
+                    </button>
                     <button @click="confirmDelete" title="Eliminar Presupuesto">
                         <DeleteIcon class="w-6 h-6 text-gray-600" />
                     </button>
@@ -66,11 +66,27 @@
                     </tbody>
                 </table>
             </div>
+
+            <!-- Popup de notificación -->
+            <div v-if="popupVisible" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
+                <div class="bg-white rounded-lg p-6 shadow-lg w-96 text-center">
+                    <h2 class="text-lg font-semibold text-blue-500 mb-4">Enviando presupuesto...</h2>
+                    <p v-if="popupMessage">{{ popupMessage }}</p>
+                    <button
+                        v-if="popupMessage"
+                        class="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                        @click="closePopup"
+                    >
+                        Tancar
+                    </button>
+                </div>
+            </div>
         </div>
     </AppLayout>
 </template>
 
 <script setup>
+import { ref } from 'vue';
 import { Inertia } from '@inertiajs/inertia';
 import AppLayout from "@/Layouts/AppLayout.vue";
 import PrintIcon from "@/Components/Icons/PrintIcon.vue";
@@ -78,7 +94,6 @@ import ConvertToInvoiceIcon from "@/Components/Icons/ConvertToInvoiceIcon.vue";
 import EditIcon from "@/Components/Icons/EditIcon.vue";
 import DeleteIcon from "@/Components/Icons/DeleteIcon.vue";
 import NavLink from "@/Components/NavLink.vue";
-import ResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
 import SendIcon from "@/Components/Icons/SendIcon.vue";
 
 const props = defineProps({
@@ -88,55 +103,36 @@ const props = defineProps({
     clients: Array
 });
 
-// Función para crear una factura desde el presupuesto
+// Estado del popup
+const popupVisible = ref(false);
+const popupMessage = ref("");
+
 const createInvoice = () => {
     Inertia.post(route('invoices.create-from-budget', props.budget));
 };
 
-// Confirmación y eliminación del presupuesto
 const confirmDelete = () => {
     if (confirm("¿Estás seguro de que quieres eliminar este presupuesto?")) {
         Inertia.delete(route('budgets.destroy', props.budget.id));
     }
 };
+
+const sendBudget = async () => {
+    popupVisible.value = true;
+    popupMessage.value = ""; // Mostra "Enviando factura..."
+    try {
+        await Inertia.get(route("budgets.send", props.budget.id));
+
+        popupMessage.value = "Missatge enviat correctament!";
+    } catch (error) {
+        popupMessage.value = "El missatge no se ha pogut enviar.";
+    }
+};
+
+const closePopup = () => {
+    popupVisible.value = false;
+    popupMessage.value = "";
+};
 </script>
 
-<style scoped>
-.icon-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background-color: #e5e7eb; /* Fondo gris */
-    transition: background-color 0.3s, color 0.3s;
-    cursor: pointer;
-    position: relative;
-}
-
-.icon-button:hover {
-    background-color: #d1d5db; /* Gris más oscuro al hacer hover */
-}
-
-.icon-button::after {
-    content: attr(title);
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    white-space: nowrap;
-    padding: 4px 8px;
-    background-color: #333;
-    color: #fff;
-    border-radius: 4px;
-    font-size: 12px;
-    opacity: 0;
-    transition: opacity 0.3s;
-    pointer-events: none;
-}
-
-.icon-button:hover::after {
-    opacity: 1;
-}
-</style>
+<style scoped></style>

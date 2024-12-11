@@ -37,6 +37,7 @@ use Inertia\Inertia;
 |
 */
 
+
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
@@ -50,15 +51,17 @@ Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
     'verified',
+    'check.company.plan', // Middleware personalizado
 ])->group(function () {
+
     Route::get('/dashboard', function () {
-        return Inertia::render('Dashboard',
-            [
-                'user' => \Illuminate\Support\Facades\Auth::user(),
-                'role'=>   \App\Models\Role::where('id', \Illuminate\Support\Facades\Auth::user()->role_id)->first(),
-//                'notifications' => \App\Models\Notification::where('user_id', \Illuminate\Support\Facades\Auth::user()->id)->get()
-            ]);
+        return Inertia::render('Dashboard', [
+            'user' => \Illuminate\Support\Facades\Auth::user(),
+            'role' => \App\Models\Role::where('id', \Illuminate\Support\Facades\Auth::user()->role_id)->first(),
+        ]);
     })->name('dashboard');
+
+    // Aquí puedes añadir otras rutas protegidas
 });
 
 
@@ -68,14 +71,19 @@ Route::post('/register/company/user', [\App\Http\Controllers\AuthController::cla
 
 
 
+Route::middleware('check.company.plan')->group(function () {
+
+    require __DIR__ . '/web/Inventario.php';
+    require __DIR__ . '/web/CRM.php';
+    require __DIR__ . '/web/Contabilidad.php';
+    require __DIR__ . '/web/TPV.php';
+    require __DIR__ . '/web/Clients.php';
+    require __DIR__ . '/web/Facturacion.php';
+
+
+});
 // Agrupación de rutas
-require __DIR__ . '/web/Administrador.php';
-require __DIR__ . '/web/Inventario.php';
-require __DIR__ . '/web/CRM.php';
-require __DIR__ . '/web/Contabilidad.php';
-require __DIR__ . '/web/TPV.php';
-require __DIR__ . '/web/Clients.php';
-require __DIR__ . '/web/Facturacion.php';
+    require __DIR__ . '/web/Administrador.php';
 
 
 

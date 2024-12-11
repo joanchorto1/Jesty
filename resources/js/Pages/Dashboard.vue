@@ -5,6 +5,9 @@
             <!-- Panel de Información del Usuario -->
             <div class="bg-white shadow-md rounded-lg p-4 w-full md:w-1/4">
                 <h2 class="text-xl pb-2 border-b-2 font-semibold mb-4">Información del Usuario</h2>
+                <div>
+                    <img :src="props.user.img">
+                </div>
                 <div class="mb-2">
                     <strong>Nombre:</strong> {{ $page.props.auth.user.name }}
                 </div>
@@ -18,9 +21,15 @@
             </div>
 
             <!-- Calendario -->
-            <div class="bg-white shadow-md rounded-lg p-4 w-full md:w-3/4">
-                <h2 class="text-lg font-semibold mb-4">Calendario</h2>
-                <Calendar/>
+            <div class="bg-white shadow-md rounded-lg text-center p-4 w-full md:w-2/4">
+                <h2 class="text-xl pb-2 border-b-2 font-semibold mb-4">Calendario</h2>
+                <Calendar class="p-10"/>
+            </div>
+            <div class="bg-white shadow-md rounded-lg p-4 w-full md:w-1/4">
+                <h2 class="text-xl pb-2 border-b-2 font-semibold mb-4">Tareas</h2>
+                <ul>
+                    <li v-for="tearea in tasks">{{tarea.name}}</li>
+                </ul>
             </div>
         </div>
 

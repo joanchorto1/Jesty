@@ -31,7 +31,7 @@
                 <!-- Vista de Venta (Categorías y Productos) -->
                 <div v-if="isVenta">
                     <!-- Categorías (widgets) -->
-                    <div class="grid grid-cols-3 gap-4 mb-6">
+                    <div class="grid grid-cols-3 gap-4 mb-6 pb-5 border-b-4">
                         <div v-for="category in categories" :key="category.id" @click="selectCategory(category)"
                              class="bg-blue-100 p-4 rounded-lg shadow-lg font-bold uppercase cursor-pointer hover:bg-blue-200 transition">
                             {{ category.name }}

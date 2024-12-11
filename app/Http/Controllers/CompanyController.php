@@ -79,7 +79,9 @@ return Inertia::location(route('dashboard.admin'));
     {
         return Inertia::render('Companies/ChangePlan', [
             'company' => $company,
-            'plans' => Plan::all(),
+//            Passar todos los planes excepto el que tenga name = FirstMonthFree
+            'plans' => Plan::where('name', '!=', 'FirstMonthFree')->get(),
+
             'plan' => Plan::where('id', $company->plan_id)->first(),
             'features' => Feature::all(),
             'planFeatures' => PlanFeature::all()

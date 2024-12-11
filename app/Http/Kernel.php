@@ -71,6 +71,7 @@ class Kernel extends HttpKernel
     protected $routeMiddleware = [
         // Otros middlewares
         'auth' => \App\Http\Middleware\Authenticate::class,
+        'check.company.plan' => \App\Http\Middleware\CheckCompanyPlan::class,
         'route.features.access' => \App\Http\Middleware\RouteFeaturesAccess::class,
     ];
 }

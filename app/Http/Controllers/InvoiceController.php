@@ -356,7 +356,6 @@ class InvoiceController extends Controller
             ->send(new InvoiceMail($invoice, $fromEmail, $fromName));
 
 
-        return Inertia::location(route('invoices.index'));
 
     }
 

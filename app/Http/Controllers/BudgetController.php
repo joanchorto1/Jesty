@@ -219,7 +219,6 @@ class BudgetController extends Controller
         Mail::to($toEmail)
             ->send(new BudgetMail($budget, $fromEmail, $fromName));
 
-        return Inertia::location(route('budgets.index'));
 
     }
 
