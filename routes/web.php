@@ -79,6 +79,8 @@ Route::middleware('check.company.plan')->group(function () {
     require __DIR__ . '/web/TPV.php';
     require __DIR__ . '/web/Clients.php';
     require __DIR__ . '/web/Facturacion.php';
+//    require __DIR__ . '/web/Proyectos.php';
+    require __DIR__ . '/web/RRHH.php';
 
 
 });
