@@ -4,13 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\Employee;
 use App\Models\Department;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 use App\Models\Payroll;
 use App\Models\Attendance;
 use App\Models\Leave;
 use App\Models\PerformanceReview;
 use App\Models\Training;
-use Illuminate\Http\Request;
-use Inertia\Inertia;
+
 
 class EmployeeController extends Controller
 {
@@ -27,15 +29,30 @@ class EmployeeController extends Controller
 
     public function show($id)
     {
-        $employee = Employee::where('company_id', auth()->user()->company_id)
-            ->with('department', 'payrolls', 'attendances', 'leaves', 'performanceReviews', 'trainings')
-            ->findOrFail($id);
+        $employee= Employee::findOrFail($id);
+        $department= Department::findOrFail($employee->department_id);
+        $payrolls = Payroll::where('employee_id', $id)->get();
+        $attendances = Attendance::where('employee_id', $id)->get();
+        $leaves = Leave::where('employee_id', $id)->get();
+        $performanceReviews = PerformanceReview::where('employee_id', $id)->get();
+        $trainings = Training::where('company_id', Auth::user()->company_id)->get();
+        $trainings = $trainings->filter(function ($training) use ($employee) {
+            return $training->employees->contains($employee);
+        });
+
+
 
         return Inertia::render('Employees/Show', [
-            'employee' => $employee
+            'employee' => $employee,
+            'department' => $department,
+            'payrolls' => $payrolls,
+            'attendances' => $attendances,
+            'leaves' => $leaves,
+            'performanceReviews' => $performanceReviews,
+            'trainings' => $trainings
+
         ]);
     }
-
     public function create()
     {
         $departments = Department::where('company_id', auth()->user()->company_id)->get();
@@ -45,7 +62,6 @@ class EmployeeController extends Controller
         ]);
     }
 
-
     public function store(Request $request)
     {
         $data = $request->validate([
@@ -54,10 +70,14 @@ class EmployeeController extends Controller
             'phone' => 'required|string',
             'address' => 'nullable|string',
             'job_title' => 'required|string',
-            'department_id' => 'nullable|exists:departments,id',
+            'department_id' => 'nullable',
             'salary' => 'required|numeric',
             'hire_date' => 'required|date',
-            'status' => 'required|in:active,inactive',
+            'status' => 'required',
+            'dni' => 'required|string|max:20|unique:employees,dni',
+            'nnss' => 'required|string|max:20|unique:employees,nnss',
+            'iban' => 'required|string|max:34|unique:employees,iban',
+            'birth_date' => 'required|date',
         ]);
 
         $data['company_id'] = auth()->user()->company_id;
@@ -91,7 +111,11 @@ class EmployeeController extends Controller
             'department_id' => 'nullable|exists:departments,id',
             'salary' => 'required|numeric',
             'hire_date' => 'required|date',
-            'status' => 'required|in:active,inactive',
+            'status' => 'required',
+            'dni' => 'required|string|max:20|unique:employees,dni,' . $employee->id,
+            'nnss' => 'required|string|max:20|unique:employees,nnss,' . $employee->id,
+            'iban' => 'required|string|max:34|unique:employees,iban,' . $employee->id,
+            'birth_date' => 'required|date',
         ]);
 
         $employee->update($data);

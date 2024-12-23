@@ -11,14 +11,14 @@ class AttendanceController extends Controller
 {
     public function index()
     {
-        $attendances = Attendance::with('employee')
-            ->whereHas('employee', function ($query) {
-                $query->where('company_id', auth()->user()->company_id);
-            })
-            ->get();
+        $employees = Employee::where('company_id', auth()->user()->company_id)->get();
+        $attendances = Attendance::whereIn('employee_id', $employees->pluck('id'))->get();
+
+
 
         return Inertia::render('Attendances/Index', [
             'attendances' => $attendances,
+            'employees' => $employees,
         ]);
     }
 
@@ -33,11 +33,13 @@ class AttendanceController extends Controller
 
     public function store(Request $request)
     {
+
         $data = $request->validate([
             'employee_id' => 'required|exists:employees,id',
             'date' => 'required|date',
-            'status' => 'required|string|in:present,absent,late',
-            'remarks' => 'nullable|string',
+            'total_hours' => 'required|numeric',
+            'check_in' => 'nullable|date_format:H:i',
+            'check_out' => 'nullable|date_format:H:i',
         ]);
 
         Attendance::create($data);
@@ -60,8 +62,10 @@ class AttendanceController extends Controller
         $data = $request->validate([
             'employee_id' => 'required|exists:employees,id',
             'date' => 'required|date',
-            'status' => 'required|string|in:present,absent,late',
-            'remarks' => 'nullable|string',
+            'total_hours' => 'required|numeric',
+            'check_in' => 'nullable|date_format:H:i',
+            'check_out' => 'nullable|date_format:H:i',
+
         ]);
 
         $attendance->update($data);

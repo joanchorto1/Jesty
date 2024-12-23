@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\LeaveController;
@@ -8,10 +9,18 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\PerformanceReviewController;
-
+use Inertia\Inertia;
 
 
 Route::middleware(['route.features.access:8'])->group(function () {
+
+
+    Route::get('/dashboard/rrhh', function () {
+        return Inertia::render('DashboardRRHH',[
+            'employees' => \App\Models\Employee::where('company_id', Auth::user()->company_id)->get(),
+            'departments' => \App\Models\Department::where('company_id', Auth::user()->company_id)->get(),
+        ]);
+    })->name('dashboard.rrhh');
 
     Route::resource('payrolls', PayrollController::class)
         ->names([
@@ -22,17 +31,29 @@ Route::middleware(['route.features.access:8'])->group(function () {
             'edit' => 'payrolls.edit',
             'update' => 'payrolls.update',
             'destroy' => 'payrolls.destroy',
+
         ]);
+
+    //payroll, send and print routes
+
+    Route::get('payrolls/{payroll}/send', [PayrollController::class, 'send'])->name('payrolls.send');
+    Route::get('payrolls/{payroll}/print', [PayrollController::class, 'print'])->name('payrolls.print');
     Route::resource('leaves', LeaveController::class)
         ->names([
             'index' => 'leaves.index',
             'create' => 'leaves.create',
             'store' => 'leaves.store',
             'show' => 'leaves.show',
-            'edit' => 'leaves.edit',
+            'edit'=>'leaves.edit',
             'update' => 'leaves.update',
             'destroy' => 'leaves.destroy',
         ]);
+
+Route::get('/leaves/{leave}/edit2',[LeaveController::class,'edit2'])->name('leaves.edit2');
+    Route::get('leaves/{leave}/goToEdit', [LeaveController::class, 'goToEdit'])->name('leaves.goToEdit');
+    Route::put('leaves/{leave}/update2', [LeaveController::class, 'update2'])->name('leaves.update2');
+
+
     Route::resource('trainings', TrainingController::class)
         ->names([
             'index' => 'trainings.index',
@@ -84,6 +105,9 @@ Route::middleware(['route.features.access:8'])->group(function () {
             'update' => 'performance-reviews.update',
             'destroy' => 'performance-reviews.destroy',
         ]);
+
+    Route::get('performance-reviews/{review}/edit2', [PerformanceReviewController::class, 'edit2'])->name('performance-reviews.edit2');
+    Route::put('performance-reviews/{review}/update2', [PerformanceReviewController::class, 'update2'])->name('performance-reviews.update2');
 
 
 

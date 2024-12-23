@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Leave;
 use App\Models\Employee;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 
@@ -13,15 +14,17 @@ class LeaveController extends Controller
     public function index()
     {
         $leaves = Leave::with('employee')->get();
+        $employees = Employee::where('company_id', Auth::user()->company_id)->get();
 
         return Inertia::render('Leaves/Index', [
             'leaves' => $leaves,
+            'employees' => $employees,
         ]);
     }
 
     public function create()
     {
-        $employees = Employee::all();
+        $employees = Employee::where('company_id',Auth::user()->company_id)->get();
 
         return Inertia::render('Leaves/Create', [
             'employees' => $employees,
@@ -39,6 +42,7 @@ class LeaveController extends Controller
             'status' => 'required|string',
         ]);
 
+
         Leave::create($data);
 
         return Inertia::location(route('leaves.index'));
@@ -46,15 +50,52 @@ class LeaveController extends Controller
 
     public function edit(Leave $leave)
     {
-        $employees = Employee::all();
 
+        dd($leave);
+
+
+        $employees = Employee::where('company_id',Auth::user()->company_id)->get();
         return Inertia::render('Leaves/Edit', [
             'leave' => $leave,
             'employees' => $employees,
         ]);
     }
 
+    public function edit2(Leave $leave)
+    {
+
+
+        $employees = Employee::where('company_id',Auth::user()->company_id)->get();
+        return Inertia::render('Leaves/Edit', [
+            'leave' => $leave,
+            'employees' => $employees,
+        ]);
+    }
+
+    public function goToEdit(Leave $leave)
+    {
+
+       return Inertia::location(route('leaves.edit2', $leave));
+    }
+
+
     public function update(Request $request, Leave $leave)
+    {
+        $data = $request->validate([
+            'employee_id' => 'required|exists:employees,id',
+            'type' => 'required|string',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date',
+            'reason' => 'nullable|string',
+            'status' => 'required|string',
+        ]);
+
+        $leave->update($data);
+
+        return Inertia::location(route('leaves.index'));
+    }
+
+    public function update2(Request $request, Leave $leave)
     {
         $data = $request->validate([
             'employee_id' => 'required|exists:employees,id',
@@ -83,6 +124,6 @@ class LeaveController extends Controller
     {
         $leave->delete();
 
-        return redirect()->route('leaves.index');
+        return Inertia::location(route('leaves.index'));
     }
 }

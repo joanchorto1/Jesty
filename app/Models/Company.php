@@ -61,4 +61,9 @@ class Company extends Model
     {
         return $this->hasMany(Asset::class);
     }
+
+    public function trainings()
+    {
+        return $this->hasMany(Training::class);
+    }
 }

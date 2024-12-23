@@ -10,17 +10,18 @@ use App\Models\Leave;
 use App\Models\PerformanceReview;
 use App\Models\Training;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 class DepartmentController extends Controller
 {
     public function index()
     {
-        $departments = Department::where('company_id', auth()->user()->company_id)
-            ->with('manager')
-            ->get();
+        $departments = Department::where('company_id', Auth::user()->company_id)->get();
+        $employees = Employee::where('company_id', Auth::user()->company_id)->get();
 
         return Inertia::render('Departments/Index', [
-            'departments' => $departments
+            'departments' => $departments,
+            'employees' => $employees
         ]);
     }
 
@@ -60,8 +61,8 @@ class DepartmentController extends Controller
 
     public function edit($id)
     {
-        $department = Department::where('company_id', auth()->user()->company_id)->findOrFail($id);
-        $employees = Employee::where('company_id', auth()->user()->company_id)->get();
+        $department = Department::findOrFail($id);
+        $employees = Employee::where('company_id', Auth::user()->company_id)->get();
 
         return Inertia::render('Departments/Edit', [
             'department' => $department,

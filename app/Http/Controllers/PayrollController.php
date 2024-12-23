@@ -5,22 +5,29 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Payroll;
 use App\Models\Employee;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class PayrollController extends Controller
 {
     public function index()
     {
-        $payrolls = Payroll::with('employee')->get();
+        // Obtener los empleados de la empresa del usuario autenticado
+        $employees = Employee::where('company_id', Auth::user()->company_id)->get();
+
+        // Encontrar las nóminas relacionadas con los empleados de la empresa
+        $payrolls = Payroll::whereIn('employee_id', $employees->pluck('id'))->get();
 
         return Inertia::render('Payrolls/Index', [
             'payrolls' => $payrolls,
+            'employees' => $employees,
         ]);
     }
 
     public function create()
     {
-        $employees = Employee::all();
+        // Obtener los empleados de la empresa
+        $employees = Employee::where('company_id', Auth::user()->company_id)->get();
 
         return Inertia::render('Payrolls/Create', [
             'employees' => $employees,
@@ -31,22 +38,64 @@ class PayrollController extends Controller
     {
         $data = $request->validate([
             'employee_id' => 'required|exists:employees,id',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date',
+            'payment_date' => 'required|date',
             'base_salary' => 'required|numeric',
+            'overtime' => 'nullable|numeric',
             'bonuses' => 'nullable|numeric',
-            'deductions' => 'nullable|numeric',
-            'net_pay' => 'required|numeric',
-            'pay_date' => 'required|date',
-            'status' => 'required|string',
+            'commissions' => 'nullable|numeric',
+            'vacation_bonus' => 'nullable|numeric',
+            'annual_bonus' => 'nullable|numeric',
+            'other_earnings' => 'nullable|numeric',
+            'income_tax' => 'nullable|numeric',
+            'social_security' => 'nullable|numeric',
+            'housing_fund' => 'nullable|numeric',
+            'loans' => 'nullable|numeric',
+            'savings_fund' => 'nullable|numeric',
+            'union_dues' => 'nullable|numeric',
+            'other_deductions' => 'nullable|numeric',
+            'irpf_percentage' => 'nullable|numeric',
+            'irpf_deduction' => 'nullable|numeric',
+
         ]);
 
+        // Calcular days_worked
+        $startDate = \Carbon\Carbon::parse($data['start_date']);
+        $endDate = \Carbon\Carbon::parse($data['end_date']);
+        $daysWorked = $endDate->diffInDays($startDate) + 1; // Sumar 1 para incluir el primer día
+
+        // Calcular total_earnings
+        $totalEarnings = $data['base_salary'] + ($data['overtime'] ?? 0) + ($data['bonuses'] ?? 0) +
+            ($data['commissions'] ?? 0) + ($data['vacation_bonus'] ?? 0) +
+            ($data['annual_bonus'] ?? 0) + ($data['other_earnings'] ?? 0);
+
+        // Calcular total_deductions
+        $totalDeductions = ($data['income_tax'] ?? 0) + ($data['social_security'] ?? 0) +
+            ($data['housing_fund'] ?? 0) + ($data['loans'] ?? 0) +
+            ($data['savings_fund'] ?? 0) + ($data['union_dues'] ?? 0) +
+            ($data['other_deductions'] ?? 0);
+
+        // Calcular net_pay
+        $irpfAmount = ($totalEarnings * ($data['irpf_percentage'] ?? 0)) / 100;
+        $netPay = $totalEarnings - $totalDeductions - $irpfAmount;
+
+        // Ahora agregar estos cálculos a los datos de la nómina
+        $data['days_worked'] = $daysWorked;
+        $data['total_earnings'] = $totalEarnings;
+        $data['total_deductions'] = $totalDeductions;
+        $data['net_pay'] = $netPay;
+
+        // Procesar y guardar la nómina
         Payroll::create($data);
 
         return Inertia::location(route('payrolls.index'));
     }
 
+
     public function edit(Payroll $payroll)
     {
-        $employees = Employee::all();
+        $employees = Employee::where('company_id', Auth::user()->company_id)->get();
 
         return Inertia::render('Payrolls/Edit', [
             'payroll' => $payroll,
@@ -56,15 +105,56 @@ class PayrollController extends Controller
 
     public function update(Request $request, Payroll $payroll)
     {
+
         $data = $request->validate([
             'employee_id' => 'required|exists:employees,id',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date',
+            'payment_date' => 'required|date',
             'base_salary' => 'required|numeric',
+            'overtime' => 'nullable|numeric',
             'bonuses' => 'nullable|numeric',
-            'deductions' => 'nullable|numeric',
-            'net_pay' => 'required|numeric',
-            'pay_date' => 'required|date',
-            'status' => 'required|string',
+            'commissions' => 'nullable|numeric',
+            'vacation_bonus' => 'nullable|numeric',
+            'annual_bonus' => 'nullable|numeric',
+            'other_earnings' => 'nullable|numeric',
+            'income_tax' => 'nullable|numeric',
+            'social_security' => 'nullable|numeric',
+            'housing_fund' => 'nullable|numeric',
+            'loans' => 'nullable|numeric',
+            'savings_fund' => 'nullable|numeric',
+            'union_dues' => 'nullable|numeric',
+            'other_deductions' => 'nullable|numeric',
+            'irpf_percentage' => 'nullable|numeric',
+            'irpf_deduction' => 'nullable|numeric',
+
         ]);
+
+        // Calcular days_worked
+        $startDate = \Carbon\Carbon::parse($data['start_date']);
+        $endDate = \Carbon\Carbon::parse($data['end_date']);
+        $daysWorked = $endDate->diffInDays($startDate) + 1; // Sumar 1 para incluir el primer día
+
+        // Calcular total_earnings
+        $totalEarnings = $data['base_salary'] + ($data['overtime'] ?? 0) + ($data['bonuses'] ?? 0) +
+            ($data['commissions'] ?? 0) + ($data['vacation_bonus'] ?? 0) +
+            ($data['annual_bonus'] ?? 0) + ($data['other_earnings'] ?? 0);
+
+        // Calcular total_deductions
+        $totalDeductions = ($data['income_tax'] ?? 0) + ($data['social_security'] ?? 0) +
+            ($data['housing_fund'] ?? 0) + ($data['loans'] ?? 0) +
+            ($data['savings_fund'] ?? 0) + ($data['union_dues'] ?? 0) +
+            ($data['other_deductions'] ?? 0);
+
+        // Calcular net_pay
+        $irpfAmount = ($totalEarnings * ($data['irpf_percentage'] ?? 0)) / 100;
+        $netPay = $totalEarnings - $totalDeductions - $irpfAmount;
+
+        // Ahora agregar estos cálculos a los datos de la nómina
+        $data['days_worked'] = $daysWorked;
+        $data['total_earnings'] = $totalEarnings;
+        $data['total_deductions'] = $totalDeductions;
+        $data['net_pay'] = $netPay;
 
         $payroll->update($data);
 
@@ -73,8 +163,11 @@ class PayrollController extends Controller
 
     public function show(Payroll $payroll)
     {
+        $employee = Employee::find($payroll->employee_id);
+
         return Inertia::render('Payrolls/Show', [
-            'payroll' => $payroll
+            'payroll' => $payroll,
+            'employee' => $employee,
         ]);
     }
 
@@ -82,11 +175,16 @@ class PayrollController extends Controller
     {
         $payroll->delete();
 
-        return redirect()->route('payrolls.index');
+        return Inertia::location(route('payrolls.index'));
     }
 
+    public function send(Payroll $payroll)
+    {
+        // Lógica para enviar la nómina por correo electrónico
+    }
 
-
-
-
+    public function print(Payroll $payroll)
+    {
+        // Lógica para la impresión de la nómina
+    }
 }

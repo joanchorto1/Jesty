@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -19,6 +20,10 @@ class Employee extends Model
         'hire_date',
         'status',
         'company_id',
+        'dni', // Nuevo campo
+        'nnss', // Nuevo campo (Número de Seguridad Social)
+        'iban', // Nuevo campo
+        'birth_date', // Nuevo campo
     ];
 
     // Relación con Department (muchos a uno)

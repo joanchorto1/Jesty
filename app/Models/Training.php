@@ -14,11 +14,15 @@ class Training extends Model
         'description',
         'date',
         'duration',
+        'company_id',
     ];
 
-    // Relación con Employee (muchos a muchos)
     public function employees()
     {
-        return $this->belongsToMany(Employee::class, 'employee_training');
+        return $this->belongsToMany(Employee::class, 'employee_training', 'training_id', 'employee_id');
+    }
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
     }
 }
