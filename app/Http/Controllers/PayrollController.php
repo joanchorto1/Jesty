@@ -7,6 +7,12 @@ use App\Models\Payroll;
 use App\Models\Employee;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use App\Models\Company;
+use Barryvdh\DomPDF\Facade\Pdf; // Importa DomPDF
+use Illuminate\Support\Facades\Mail;
+use App\Mail\PayrollEmail;
+
+
 
 class PayrollController extends Controller
 {
@@ -178,13 +184,59 @@ class PayrollController extends Controller
         return Inertia::location(route('payrolls.index'));
     }
 
-    public function send(Payroll $payroll)
+
+    public function send($payrollId)
     {
-        // Lógica para enviar la nómina por correo electrónico
+        // Obtén los datos de la nómina, el empleado y la empresa
+        $payroll = Payroll::findOrFail($payrollId);
+        $employee = Employee::findOrFail($payroll->employee_id);
+        $company = Company::findOrFail(Auth::user()->company_id);
+
+        // Personaliza los detalles del correo
+        $fromEmail = $company->email; // Email del remitente (empresa)
+        $toEmail = $employee->email;      // Email del destinatario (empleado)
+        $fromName = $company->name;
+
+        // Generar PDF y obtener la ruta
+        $pdfPath = $this->generatePayrollPdf($payrollId);
+
+        // Enviar el correo con el PDF adjunto
+        Mail::to($toEmail)->send(new PayrollEmail($payroll, $fromEmail, $fromName, $pdfPath));
+
     }
+
+    public function generatePayrollPdf($payrollId)
+    {
+        // Obtén los datos de la nómina
+        $payroll = Payroll::findOrFail($payrollId);
+        $employee = Employee::findOrFail($payroll->employee_id);
+        $company = Company::findOrFail(Auth::user()->company_id);
+
+        // Genera el PDF usando una vista Blade
+        $pdf = Pdf::loadView('pdfs.payroll', [
+            'payroll' => $payroll,
+            'employee' => $employee,
+            'company' => $company,
+        ]);
+
+        // Guarda temporalmente el PDF (opcional)
+        $filePath = storage_path("app/public/payroll-{$payroll->id}.pdf");
+        $pdf->save($filePath);
+
+        return $filePath;
+    }
+
 
     public function print(Payroll $payroll)
     {
-        // Lógica para la impresión de la nómina
+        $employee = Employee::find($payroll->employee_id);
+        $company = Company::find(Auth::user()->company_id);
+
+        return Inertia::render('Payrolls/Print', [
+            'payroll' => $payroll,
+            'employee' => $employee,
+            'company' => $company,
+        ]);
     }
+
 }
