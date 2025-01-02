@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Company;
+use App\Models\EmailConfiguration;
 use App\Models\Feature;
 use App\Models\Plan;
 use App\Models\PlanFeature;
@@ -91,6 +92,18 @@ class AuthController extends Controller
                     'email' => $request->company_email,
                     'nif' => $request->company_nif,
                     'plan_id' => $request->plan_id,
+                ]);
+
+                //Crear configuracion de email:
+                EmailConfiguration::create([
+                    'company_id' => $company->id,
+                    'host' => 'smtp.mailtrap.io',
+                    'port' => '2525',
+                    'username' => 'b1b1b1b1b1b1b1',
+                    'password' => 'a1a1a1a1a1a1a1',
+                    'encryption' => 'tls',
+                    'from_address' => ''
+
                 ]);
 
                 // Crear rol y características

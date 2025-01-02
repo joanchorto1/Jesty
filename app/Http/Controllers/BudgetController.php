@@ -8,11 +8,13 @@ use App\Models\Budget;
 use App\Models\BudgetItem;
 use App\Models\Client;
 use App\Models\Company;
+use App\Models\EmailConfiguration;
 use App\Models\Invoice;
 use App\Models\Product;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 
@@ -215,6 +217,19 @@ class BudgetController extends Controller
         $toEmail =$client->email;  // Email del destinatario (cliente)
         $company=Company::find(Auth::user()->company_id);
         $fromName= $company->name;
+
+
+
+        $companyEmailConfig = EmailConfiguration::where('company_id', $company->id)->first();
+
+        // Cambiar la configuración de correo de manera dinámica
+        Config::set('mail.mailers.smtp.host', $companyEmailConfig->smtp_host);
+        Config::set('mail.mailers.smtp.port', $companyEmailConfig->smtp_port);
+        Config::set('mail.mailers.smtp.username', $companyEmailConfig->smtp_username);
+        Config::set('mail.mailers.smtp.password', $companyEmailConfig->smtp_password);
+        Config::set('mail.mailers.smtp.encryption', $companyEmailConfig->smtp_encryption);
+
+
         // Enviar el correo
         Mail::to($toEmail)
             ->send(new BudgetMail($budget, $fromEmail, $fromName));

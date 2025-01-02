@@ -44,6 +44,46 @@
                     </div>
                 </div>
             </div>
+            <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg text-blue-500 font-semibold">Configuración de Correo</h2>
+                    <NavLink :href="route('email-configurations.edit', emailConfig.id)" class="text-white font-bold py-2 px-4">
+                        <EditIcon class="w-6 h-6 fill-gray-200" />
+                    </NavLink>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-gray-700"><span class="font-semibold">Empresa:</span> {{ company.name }}</p>
+                        <p class="text-gray-700"><span class="font-semibold">Correo Remitente:</span> {{ emailConfig.from_email }}</p>
+                        <p class="text-gray-700"><span class="font-semibold">Nombre Remitente:</span> {{ emailConfig.from_name }}</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-700"><span class="font-semibold">SMTP Host:</span> {{ emailConfig.smtp_host }}</p>
+                        <p class="text-gray-700"><span class="font-semibold">SMTP Puerto:</span> {{ emailConfig.smtp_port }}</p>
+                        <p class="text-gray-700"><span class="font-semibold">Usuario SMTP:</span> {{ emailConfig.smtp_username }}</p>
+                    </div>
+                </div>
+            </div>
+
+<!--            Informacion de las keys-->
+            <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg text-blue-500 font-semibold">Información de las Keys</h2>
+                    <NavLink :href="route('companies.showKeys',company.id)" class=" text-white font-bold py-2 px-4 ">
+                        <EditIcon class="w-6 h-6 fill-gray-200" />
+                    </NavLink>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-gray-700 line-clamp-2"><span class="font-semibold">Public Key:</span> {{ company.public_key }}</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-700 line-clamp-2"><span class="font-semibold">Private Key:</span> {{ company.private_key }}</p>
+                    </div>
+                </div>
+            </div>
+
+
 
             <!-- Características del plan -->
             <div class="bg-white p-6 rounded-lg shadow-md mb-6">
@@ -101,7 +141,10 @@ const props = defineProps({
     plan: Object,
     features: Array,
     roles: Array,
+    emailConfig: Object
 });
+
+console.log(props.emailConfig);
 
 
 const deleteCompany =() => {

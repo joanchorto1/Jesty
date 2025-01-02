@@ -5,17 +5,26 @@ namespace App\Http\Controllers;
 use App\Mail\InvoiceMail;
 use App\Models\Budget;
 use App\Models\BudgetItem;
+use App\Models\EmailConfiguration;
 use App\Models\Income;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\Client;
 use App\Models\Company;
 use App\Models\Product;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 use Barryvdh\DomPDF\Facade\Pdf; // Importa DomPDF
+use phpseclib3\Crypt\RSA;
+use setasign\Fpdi\Fpdi;
+use setasign\Fpdi\PdfParser\StreamReader;
+
+// Importa la clase RSA
 
 
 class InvoiceController extends Controller
@@ -206,6 +215,9 @@ class InvoiceController extends Controller
     public function createFromBudget(Budget $budget)
     {
         try {
+
+            $budget['state'] = 'accepted';
+            $budget->save();
             // Crear la factura con los datos del presupuesto
             $invoice = Invoice::create([
                 'company_id' => $budget->company_id,
@@ -340,6 +352,7 @@ class InvoiceController extends Controller
         $product->save();
     }
 
+
     public function send($invoiceId)
     {
         // Obtén los datos de la factura, la empresa y el cliente
@@ -351,6 +364,16 @@ class InvoiceController extends Controller
         $toEmail =$client->email;  // Email del destinatario (cliente)
         $company=Company::find(Auth::user()->company_id);
         $fromName= $company->name;
+
+
+        $companyEmailConfig = EmailConfiguration::where('company_id', $company->id)->first();
+
+        // Cambiar la configuración de correo de manera dinámica
+        Config::set('mail.mailers.smtp.host', $companyEmailConfig->smtp_host);
+        Config::set('mail.mailers.smtp.port', $companyEmailConfig->smtp_port);
+        Config::set('mail.mailers.smtp.username', $companyEmailConfig->smtp_username);
+        Config::set('mail.mailers.smtp.password', $companyEmailConfig->smtp_password);
+        Config::set('mail.mailers.smtp.encryption', $companyEmailConfig->smtp_encryption);
         // Enviar el correo
         Mail::to($toEmail)
             ->send(new InvoiceMail($invoice, $fromEmail, $fromName));
@@ -361,19 +384,88 @@ class InvoiceController extends Controller
 
     public function generateInvoicePdf($invoiceId)
     {
-        // Obtén los datos del invoice
+        // Obtén los datos de la factura
         $invoice = Invoice::with('items', 'client', 'company')->findOrFail($invoiceId);
 
         // Genera el PDF usando una vista Blade
-        $pdf = Pdf::loadView('pdfs.invoice', ['invoice' => $invoice, 'client' => $invoice->client, 'company' => $invoice->company]);
+        $pdf = Pdf::loadView('pdfs.invoice', [
+            'invoice' => $invoice,
+            'client' => $invoice->client,
+            'company' => $invoice->company
+        ]);
 
-        // Guarda temporalmente el PDF (opcional)
+        // Guardar temporalmente el PDF (opcional)
         $filePath = storage_path("app/public/invoice-{$invoice->id}.pdf");
         $pdf->save($filePath);
 
-//        return $filePath; // Devuelve la ruta del archivo generado
-        return $filePath;
+        // Aplicar la firma digital
+        $company = Company::findOrFail(Auth::user()->company_id); // Obtener la empresa autenticada
+        $privateKey = unserialize(Crypt::decryptString($company->private_key));
+        // Leer el archivo PDF generado
+        $pdfContent = file_get_contents($filePath);
+
+        // Firmar el contenido del PDF
+        $signedPdf = $this->applyDigitalSignature($pdfContent, $privateKey);
+
+        // Guardar el PDF firmado
+        $signedFilePath = storage_path("app/public/invoice-{$invoice->id}-signed.pdf");
+        file_put_contents($signedFilePath, $signedPdf);
+
+
+
+        // Devuelve la ruta del archivo firmado
+        return $signedFilePath;
     }
+
+
+
+    private function applyDigitalSignature($pdfContent, $privateKey)
+    {
+        // Inicializar la clase RSA con la clave privada
+        $rsa = RSA::load($privateKey);
+
+        // Firmar el contenido del PDF (en formato binario)
+        $signature = $rsa->sign($pdfContent);
+
+        // Agregar la firma al PDF (usaremos una sección del PDF donde añadirla o simplemente agregarla al final)
+        $signedPdf = $this->addSignatureToPdf($pdfContent, $signature);
+
+        return $signedPdf;
+    }
+
+    private function addSignatureToPdf($pdfContent, $signature)
+    {
+        // Crear una instancia de FPDI
+        $pdf = new FPDI();
+
+        // Usar el contenido binario del PDF
+        $pdf->setSourceFile(StreamReader::createByString($pdfContent));
+
+        // Importar la primera página del PDF (para usarla en el archivo original)
+        $templateId = $pdf->importPage(1);
+        $pdf->addPage();
+        $pdf->useTemplate($templateId);
+
+        // Si el documento tiene más de una página, importa la segunda página
+        if ($pdf->setSourceFile(StreamReader::createByString($pdfContent)) > 1) {
+            // Importar la segunda página
+            $templateId2 = $pdf->importPage(2);
+            $pdf->addPage();
+            $pdf->useTemplate($templateId2);
+
+            // Ajustar la posición del texto al final de la segunda página
+            $pdf->SetFont('Helvetica', '', 12);
+            $pdf->SetXY(10, 100); // Ajustar la posición a un área cerca del final de la página
+
+            // Agregar el texto de la firma
+            $signatureText = "Firma Digital: " . base64_encode($signature);
+            $pdf->Write(0, $signatureText);
+        }
+
+        // Generar el PDF con la firma añadida y devolverlo
+        return $pdf->Output('S');
+    }
+
 
 
 

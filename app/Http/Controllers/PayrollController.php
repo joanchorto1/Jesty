@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\EmailConfiguration;
 use Illuminate\Http\Request;
 use App\Models\Payroll;
 use App\Models\Employee;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
 use Inertia\Inertia;
 use App\Models\Company;
 use Barryvdh\DomPDF\Facade\Pdf; // Importa DomPDF
@@ -197,6 +199,15 @@ class PayrollController extends Controller
         $toEmail = $employee->email;      // Email del destinatario (empleado)
         $fromName = $company->name;
 
+
+        $companyEmailConfig = EmailConfiguration::where('company_id', $company->id)->first();
+
+        // Cambiar la configuración de correo de manera dinámica
+        Config::set('mail.mailers.smtp.host', $companyEmailConfig->smtp_host);
+        Config::set('mail.mailers.smtp.port', $companyEmailConfig->smtp_port);
+        Config::set('mail.mailers.smtp.username', $companyEmailConfig->smtp_username);
+        Config::set('mail.mailers.smtp.password', $companyEmailConfig->smtp_password);
+        Config::set('mail.mailers.smtp.encryption', $companyEmailConfig->smtp_encryption);
         // Generar PDF y obtener la ruta
         $pdfPath = $this->generatePayrollPdf($payrollId);
 
