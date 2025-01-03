@@ -373,7 +373,7 @@ class InvoiceController extends Controller
         Config::set('mail.mailers.smtp.port', $companyEmailConfig->smtp_port);
         Config::set('mail.mailers.smtp.username', $companyEmailConfig->smtp_username);
         Config::set('mail.mailers.smtp.password', $companyEmailConfig->smtp_password);
-        Config::set('mail.mailers.smtp.encryption', $companyEmailConfig->smtp_encryption);
+        Config::set('mail.mailers.smtp.encryption', $companyEmailConfig->smtp_encryption);;
         // Enviar el correo
         Mail::to($toEmail)
             ->send(new InvoiceMail($invoice, $fromEmail, $fromName));
@@ -446,6 +446,8 @@ class InvoiceController extends Controller
         $pdf->addPage();
         $pdf->useTemplate($templateId);
 
+
+
         // Si el documento tiene más de una página, importa la segunda página
         if ($pdf->setSourceFile(StreamReader::createByString($pdfContent)) > 1) {
             // Importar la segunda página
@@ -456,6 +458,14 @@ class InvoiceController extends Controller
             // Ajustar la posición del texto al final de la segunda página
             $pdf->SetFont('Helvetica', '', 12);
             $pdf->SetXY(10, 100); // Ajustar la posición a un área cerca del final de la página
+
+            // Agregar el texto de la firma
+            $signatureText = "Firma Digital: " . base64_encode($signature);
+            $pdf->Write(0, $signatureText);
+        }else{
+            // Ajustar la posición del texto al final de la segunda página
+            $pdf->SetFont('Helvetica', '', 12);
+            $pdf->SetXY(10, 200); // Ajustar la posición a un área cerca del final de la página
 
             // Agregar el texto de la firma
             $signatureText = "Firma Digital: " . base64_encode($signature);

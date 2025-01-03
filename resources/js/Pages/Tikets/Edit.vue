@@ -186,47 +186,15 @@ const change = ref(0);
 const isCobrarModalOpen = ref(false);
 const isImprimirModalOpen = ref(false);
 
-
-
-
-
-// Métodos
-const openCobrarModal = () => {
-    isCobrarModalOpen.value = true;
-};
-
-const closeCobrarModal = () => {
-    isCobrarModalOpen.value = false;
-};
-
-const calculateChange = () => {
-    change.value = (receivedAmount.value - total.value).toFixed(2);
-};
-const confirmUpdate = () => {
-    // Preparar los datos actualizados para enviar al servidor
-    updateTicket();
-
-    // Cerrar el modal de cobro y abrir el de imprimir
-    closeCobrarModal();
-    isImprimirModalOpen.value = true;
-};
-
-const closeImprimirModal = () => {
-    Inertia.visit(route('tikets.goToCreate'));
-    isImprimirModalOpen.value = false;
-
-
-};
-
-const imprimir = () => {
-    // Enviar una solicitud para imprimir
-    Inertia.get(route('tikets.print', props.ticket.id));
-
-    // Limpiar los datos después de imprimir
-    isImprimirModalOpen.value = false;
-};
-
-
+// Estado para los datos del ticket
+let ticketData = reactive({
+    name: props.ticket.name,
+    base_imponible: 0,
+    iva: iva.value,
+    monto_iva: 0,
+    total: 0,
+    ticketItems: ticketItems,
+});
 
 // Computed para filtrar los productos por categoría
 const filteredProducts = computed(() => {
@@ -237,11 +205,17 @@ const filteredProducts = computed(() => {
 // Computed para obtener los últimos 4 ítems del ticket
 const latestItems = computed(() => ticketItems.slice(-4));
 
-// Computed para calcular el total con IVA
+// Computed para calcular el total, base imponible y el monto de IVA
 const total = computed(() => {
     const subtotal = ticketItems.reduce((sum, item) => sum + parseFloat(item.total), 0);
-    const totalIVA = (subtotal * iva.value) / 100;
-    return (subtotal + totalIVA).toFixed(2);
+    const montoIva = (subtotal * iva.value) / (100 + iva.value);  // Calculando el monto del IVA
+    const baseImponible = subtotal - montoIva;  // Base imponible es el subtotal menos el IVA
+
+    ticketData.base_imponible = baseImponible.toFixed(2);  // Asignando base imponible
+    ticketData.monto_iva = montoIva.toFixed(2);  // Asignando monto de IVA
+    ticketData.total = subtotal.toFixed(2);  // Total con IVA incluido
+
+    return subtotal.toFixed(2);
 });
 
 // Métodos
@@ -268,13 +242,13 @@ const addItemToTicket = (product) => {
             name: product.name,
             quantity: 1,
             unit_price: product.price,
-            total: product.price,
+            total: product.price.toFixed(2),  // Asegurando que el total se guarda con 2 decimales
         });
     }
 };
 
 const updateItemTotal = (item) => {
-    item.total = (item.quantity * item.unit_price).toFixed(2);
+    item.total = (item.quantity * item.unit_price).toFixed(2);  // Asegurando que el total se actualiza con 2 decimales
 };
 
 const removeItem = (id) => {
@@ -285,15 +259,15 @@ const removeItem = (id) => {
 // Método para actualizar el ticket
 const updateTicket = () => {
     const subtotal = ticketItems.reduce((sum, item) => sum + parseFloat(item.total), 0);
-    const monto_iva = (subtotal * iva.value) / 100;
-    const base_imponible = subtotal;
-    const totalTicket = (base_imponible + monto_iva).toFixed(2);
+    const monto_iva = (subtotal * iva.value) / (100 + iva.value);  // Calculamos el monto de IVA
+    const base_imponible = subtotal - monto_iva;  // Base imponible es el subtotal menos el IVA
+    const totalTicket = subtotal.toFixed(2);  // Total con IVA incluido
 
     const ticketData = {
         name: props.ticket.name,
         ticketItems: ticketItems,
-        monto_iva,
-        base_imponible,
+        monto_iva: monto_iva.toFixed(2),  // Asegurando que el monto de IVA tenga 2 decimales
+        base_imponible: base_imponible.toFixed(2),  // Asegurando que la base imponible tenga 2 decimales
         iva: iva.value,
         total: totalTicket,
     };
@@ -303,6 +277,42 @@ const updateTicket = () => {
 };
 
 const eliminarTodo = () => {
-    ticketItems.value = [];
+    ticketItems.length = 0;  // Limpiar todos los ítems del ticket
+};
+
+// Métodos para manejar los modales
+const openCobrarModal = () => {
+    isCobrarModalOpen.value = true;
+};
+
+const closeCobrarModal = () => {
+    isCobrarModalOpen.value = false;
+};
+
+const calculateChange = () => {
+    change.value = (receivedAmount.value - parseFloat(ticketData.total)).toFixed(2);  // Asegurando que el cambio tenga 2 decimales
+};
+
+const confirmUpdate = () => {
+    // Preparar los datos actualizados para enviar al servidor
+    updateTicket();
+
+    // Cerrar el modal de cobro y abrir el de imprimir
+    closeCobrarModal();
+    isImprimirModalOpen.value = true;
+};
+
+const closeImprimirModal = () => {
+    Inertia.visit(route('tikets.goToCreate'));
+    isImprimirModalOpen.value = false;
+};
+
+const imprimir = () => {
+    // Enviar una solicitud para imprimir
+    Inertia.get(route('tikets.print', props.ticket.id));
+
+    // Limpiar los datos después de imprimir
+    isImprimirModalOpen.value = false;
 };
 </script>
+

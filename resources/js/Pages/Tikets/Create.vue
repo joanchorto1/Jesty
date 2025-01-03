@@ -191,7 +191,7 @@ const change = ref(0);
 const isVenta = ref(true);
 const selectedCategory = ref(null);
 const tiketItems = reactive([]);  // Usamos reactive para hacer que las actualizaciones se reflejen de inmediato
-const iva = ref(0);
+const iva = ref(21); // Iniciamos IVA en 21%
 let tiketData = reactive({
     name: '',
     base_imponible: 0,
@@ -210,11 +210,19 @@ const filteredProducts = computed(() => {
 // Computed para obtener los 4 últimos ítems del ticket
 const latestItems = computed(() => tiketItems.slice(-4));
 
-// Computed para calcular el total con IVA
+// Computed para calcular el total y extraer el IVA
 const total = computed(() => {
     const subtotal = tiketItems.reduce((sum, item) => sum + parseFloat(item.total), 0);
-    const totalIVA = (subtotal * iva.value) / 100;
-    return (subtotal + totalIVA).toFixed(2);
+    // Calculamos el monto del IVA
+    const montoIva = (subtotal * iva.value) / (100 + iva.value);
+    // La base imponible es el total menos el monto del IVA
+    const baseImponible = subtotal - montoIva;
+
+    tiketData.base_imponible = baseImponible.toFixed(2); // Base imponible
+    tiketData.monto_iva = montoIva.toFixed(2); // Monto del IVA
+    tiketData.total = subtotal.toFixed(2); // Total con IVA incluido
+
+    return subtotal.toFixed(2);
 });
 
 // Métodos
@@ -264,7 +272,7 @@ const closeCobrarModal = () => {
 };
 
 const calculateChange = () => {
-    change.value = (receivedAmount.value - total.value).toFixed(2);
+    change.value = (tiketData.base_imponible.value - total.value).toFixed(2);
 };
 
 const confirmCobro = () => {
@@ -273,10 +281,10 @@ const confirmCobro = () => {
     // Preparar datos para enviar al controlador
     tiketData = {
         name: 'Ticket-' + new Date().toLocaleString(),
-        base_imponible: tiketItems.reduce((sum, item) => sum + parseFloat(item.total), 0),
+        base_imponible: tiketData.base_imponible,
         iva: iva.value,
-        monto_iva: ((tiketItems.reduce((sum, item) => sum + parseFloat(item.total), 0) * iva.value) / 100).toFixed(2),
-        total: total.value,
+        monto_iva: tiketData.monto_iva,
+        total: tiketData.total,
         tiketItems: tiketItems
     };
 
@@ -289,7 +297,6 @@ const confirmCobro = () => {
 const eliminarTodo = () => {
     tiketItems.splice(0, tiketItems.length);
 };
-
 
 const imprimir = () => {
     Inertia.get(route('tickets.printNoID', tiketData ));
@@ -307,11 +314,7 @@ const closeImprimirModal = () => {
     };
     tiketItems.splice(0, tiketItems.length);
     isImprimirModalOpen.value = false;
-
 };
 
 </script>
 
-<style scoped>
-/* Estilos opcionales para mejorar el diseño */
-</style>

@@ -1,70 +1,68 @@
 <template>
     <AppLayout>
-    <div class="flex flex-col bg-gray-100 min-h-screen">
-        <div class="flex flex-col  md:flex-row md:space-x-4 p-4">
-            <!-- Panel de Información del Usuario -->
-            <div class="bg-white shadow-md rounded-lg p-4 w-full md:w-1/4">
-                <h2 class="text-xl pb-2 border-b-2 font-semibold mb-4">Información del Usuario</h2>
-                <div>
-                    <img :src="props.user.img">
-                </div>
-                <div class="mb-2">
-                    <strong>Nombre:</strong> {{ $page.props.auth.user.name }}
-                </div>
-                <div class="mb-2">
-                    <strong>Email:</strong> {{    $page.props.auth.user.email }}
-                </div>
-                <div class="mb-2">
-                    <strong>Rol:</strong> {{role.name}}
-                </div>
-
+        <div class="flex flex-col bg-gray-100 min-h-screen p-6">
+            <!-- Encabezado con Bienvenida y Usuario -->
+            <div class="flex items-center bg-white rounded-lg p-5 shadow-md justify-between mb-6">
+                <h1 class="text-2xl font-bold text-gray-700">Bienvenido, {{ user.name }}!</h1>
             </div>
 
-            <!-- Calendario -->
-            <div class="bg-white shadow-md rounded-lg text-center p-4 w-full md:w-2/4">
-                <h2 class="text-xl pb-2 border-b-2 font-semibold mb-4">Calendario</h2>
-                <Calendar class="p-10"/>
+            <!-- Contenido Principal -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Calendario -->
+                <div class="bg-white shadow-md rounded-lg p-6 col-span-2">
+                    <Calendar id="calendar" class="w-full" />
+
+                    <!-- Tareas de Hoy -->
+                    <div class="mt-6">
+                        <h3 class="text-lg font-semibold text-gray-600 mb-3">Tareas de hoy (nº de tareas)</h3>
+                        <ul class="space-y-2">
+                            <li v-for="task in tasks" :key="task.id" class="flex items-center justify-between">
+                                <div class="flex items-center space-x-2">
+                                    <input type="checkbox" class="form-checkbox" />
+                                    <span class="text-gray-600">{{ task.name }}</span>
+                                </div>
+                                <span class="text-sm text-gray-400">{{ task.time }}</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Notificaciones -->
+                <div class="bg-white shadow-md rounded-lg p-6">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">Notificaciones</h2>
+                    <ul class="space-y-4">
+                        <li v-for="notification in notifications" :key="notification.id" class="p-4 bg-purple-100 rounded-lg">
+                            <p class="text-gray-700 font-medium">{{ notification.title }}</p>
+                            <p class="text-sm text-gray-500">{{ notification.message }}</p>
+                            <button class="mt-2 text-purple-500 hover:text-purple-700">Assign Now</button>
+                        </li>
+                    </ul>
+                </div>
             </div>
-            <div class="bg-white shadow-md rounded-lg p-4 w-full md:w-1/4">
-                <h2 class="text-xl pb-2 border-b-2 font-semibold mb-4">Tareas</h2>
-                <ul>
-                    <li v-for="tearea in tasks">{{tarea.name}}</li>
-                </ul>
-            </div>
+
+
         </div>
-
-        <!-- Lista de Notificaciones -->
-        <div class="bg-white shadow-md mx-5 rounded-lg p-4 mt-4">
-            <h2 class="text-lg font-semibold mb-4">Notificaciones</h2>
-            <ul>
-                <li v-for="notification in notifications" :key="notification.id" class="border-b last:border-b-0 py-2">
-                    <span class="font-semibold">{{ notification.title }}</span>
-                    <p class="text-sm text-gray-600">{{ notification.message }}</p>
-                </li>
-            </ul>
-        </div>
-    </div>
     </AppLayout>
 </template>
 
 <script setup>
-import { defineProps, onMounted } from 'vue';
-import Calendar from "@/Components/Calendar.vue";
-import AppLayout from "@/Layouts/AppLayout.vue";
-
+import { defineProps } from 'vue';
+import Calendar from '@/Components/Calendar.vue';
+import AppLayout from '@/Layouts/AppLayout.vue';
+import MenuClientsIcon from "@/Components/Icons/MenuClientsIcon.vue";
 
 const props = defineProps({
-    role: Object,
-    notifications: Array,
     user: Object,
+    notifications: Array,
     tasks: Array,
-    company: Object,
+    teamChat: Array,
 });
 </script>
 
 <style scoped>
 #calendar {
-    max-height: 400px; /* Ajusta la altura del calendario según tus necesidades */
+    max-height: 400px;
+    border-radius: 8px;
+    overflow: hidden;
 }
 </style>
-

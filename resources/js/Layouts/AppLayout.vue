@@ -25,12 +25,12 @@
         <!-- Layout con Sidebar -->
         <div class="flex flex-1 w-full">
             <!-- Sidebar Menu -->
-            <nav class="w-55 border-r border-gray-200 bg-gray-100 shadow-sm min-h-screen flex-shrink-0">
-                <div class="flex flex-col bg-gray-100 mt-6 space-y-2">
+            <nav class="w-55 border-r border-gray-300 bg-white shadow-sm min-h-screen flex-shrink-0">
+                <div class="flex flex-col bg-white mt-6 space-y-2">
                     <NewNavLink :href="route('dashboard')" :active="route().current('dashboard')"
                                        class="text-blue-500 hover:text-blue-700 py-2">
                         <div class="flex items-center space-x-2">
-                            <InfoIcon class="h-5 w-5"/>
+                            <MenuHomeIcon class="fill-gray-950 h-4 w-5"/>
                             <p class="text-base">Home</p>
                         </div>
                     </NewNavLink>
@@ -211,7 +211,7 @@
                     <template v-for="feature in props.features.value">
                         <NewNavLink v-if="feature.name==='RRHH'" :href="route('dashboard.rrhh')" :active="route().current('dashboard.rrhh')" class="text-blue-500 hover:text-blue-700 py-2">
                             <div class="flex items-center space-x-2">
-                                <MenuClientsIcon class="h-5 w-5"/>
+                                <MenuRRHHIcon class="h-5 w-5 fill-gray-950"/>
                                 <p class="text-base">RRHH</p>
                                 <DropdownIcon class="h-5 w-5 fill-blue-500 stroke-0"/>
                             </div>
@@ -394,6 +394,8 @@ import AddProductIcon from "@/Components/Icons/AddProductIcon.vue";
 import IncomeIcon from "@/Components/Icons/IncomeIcon.vue";
 import {computed} from "vue";
 import {usePage} from "@inertiajs/vue3";
+import MenuRRHHIcon from "@/Components/Icons/MenuRRHHIcon.vue";
+import MenuHomeIcon from "@/Components/Icons/MenuHomeIcon.vue";
 
 
 const features = computed(() => usePage().props.features)

@@ -40,7 +40,7 @@
         <!-- Totales -->
         <div class="text-right">
             <p><strong>Base Imponible:</strong> {{ tiket.base_imponible }}€</p>
-            <p><strong>IVA (21%):</strong> {{ tiket.monto_iva }}€</p>
+            <p><strong>IVA ({{tiket.iva}}%):</strong> {{ tiket.monto_iva }}€</p>
             <p class="text-lg font-semibold"><strong>Total:</strong> {{ tiket.total }}€</p>
         </div>
 
