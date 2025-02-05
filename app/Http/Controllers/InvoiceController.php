@@ -23,6 +23,7 @@ use Barryvdh\DomPDF\Facade\Pdf; // Importa DomPDF
 use phpseclib3\Crypt\RSA;
 use setasign\Fpdi\Fpdi;
 use setasign\Fpdi\PdfParser\StreamReader;
+use phpseclib3\Crypt\PublicKeyLoader;
 
 // Importa la clase RSA
 
@@ -404,11 +405,12 @@ class InvoiceController extends Controller
         // Leer el archivo PDF generado
         $pdfContent = file_get_contents($filePath);
 
-        // Firmar el contenido del PDF
+//        // Firmar el contenido del PDF
         $signedPdf = $this->applyDigitalSignature($pdfContent, $privateKey);
 
         // Guardar el PDF firmado
         $signedFilePath = storage_path("app/public/invoice-{$invoice->id}-signed.pdf");
+//        file_put_contents($signedFilePath, $pdfContent);
         file_put_contents($signedFilePath, $signedPdf);
 
 
@@ -419,62 +421,57 @@ class InvoiceController extends Controller
 
 
 
+
+
     private function applyDigitalSignature($pdfContent, $privateKey)
     {
-        // Inicializar la clase RSA con la clave privada
-        $rsa = RSA::load($privateKey);
+        // Cargar la clave privada
+        $rsa = PublicKeyLoader::loadPrivateKey($privateKey);
 
         // Firmar el contenido del PDF (en formato binario)
         $signature = $rsa->sign($pdfContent);
 
-        // Agregar la firma al PDF (usaremos una sección del PDF donde añadirla o simplemente agregarla al final)
-        $signedPdf = $this->addSignatureToPdf($pdfContent, $signature);
+        // Crear una nueva instancia de FPDI
+        $pdf = new Fpdi();
 
-        return $signedPdf;
-    }
+        // Cargar el contenido del PDF original desde la cadena
+        $stream = StreamReader::createByString($pdfContent);
+        $pageCount = $pdf->setSourceFile($stream);
 
-    private function addSignatureToPdf($pdfContent, $signature)
-    {
-        // Crear una instancia de FPDI
-        $pdf = new FPDI();
-
-        // Usar el contenido binario del PDF
-        $pdf->setSourceFile(StreamReader::createByString($pdfContent));
-
-        // Importar la primera página del PDF (para usarla en el archivo original)
-        $templateId = $pdf->importPage(1);
-        $pdf->addPage();
-        $pdf->useTemplate($templateId);
-
-
-
-        // Si el documento tiene más de una página, importa la segunda página
-        if ($pdf->setSourceFile(StreamReader::createByString($pdfContent)) > 1) {
-            // Importar la segunda página
-            $templateId2 = $pdf->importPage(2);
+        // Importar todas las páginas al nuevo documento
+        for ($pageNo = 1; $pageNo <= $pageCount; $pageNo++) {
+            $templateId = $pdf->importPage($pageNo);
             $pdf->addPage();
-            $pdf->useTemplate($templateId2);
-
-            // Ajustar la posición del texto al final de la segunda página
-            $pdf->SetFont('Helvetica', '', 12);
-            $pdf->SetXY(10, 100); // Ajustar la posición a un área cerca del final de la página
-
-            // Agregar el texto de la firma
-            $signatureText = "Firma Digital: " . base64_encode($signature);
-            $pdf->Write(0, $signatureText);
-        }else{
-            // Ajustar la posición del texto al final de la segunda página
-            $pdf->SetFont('Helvetica', '', 12);
-            $pdf->SetXY(10, 200); // Ajustar la posición a un área cerca del final de la página
-
-            // Agregar el texto de la firma
-            $signatureText = "Firma Digital: " . base64_encode($signature);
-            $pdf->Write(0, $signatureText);
+            $pdf->useTemplate($templateId);
         }
 
-        // Generar el PDF con la firma añadida y devolverlo
-        return $pdf->Output('S');
+        // Obtener datos de la compañía para los metadatos
+        $company = Company::findOrFail(Auth::user()->company_id);
+
+        // Agregar metadatos al PDF
+        $pdf->SetTitle('Documento firmado digitalmente');
+        $pdf->SetAuthor($company->name);
+        $pdf->SetSubject('Firma Digital');
+        $pdf->SetKeywords('Firma, Digital, Seguridad');
+
+        // Agregar la firma digital como anotación o texto (puede variar según el caso)
+        $pdf->SetFont('Helvetica', '', 10);
+        $pdf->SetXY(10, $pdf->GetPageHeight() - 20);
+        $pdf->Cell(0, 10, 'Firmado digitalmente por: ' . $company->name, 0, 1, 'L');
+        $pdf->SetXY(10, $pdf->GetPageHeight() - 15);
+        $pdf->Cell(0, 10, 'Firma: ' . base64_encode($signature), 0, 1, 'L');
+
+        // Guardar el PDF en memoria
+        $output = $pdf->Output('S'); // 'S' devuelve el PDF como cadena
+
+        // Retornar el PDF firmado
+        return response($output)
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', 'inline; filename="documento_firmado.pdf"');
     }
+
+
+
 
 
 

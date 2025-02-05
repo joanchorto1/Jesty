@@ -35,8 +35,21 @@
 
                     <div class="mb-4">
                         <label for="file" class="block text-gray-700">Archivo</label>
-                        <input id="file" type="file" @change="handleFileChange"
-                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+
+                        <!-- Vista previa si el archivo es una imagen -->
+                        <div v-if="expense.file && isImage(expense.file)" class="mb-2">
+                            <img :src="getFileUrl(expense.file)" alt="Archivo adjunto" class="w-40 h-auto rounded shadow">
+                        </div>
+
+                        <!-- Enlace de descarga si no es imagen -->
+                        <div v-else-if="expense.file && typeof expense.file === 'string'" class="mb-2">
+                            <a :href="getFileUrl(expense.file)" target="_blank" class="text-blue-600 underline">
+                                Ver archivo actual
+                            </a>
+                        </div>
+
+                        <!-- Input para subir archivo -->
+                        <input id="file" type="file" @change="handleFileChange" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
                     </div>
 
                     <div class="mb-4">
@@ -101,6 +114,14 @@ onMounted(() => {
     expense.value = { ...props.expense }; // Asignar los datos actuales al formulario
 });
 
+const getFileUrl = (filePath) => {
+    return `/storage/${filePath.replace('public/', '')}`;
+};
+
+const isImage = (file) => {
+    return file instanceof File && file.type.startsWith('image');
+};
+
 // Manejar el cambio de archivo
 const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -112,30 +133,22 @@ const handleFileChange = (event) => {
     }
 };
 
-// Enviar el formulario con el archivo usando FormData
 const submitForm = async () => {
     const formData = new FormData();
 
-    // Añadir los datos del formulario a formData
-    Object.keys(expense.value).forEach((key) => {
-        formData.append(key, expense.value[key]);
-    });
-
-    // Enviar el archivo si existe
-    if (expense.value.file) {
-        formData.append('file', expense.value.file);
+    for (const [key, value] of Object.entries(expense.value)) {
+        if (value !== null && value !== undefined) {
+            if (key === 'file' && typeof value === 'string') {
+                continue; // No enviar la ruta del archivo actual
+            }
+            formData.append(key, value instanceof File ? value : String(value));
+        }
     }
 
-
-  console.log('Enviando formulario:', formData);
-    // Enviar la solicitud
-    Inertia.put(route('expenses.update2', props.expense.id), formData, {
-        forceFormData: true,  // Para asegurarse de que se usa FormData
-        onError: (errors) => {
-            console.error(errors);
-        },
+    // Enviar datos con Inertia
+    Inertia.post(route('expenses.update2', props.expense.id), formData, {
+        forceFormData: true, // Esto es clave para que Inertia envíe FormData correctamente
     });
 };
 
 </script>
-

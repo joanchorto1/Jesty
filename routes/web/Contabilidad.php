@@ -23,7 +23,7 @@ Route::get('/dashboard/accounting', function () {
 })->name('dashboard.accounting');
 
 Route::resource('expenses', ExpenseController::class);
-Route::put('/expenses/{expense}/update', [ExpenseController::class, 'update'])->name('expenses.update2');
+Route::post('/expenses/{expense}/update', [ExpenseController::class, 'update'])->name('expenses.update2');
 //Rote for expenses report
 Route::get('report', [ExpenseController::class, 'report'])->name('expenses.report');
 //Rote for expenses reportPrint

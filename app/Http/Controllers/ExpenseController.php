@@ -93,6 +93,10 @@ class ExpenseController extends Controller
     {
         $categories = ExpenseCategory::all();
         $paymentMethods = PaymentMethod::all();
+
+        //eliminar el archivo al editar
+//        $expense->file = null;
+//        $expense->save();
         return Inertia::render('Expenses/Edit', [
             'expense' => $expense,
             'categories' => $categories,
@@ -101,6 +105,10 @@ class ExpenseController extends Controller
     }
     public function update(Request $request, Expense $expense)
     {
+
+
+        try {
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -111,6 +119,10 @@ class ExpenseController extends Controller
             'expense_category_id' => 'required|exists:expense_categories,id',
             'file' => 'nullable|file',
         ]);
+
+        } catch (\Exception $e) {
+            return $e;
+        }
         if ($request->file) {
             $file = $request->file('file');
             $path = $file->store('expenses', 'public');
