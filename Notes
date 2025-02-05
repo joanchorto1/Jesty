@@ -1,0 +1,12 @@
+**Inforamcio relevant:**
+
+el formData unicament soporta POST no soporta PUT.
+
+
+
+
+** Anotacions: **
+
+- En el cas de les tasques he optat per a que cada usuari s'assigni les tasques que vol fer, per tant, no hi ha cap gerarquia de tasques, l'administrador no interve a l'hora de gestionar les tasques, pero si que les pot supervisar.
+
+-En el cas de les notificacións s'han de enviar als usuaris que tinguin acces a la funcionalitat de la qual prove la notificació.Per exemple, stock baix nomes s'enviara a usuaris que tinguin acces a la funcionalitat de inventari. Factura pagada nomes s'enviara a usuaris que tinguin acces a la funcionalitat de facturació. S'ha introduit un gasto nou, nomes s'enviara a usuaris que tinguin acces a la funcionalitat de comptabilitat.
