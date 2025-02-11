@@ -344,6 +344,11 @@ class InvoiceController extends Controller
         $product = Product::find($product_id);
         $product->stock = $product->stock - $quantity;
         $product->save();
+
+        if ($product->stock < 5) {
+            // Enviar notificación de stock bajo
+            $this->sendLowStockNotification($product);
+        }
     }
 
     private function restoreStockProduct($product_id, $quantity)

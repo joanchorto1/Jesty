@@ -31,14 +31,15 @@
                 <div class="bg-white shadow-md rounded-lg p-6">
                     <h2 class="text-xl font-semibold text-gray-700 mb-4">Notificaciones</h2>
                     <ul class="space-y-4">
-                        <li v-for="notification in notifications" :key="notification.id" class="p-4 bg-purple-100 rounded-lg">
+                        <li v-for="notification in notifications" :key="notification.id" class="p-4 bg-blue-100 rounded-lg">
                             <p class="text-gray-700 font-medium">{{ notification.title }}</p>
                             <p class="text-sm text-gray-500">{{ notification.message }}</p>
-                            <button class="mt-2 text-purple-500 hover:text-purple-700">Assign Now</button>
+                            <NavLink :href="route('user-notifications.markAsRead',notification.id)" class="mt-2 text-blue-500 hover:text-blue-700">Marcar comol eido</NavLink>
                         </li>
                     </ul>
                 </div>
             </div>
+
 
 
         </div>
@@ -50,6 +51,7 @@ import { defineProps } from 'vue';
 import Calendar from '@/Components/Calendar.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import MenuClientsIcon from "@/Components/Icons/MenuClientsIcon.vue";
+import NavLink from "../../../vendor/laravel/jetstream/stubs/inertia/resources/js/Components/NavLink.vue";
 
 const props = defineProps({
     user: Object,

@@ -58,6 +58,8 @@ Route::middleware([
         return Inertia::render('Dashboard', [
             'user' => \Illuminate\Support\Facades\Auth::user(),
             'role' => \App\Models\Role::where('id', \Illuminate\Support\Facades\Auth::user()->role_id)->first(),
+            'notifications' => \App\Models\UserNotification::where('user_id', \Illuminate\Support\Facades\Auth::user()->id)->where('read',false)->orderBy('created_at', 'desc')->get(),
+            'tasks' => \App\Models\Task::where('user_id', \Illuminate\Support\Facades\Auth::user()->id)->orderBy('created_at', 'desc')->get(),
         ]);
     })->name('dashboard');
 
@@ -81,6 +83,7 @@ Route::middleware('check.company.plan')->group(function () {
     require __DIR__ . '/web/Facturacion.php';
 //    require __DIR__ . '/web/Proyectos.php';
     require __DIR__ . '/web/RRHH.php';
+    require __DIR__ . '/web/Notifications.php';
 
 
 });
