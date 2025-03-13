@@ -40,6 +40,8 @@ class BudgetController extends Controller
             'companies' => $companies,
             'products' => $products
         ]);
+
+
     }
 
 
@@ -65,6 +67,9 @@ class BudgetController extends Controller
         } catch (\Exception $e) {
             return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
         }
+
+
+
     }
 
     public function storeWithItems(Request $request)
@@ -104,6 +109,9 @@ class BudgetController extends Controller
             ]);
         }
 
+
+        $notificationController = new UserNotificationController();
+        $notificationController->createNotification('Nuevo presupuesto', 'Se ha creado un nuevo presupuesto', 'Facturación');
         // Devolver respuesta adecuada
         return Inertia::location(route('budgets.index'));
     }
@@ -112,6 +120,8 @@ class BudgetController extends Controller
     public function edit(Budget $budget)
     {
         $budgetItems = BudgetItem::where('budget_id', $budget->id)->get();
+
+
         return Inertia::render('Budgets/Edit', [
             'budget' => $budget,
             'budgetItems' => $budgetItems,
@@ -161,6 +171,12 @@ class BudgetController extends Controller
             ]);
         }
 
+        if ($budget->state == 'accepted') {
+            app(UserNotificationController::class)->createNotification('Presupuesto aceptado ID: '.$budget->id, 'Se ha aceptado un presupuesto.', 'Facturación');
+        } elseif ($budget->state == 'rejected') {
+            app(UserNotificationController::class)->createNotification('Presupuesto rechazado ID: '.$budget->id, 'Se ha rechazado un presupuesto.', 'Facturación');
+        }
+
         return Inertia::location(route('budgets.index'));
     }
 
@@ -169,8 +185,12 @@ class BudgetController extends Controller
         // Eliminar los ítems relacionados
         BudgetItem::where('budget_id', $budget->id)->delete();
 
+
+        app(UserNotificationController::class)->createNotification('Presupuesto eliminado ID: '.$budget->id, 'Se ha eliminado un presupuesto.', 'Facturación');
+
         // Eliminar el presupuesto
         $budget->delete();
+
 
         return Inertia::location(route('budgets.index'));
     }
@@ -229,7 +249,7 @@ class BudgetController extends Controller
         Config::set('mail.mailers.smtp.password', $companyEmailConfig->smtp_password);
         Config::set('mail.mailers.smtp.encryption', $companyEmailConfig->smtp_encryption);
 
-
+        app(UserNotificationController::class)->createNotification('Presupuesto enviado ID: '.$budget->id, 'Se ha enviado un presupuesto.', 'Facturación');
         // Enviar el correo
         Mail::to($toEmail)
             ->send(new BudgetMail($budget, $fromEmail, $fromName));

@@ -51,6 +51,8 @@ class ClientController extends Controller
 
         Client::create($request->all());
 
+        app('App\Http\Controllers\UserNotificationController')->createNotification('Nuevo cliente', 'Se ha creado un nuevo cliente', 'Clientes');
+
         return Inertia::location(route('dashboard.clients'));
     }
 
@@ -77,11 +79,15 @@ class ClientController extends Controller
 
         $client->update($request->all());
 
+        app('App\Http\Controllers\UserNotificationController')->createNotification('Cliente modificado', 'Se ha modificado un cliente', 'Clientes');
+
 return Inertia::location(route('dashboard.clients'));
     }
 
     public function destroy(Client $client)
     {
+
+        app('App\Http\Controllers\UserNotificationController')->createNotification('Cliente eliminado', 'Se ha eliminado un cliente', 'Clientes');
         $client->delete();
 
 

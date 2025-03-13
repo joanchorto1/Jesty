@@ -114,6 +114,8 @@ class InvoiceController extends Controller
             $this->createIncomeFromInvoice($invoice);
         }
 
+        app('App\Http\Controllers\UserNotificationController')->createNotification('Nueva factura', 'Se ha creado una nueva factura', 'Facturación');
+
         return Inertia::location(route('invoices.index'));
     }
 
@@ -168,10 +170,17 @@ class InvoiceController extends Controller
 
             if ($invoice->state == 'cancelled') {
                 $this->restoreStockProduct($item['product_id'], $item['quantity']);
+                app('App\Http\Controllers\UserNotificationController')->createNotification('Factura cancelada', 'Se ha cancelado una factura', 'Facturación');
+            }if ($invoice->state == 'paid') {
+                $this->createIncomeFromInvoice($invoice);
             }
+
+
         }
 
         $this->updateIncomeFromInvoice($invoice);
+
+
 
         return Inertia::location(route('invoices.index'));
     }
@@ -181,6 +190,8 @@ class InvoiceController extends Controller
         $this->destroyIncomeFromInvoice($invoice);
 
         InvoiceItem::where('invoice_id', $invoice->id)->delete();
+
+        app('App\Http\Controllers\UserNotificationController')->createNotification('Factura eliminada', 'Se ha eliminado una factura', 'Facturación');
         $invoice->delete();
 
         return Inertia::location(route('invoices.index'));
@@ -247,6 +258,8 @@ class InvoiceController extends Controller
 
             //Comprobar si se ha creado la factura
             // Redirigir a la vista de la factura creada
+
+            app('App\Http\Controllers\UserNotificationController')->createNotification('Nueva factura', 'Se ha creado una nueva factura a partir de un presupuesto', 'Facturación');
             return Inertia::location(route('invoices.show', ['invoice' => $invoice->id]));
         } catch (Exception $e) {
             // Manejo de errores
@@ -302,6 +315,8 @@ class InvoiceController extends Controller
                 'date' => $invoice->date,
             ]
         );
+
+        app('App\Http\Controllers\UserNotificationController')->createNotification('Nueva factura pagada', 'Se ha pagado una factura', 'Facturación');
     }
     private function updateIncomeFromInvoice(Invoice $invoice)
     {
@@ -318,6 +333,7 @@ class InvoiceController extends Controller
                 'date' => $invoice->date,
             ]
         );
+
     }
 
     private function destroyIncomeFromInvoice(Invoice $invoice)
@@ -331,6 +347,11 @@ class InvoiceController extends Controller
         $product->stock = $product->stock - $quantity;
         $product->save();
 
+        if ($product->stock < 5) {
+            // Enviar notificación de stock bajo
+            $this->sendLowStockNotification($product);
+        }
+
     }
     private function updateStrockProductFromOldItems($product_id, $quantity,$oldItems)
     {
@@ -339,6 +360,8 @@ class InvoiceController extends Controller
             $product->stock = $product->stock + $item->quantity;
             $product->save();
         }
+
+
 
 
         $product = Product::find($product_id);
@@ -356,6 +379,11 @@ class InvoiceController extends Controller
         $product = Product::find($product_id);
         $product->stock = $product->stock + $quantity;
         $product->save();
+
+        if ($product->stock < 5) {
+            // Enviar notificación de stock bajo
+            $this->sendLowStockNotification($product);
+        }
     }
 
 
@@ -381,6 +409,9 @@ class InvoiceController extends Controller
         Config::set('mail.mailers.smtp.password', $companyEmailConfig->smtp_password);
         Config::set('mail.mailers.smtp.encryption', $companyEmailConfig->smtp_encryption);;
         // Enviar el correo
+
+        app('App\Http\Controllers\UserNotificationController')->createNotification('Factura enviada', 'Se ha enviado una factura', 'Facturación');
+
         Mail::to($toEmail)
             ->send(new InvoiceMail($invoice, $fromEmail, $fromName));
 
@@ -475,10 +506,10 @@ class InvoiceController extends Controller
             ->header('Content-Disposition', 'inline; filename="documento_firmado.pdf"');
     }
 
-
-
-
-
+    private function sendLowStockNotification($product)
+    {
+        app('App\Http\Controllers\UserNotificationController')->createNotification('Stock bajo', 'El producto ' . $product->name . ' tiene un stock bajo', 'Inventario');
+    }
 
 
 }

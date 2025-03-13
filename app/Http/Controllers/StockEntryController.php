@@ -118,6 +118,8 @@ class StockEntryController extends Controller
         }
 
         $this->createExpenseFromStockEntry($stockEntry);
+
+        app('App\Http\Controllers\UserNotificationController')->createNotification('Nueva entrada de stock', 'Se ha creado una nueva entrada de stock', 'Inventario');
         return Inertia::location(route('stockEntries.index'));}
 
 
@@ -197,6 +199,7 @@ class StockEntryController extends Controller
         }
 
 
+        app('App\Http\Controllers\UserNotificationController')->createNotification('Entrada de stock actualizada', 'Se ha actualizado una entrada de stock', 'Inventario');
         return Inertia::location(route('stockEntries.index'));
     }
 
@@ -207,6 +210,7 @@ class StockEntryController extends Controller
         $stockEntry->delete();
         $this->deleteExpenseFromStockEntry($stockEntry);
 
+        app('App\Http\Controllers\UserNotificationController')->createNotification('Entrada de stock eliminada', 'Se ha eliminado una entrada de stock', 'Inventario');
         return Inertia::location(route('stockEntries.index'));
     }
 
@@ -297,6 +301,8 @@ class StockEntryController extends Controller
         $product = Product::findOrFail($product_id);
         $product->stock += $quantity;
         $product->save();
+
+
     }
 
 

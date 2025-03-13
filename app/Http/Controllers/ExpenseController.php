@@ -74,6 +74,8 @@ class ExpenseController extends Controller
 
         $expense->save();
 
+        app('App\Http\Controllers\UserNotificationController')->createNotification('Nuevo gasto', 'Se ha creado un nuevo gasto', 'Contabilidad');
+
         return Inertia::location(route('expenses.index'));
     }
 
@@ -136,6 +138,8 @@ class ExpenseController extends Controller
         }
 
 
+        app('App\Http\Controllers\UserNotificationController')->createNotification('Gasto actualizado', 'Se ha actualizado un gasto', 'Contabilidad');
+
         return Inertia::location(route('expenses.index'));
     }
 
@@ -143,6 +147,9 @@ class ExpenseController extends Controller
 
     public function destroy(Expense $expense)
     {
+
+        app('App\Http\Controllers\UserNotificationController')->createNotification('Gasto eliminado', 'Se ha eliminado un gasto', 'Contabilidad');
+
         $expense->delete();
 
         return Inertia::location(route('expenses.index'));

@@ -44,6 +44,7 @@ class IncomeController extends Controller
 
         Income::create($validated);
 
+        app('App\Http\Controllers\UserNotificationController')->createNotification('Nuevo ingreso', 'Se ha creado un nuevo ingreso ', 'Contabilidad');
         return Inertia::location(route('incomes.index'));
     }
 
@@ -80,11 +81,14 @@ class IncomeController extends Controller
 
         $income->update($validated);
 
+        app('App\Http\Controllers\UserNotificationController')->createNotification('Ingreso actualizado', 'Se ha actualizado un ingreso', 'Contabilidad');
+
         return Inertia::location(route('incomes.index'));
     }
 
     public function destroy(Income $income)
     {
+        app('App\Http\Controllers\UserNotificationController')->createNotification('Ingreso eliminado', 'Se ha eliminado un ingreso', 'Contabilidad');
         $income->delete();
 
     return Inertia::location(route('incomes.index'));

@@ -2,8 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\NotificationMail;
+use App\Models\EmailConfiguration;
+use App\Models\Feature;
+use App\Models\Role;
+use App\Models\User;
 use App\Models\UserNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+
 
 
 class UserNotificationController extends Controller
@@ -34,17 +44,73 @@ class UserNotificationController extends Controller
     }
 
     //funcion general para crear notificaciones
-    public static function createNotification($user_id, $title, $message)
+    public function createNotification($title, $message, $type)
     {
-        $notification = new UserNotification();
-        $notification->user_id = $user_id;
-        $notification->title = $title;
-        $notification->message = $message;
-        $notification->read = false;
-        $notification->save();
 
-        //fer el push de la notificación
+        //Separar els id dels usuaris depenent del seu rol i del les funcionalitats de cada rol.La funcionalitat la rebem pel type.
 
-        //que la notificación se envíe
+        Log::info('Type: '.$type);
+        Log::info('Message: '.$message);
+        Log::info('Title: '.$title);
+
+
+        $feature = Feature::where('name', $type)->first();
+
+        Log::info('Feature: '.$feature);
+
+        $roles = $feature->roles;
+
+        Log::info('Roles: '.$roles);
+
+        $users = $roles->map(function ($role) {
+            return $role->users;
+        })->flatten();
+
+        Log::info('Users: '.$users);
+
+        $company = Auth::user()->company;
+
+
+        //crear la notificación
+        foreach ($users as $user) {
+            $notification = UserNotification::create([
+                'user_id' => $user->id,
+                'title' => $title,
+                'message' => $message,
+                'read' => false,
+                'type' => $type
+            ]);
+
+            $companyEmailConfig = EmailConfiguration::where('company_id', $company->id)->first();
+
+            // Cambiar la configuración de correo de manera dinámica
+            Config::set('mail.mailers.smtp.host', $companyEmailConfig->smtp_host);
+            Config::set('mail.mailers.smtp.port', $companyEmailConfig->smtp_port);
+            Config::set('mail.mailers.smtp.username', $companyEmailConfig->smtp_username);
+            Config::set('mail.mailers.smtp.password', $companyEmailConfig->smtp_password);
+            Config::set('mail.mailers.smtp.encryption', $companyEmailConfig->smtp_encryption);
+            //enviar la notificación
+           $this->sendNotification($notification);
+        }
     }
+
+
+    //funcion para enviar notificaciones
+
+    public function sendNotification(UserNotification $notification)
+    {
+        $user = User::find($notification->user_id);
+        Log::info('Enviant notificació a: '.$user->email);
+
+        try {
+
+            Mail::to($user->email)->send(new NotificationMail($notification));
+        } catch (\Exception $e) {
+            Log::error('Error al enviar el email: '.$e->getMessage());
+        }
+
+    }
+
+
+
 }
