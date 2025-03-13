@@ -14,7 +14,9 @@
 
                     <!-- Tareas de Hoy -->
                     <div class="mt-6">
-                        <h3 class="text-lg font-semibold text-gray-600 mb-3">Tareas de hoy (nº de tareas)</h3>
+                            <h3 class="text-lg font-semibold justify-start text-gray-600 mb-3">Tareas de hoy (nº de tareas)</h3>
+                            <NavLink :href="route('user_tasks.create')" class="text-gray-50 bg-blue-500 rounded-lg hover:text-blue-700"><p class="text-gray-50  px-2 py-2 ">Nueva tarea</p></NavLink>
+
                         <ul class="space-y-2">
                             <li v-for="task in tasks" :key="task.id" class="flex items-center justify-between">
                                 <div class="flex items-center space-x-2">

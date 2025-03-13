@@ -59,7 +59,7 @@ Route::middleware([
             'user' => \Illuminate\Support\Facades\Auth::user(),
             'role' => \App\Models\Role::where('id', \Illuminate\Support\Facades\Auth::user()->role_id)->first(),
             'notifications' => \App\Models\UserNotification::where('user_id', \Illuminate\Support\Facades\Auth::user()->id)->where('read',false)->orderBy('created_at', 'desc')->get(),
-            'tasks' => \App\Models\Task::where('user_id', \Illuminate\Support\Facades\Auth::user()->id)->orderBy('created_at', 'desc')->get(),
+            'tasks' => \App\Models\UserTask::where('user_id', \Illuminate\Support\Facades\Auth::user()->id)->orderBy('created_at', 'desc')->get(),
         ]);
     })->name('dashboard');
 
@@ -70,6 +70,14 @@ Route::middleware([
 //Register route:
 
 Route::post('/register/company/user', [\App\Http\Controllers\AuthController::class, 'store'])->name('auth.register');
+
+//Rutas basicas de qualquier usuario
+use App\Http\Controllers\UserTaskController;
+
+Route::middleware(['auth'])->group(function () {
+    Route::resource('user_tasks', UserTaskController::class);
+    Route::post('user_tasks/{user_task}/complete', [UserTaskController::class, 'markAsCompleted'])->name('user_tasks.complete');
+});
 
 
 

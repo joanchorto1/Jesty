@@ -32,7 +32,10 @@ class NotificationMail extends Mailable
             $this->notification->user->company->name ?? 'Holii'
         )
             ->subject($this->notification->title ?? 'Notificación')
-            ->html('<h1>' . e($this->notification->title) . '</h1><p>' . e($this->notification->message) . '</p>');
+            ->html("
+                <h1 style='color: dodgerblue;'>" . e($this->notification->title) . "</h1>
+                <p>" . e($this->notification->message) . "</p>
+            ");
     }
 
 
