@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Role;
 use App\Models\User;
 use App\Models\UserTask;
 use Illuminate\Http\Request;
@@ -12,10 +13,25 @@ class UserTaskController extends Controller
 {
 
 
+    public function index()
+    {
+        $company_users = User::where('company_id',Auth::user()->company_id)->get();
+        return Inertia::render('User_tasks/Index', [
+            //tareas de todos los usuarios de la empresa
+            'tasks' => UserTask::whereIn('user_id',$company_users->pluck('id'))->orderBy('created_at', 'desc')->get(),
+            'users'=>User::where('company_id',Auth::user()->company_id)->get()
+        ]);
+    }
     public function create()
     {
         return Inertia::render('User_tasks/Create');
     }
+    public function adminCreate()
+    {
+        return Inertia::render('User_tasks/AdminCreate',['users'=>User::where('company_id',Auth::user()->company_id)->get()]);
+    }
+
+
 
     public function store(Request $request)
     {
@@ -35,12 +51,40 @@ class UserTaskController extends Controller
 
         return Inertia::location('/dashboard');
     }
+public function adminStore(Request $request)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'due_date' => 'required|date',
+            'user_id' => 'required|exists:users,id',
+        ]);
+
+            UserTask::create([
+               'title' => $request->title,
+                'description' => $request->description,
+                'due_date' => $request->due_date,
+                'status' => 'pending',
+                'user_id'=> $request->user_id,
+            ]);
+
+        return Inertia::location('/user_tasks');
+    }
+
 
     public function edit(UserTask $userTask)
     {
 
         return Inertia::render('User_tasks/Edit', [
             'task' => $userTask
+        ]);
+    }
+    public function adminEdit(UserTask $userTask)
+    {
+
+        return Inertia::render('User_tasks/AdminEdit', [
+            'task' => $userTask,
+            'users'=>User::where('company_id',Auth::user()->company_id)->get()
         ]);
     }
 
@@ -57,12 +101,30 @@ class UserTaskController extends Controller
 
         return Inertia::location('/dashboard');
     }
+    public function adminUpdate(Request $request, UserTask $userTask)
+    {
+
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'due_date' => 'required|date',
+            'user_id' => 'required|exists:users,id',
+        ]);
+
+        $userTask->update($request->all());
+
+        return Inertia::location('/user_tasks');
+    }
 
     public function destroy(UserTask $userTask)
     {
         $userTask->delete();
 
-        return Inertia::location('/dashboard');
+        if (Auth::user()->role_id == Role::where('company_id', Auth::user()->company_id)->where('name', 'Administrador')->first()->id){
+            return Inertia::location('/user_tasks');
+        }else{
+            return Inertia::location('/dashboard');
+        }
     }
 
     public function markAsCompleted(UserTask $userTask)

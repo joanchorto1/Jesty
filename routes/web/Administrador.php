@@ -93,6 +93,15 @@ Route::middleware(['route.features.access:7'])->group(function () {
     Route::get('/company/{company}/keys', [CompanyController::class , 'showKeys'])->name('companies.showKeys');
     Route::put('/company/{company}/keys', [CompanyController::class, 'updateKeys'])->name('companies.updateKeys');
     Route::get('/company/{company}/keys/new', [CompanyController::class, 'generateKeys'])->name('companies.generateKeys');
+
+
+    //Rutas de tareas de usuario
+
+    Route::get('/user_tasks', [\App\Http\Controllers\UserTaskController::class, 'index'])->name('user_tasks.index');
+    Route::get('/user_tasks/creat/admin', [\App\Http\Controllers\UserTaskController::class, 'adminCreate'])->name('user_tasks.adminCreate');
+    Route::get('/user_tasks/edit/admin/{user_task}', [\App\Http\Controllers\UserTaskController::class, 'adminEdit'])->name('user_tasks.adminEdit');
+    Route::post('/user_tasks/admin', [\App\Http\Controllers\UserTaskController::class, 'adminStore'])->name('user_tasks.adminStore');
+    Route::put('/user_tasks/admin/{user_task}', [\App\Http\Controllers\UserTaskController::class, 'adminUpdate'])->name('user_tasks.adminUpdate');
 });
 
 

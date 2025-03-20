@@ -81,6 +81,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('user_tasks', UserTaskController::class);
     Route::get('user_tasks/{user_task}/complete', [UserTaskController::class, 'markAsCompleted'])->name('user_tasks.mark_as_completed');
     Route::get('user_tasks/{user_task}/in_progress', [UserTaskController::class, 'markAsInProgress'])->name('user_tasks.mark_as_in_progress');
+    Route::get('user_tasks/{user_task}', [UserTaskController::class, 'show'])->name('user_tasks.show');
 });
 
 
