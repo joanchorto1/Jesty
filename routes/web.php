@@ -59,7 +59,10 @@ Route::middleware([
             'user' => \Illuminate\Support\Facades\Auth::user(),
             'role' => \App\Models\Role::where('id', \Illuminate\Support\Facades\Auth::user()->role_id)->first(),
             'notifications' => \App\Models\UserNotification::where('user_id', \Illuminate\Support\Facades\Auth::user()->id)->where('read',false)->orderBy('created_at', 'desc')->get(),
-            'tasks' => \App\Models\UserTask::where('user_id', \Illuminate\Support\Facades\Auth::user()->id)->orderBy('created_at', 'desc')->get(),
+            'tasks' => \App\Models\UserTask::where('user_id', \Illuminate\Support\Facades\Auth::user()->id)
+                ->whereIn('status', ['pending', 'in_progress'])
+                ->orderBy('created_at', 'desc')
+                ->get(),
         ]);
     })->name('dashboard');
 
@@ -76,7 +79,8 @@ use App\Http\Controllers\UserTaskController;
 
 Route::middleware(['auth'])->group(function () {
     Route::resource('user_tasks', UserTaskController::class);
-    Route::post('user_tasks/{user_task}/complete', [UserTaskController::class, 'markAsCompleted'])->name('user_tasks.complete');
+    Route::get('user_tasks/{user_task}/complete', [UserTaskController::class, 'markAsCompleted'])->name('user_tasks.mark_as_completed');
+    Route::get('user_tasks/{user_task}/in_progress', [UserTaskController::class, 'markAsInProgress'])->name('user_tasks.mark_as_in_progress');
 });
 
 
