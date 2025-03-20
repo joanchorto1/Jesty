@@ -42,8 +42,8 @@
                                     <td class="px-4 py-3 items-center justify-center  flex space-x-2">
                                         <NavLink :href="route('user_tasks.show', task.id)" class="text-blue-500 hover:text-blue-700"><InfoIcon class="fill-gray-950 w-5 h-5 " title="Ver Mas"/></NavLink>
                                         <NavLink :href="route('user_tasks.edit', task.id)" class="text-yellow-500 hover:text-yellow-700"><EditIcon class="fill-gray-950 w-5 h-5" title="Editar"/> </NavLink>
-                                        <NavLink :href="route('user_tasks.mark_as_completed', task.id)" v-if="task.status !== 'completed'" class="text-green-500 hover:text-green-700" title="Marcar como Finalizado"><MenuCategoryIcon class="fill-gray-950 w-5 h-5 "/> </NavLink>
-                                        <NavLink :href="route('user_tasks.mark_as_in_progress', task.id)" v-if="task.status !== 'in_progress'" class="text-gray-500 hover:text-gray-700" title="Marcar como Progreso"><MenuProductIcon class="fill-gray-950 w-5 h-5"/>
+                                        <NavLink :href="route('user_tasks.mark_as_completed', task.id)" v-if="task.status !== 'completed'" class="text-green-500 " title="Marcar como Finalizado"><MenuCategoryIcon class="fill-gray-950 w-5 h-5 "/> </NavLink>
+                                        <NavLink :href="route('user_tasks.mark_as_in_progress', task.id)" v-if="task.status !== 'in_progress'" class="text-gray-500 " title="Marcar como Progreso"><MenuProductIcon  title="Marcar como Progreso" class="fill-gray-950 w-5 h-5"/>
                                         </NavLink>
                                         <button @click="deleteTask(task.id)" class="text-red-500"><DeleteIcon class="fill-gray-950 h-5 w-5 hover:border-b-2" title="eliminar"/> </button>
                                     </td>
