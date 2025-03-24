@@ -36,6 +36,9 @@
                     <button @click="sendInvoice" title="Enviar factura">
                         <SendIcon class="w-6 h-6 fill-gray-950" />
                     </button>
+                    <NavLink :href="route('invoices.credit-notes.create', invoice.id)" class="btn btn-primary">
+                        <MenuBillingIcon class="w-6 h-6 fill-gray-950" title="Hacer un abono"/>
+                    </NavLink>
                     <button @click="confirmDelete" title="Eliminar Factura">
                         <DeleteIcon class="w-6 h-6 text-gray-600" />
                     </button>
@@ -81,6 +84,20 @@
                     </tbody>
                 </table>
             </div>
+            <div class="mb-6">
+                <h2 class="text-xl font-medium">Abonos</h2>
+                <div v-if="creditNotes.length === 0" class="text-gray-500">No hay abonos para esta factura.</div>
+                <div v-else>
+                    <div v-for="(creditNote, index) in creditNotes" :key="index" class="mb-4">
+                        <div class="border p-4 rounded-lg shadow-sm">
+                            <div><strong>Data:</strong> {{ creditNote.created_at }}</div>
+                            <div><strong>Total sense IVA:</strong> {{ creditNote.total_without_tax }}</div>
+                            <div><strong>Total amb IVA:</strong> {{ creditNote.total_with_tax }}</div>
+                            <NavLink :href="route('credit-notes.edit', creditNote.id)" class="btn btn-link">Editar</NavLink>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </AppLayout>
 </template>
@@ -95,12 +112,14 @@ import NavLink from "@/Components/NavLink.vue";
 import CopyIcon from "@/Components/Icons/CopyIcon.vue";
 import SendIcon from "@/Components/Icons/SendIcon.vue";
 import { ref } from "vue";
+import MenuBillingIcon from "@/Components/Icons/MenuBillingIcon.vue";
 
 const props = defineProps({
     invoice: Object,
     invoiceItems: Array,
     products: Array,
-    clients: Array
+    clients: Array,
+    creditNotes: Array,
 });
 
 // Estado del popup

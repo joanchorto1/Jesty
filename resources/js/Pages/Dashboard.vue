@@ -18,7 +18,7 @@
                     <!-- Tareas de Hoy -->
                     <div class="mt-6">
                         <div class="flex mt-10 w-full justify-between items-center">
-                            <h3 class="text-lg font-semibold text-gray-600 mb-3">Tareas de hoy ({{ tasks.length }})</h3>
+                            <h3 class="text-lg font-semibold text-gray-600 mb-3">Tareas ({{ tasks.length }})</h3>
                             <NavLink :href="route('user_tasks.create')" class="text-white bg-blue-500 rounded-lg hover:bg-blue-600 px-4 py-2">
                                 Nueva Tarea
                             </NavLink>

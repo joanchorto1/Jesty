@@ -7,6 +7,8 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\InvoiceItemController;
 use App\Http\Controllers\BudgetController;
 use App\Http\Controllers\BudgetItemController;
+use App\Http\Controllers\CreditNoteController;
+
 
 
 Route::middleware(['route.features.access:1'])->group(function() {
@@ -69,6 +71,17 @@ Route::middleware(['route.features.access:1'])->group(function() {
 
     Route::get('/budgets/{budget}/send', [BudgetController::class, 'send'])->name('budgets.send');
     Route::get('/invoices/{invoice}/send', [InvoiceController::class, 'send'])->name('invoices.send');
+
+
+
+    // Routes for Credit Notes;
+
+    Route::get('/invoices/{invoice}/credit-notes', [CreditNoteController::class, 'show'])->name('invoices.credit-notes');
+    Route::get('/invoices/{invoice}/credit-notes/create', [CreditNoteController::class, 'create'])->name('invoices.credit-notes.create');
+    Route::post('/invoices/{invoice}/credit-notes', [CreditNoteController::class, 'store'])->name('invoices.credit-notes.store');
+    Route::get('/credit-notes/{creditNote}/edit', [CreditNoteController::class, 'edit'])->name('credit-notes.edit');
+    Route::put('/credit-notes/{creditNote}', [CreditNoteController::class, 'update'])->name('credit-notes.update');
+    Route::delete('/credit-notes/{creditNote}', [CreditNoteController::class, 'destroy'])->name('credit-notes.destroy');
 
 
 //// Routes for Budget Items

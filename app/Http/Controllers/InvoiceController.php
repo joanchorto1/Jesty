@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Mail\InvoiceMail;
 use App\Models\Budget;
 use App\Models\BudgetItem;
+use App\Models\CreditNote;
 use App\Models\EmailConfiguration;
 use App\Models\Income;
 use App\Models\Invoice;
@@ -200,12 +201,14 @@ class InvoiceController extends Controller
     public function show(Invoice $invoice)
     {
         $invoiceItems = InvoiceItem::where('invoice_id', $invoice->id)->get();
+        $creditNotes = CreditNote::where('invoice_id', $invoice->id)->get();
 
         return Inertia::render('Invoices/Show', [
             'invoice' => $invoice,
             'invoiceItems' => $invoiceItems,
             'products' => Product::where('company_id', Auth::user()->company_id)->get(),
             'clients' => Client::where('company_id', Auth::user()->company_id)->get(),
+            'creditNotes' => $creditNotes
         ]);
     }
 
