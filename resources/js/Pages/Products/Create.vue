@@ -19,6 +19,7 @@ const data = reactive({
         cost_price: '', // Nuevo campo
         stock: '',
         supplier_id: '', // Nuevo campo
+        is_stackable: false, // Nuevo campo
     },
 });
 
@@ -76,8 +77,12 @@ const submitForm = () => {
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="cost_price">Base Price</label>
                     <input v-model="data.form.cost_price" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="cost_price" type="number" step="0.01" placeholder="Enter base price">
                 </div>
-
                 <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="cost_price">Es stockable?</label>
+                    <input type="checkbox" v-model="data.form.is_stackable" class="shadow appearance-none border rounded  py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="is_stackable" step="0.01" placeholder="Enter if is stackable">
+                </div>
+
+                <div class="mb-4" v-if="data.form.is_stackable">
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="stock">Stock</label>
                     <input v-model="data.form.stock" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="stock" type="number" placeholder="Enter stock quantity">
                 </div>

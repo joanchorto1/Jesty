@@ -345,47 +345,58 @@ class InvoiceController extends Controller
     private function updateStockProduct($product_id, $quantity)
     {
         $product = Product::find($product_id);
-        $product->stock = $product->stock - $quantity;
+
+        if (!$product->is_stackable) {
+            return; // No actualitza stock si no és stackable
+        }
+
+        $product->stock -= $quantity;
         $product->save();
 
         if ($product->stock < 5) {
-            // Enviar notificación de stock bajo
             $this->sendLowStockNotification($product);
         }
-
     }
-    private function updateStrockProductFromOldItems($product_id, $quantity,$oldItems)
+
+    private function updateStrockProductFromOldItems($product_id, $quantity, $oldItems)
     {
         foreach ($oldItems as $item) {
             $product = Product::find($item->product_id);
-            $product->stock = $product->stock + $item->quantity;
+
+            if ($product->is_stackable) {
+                $product->stock += $item->quantity;
+                $product->save();
+            }
+        }
+
+        $product = Product::find($product_id);
+        if ($product->is_stackable) {
+            $product->stock -= $quantity;
             $product->save();
         }
 
-
-
-
-        $product = Product::find($product_id);
-        $product->stock = $product->stock - $quantity;
-        $product->save();
-
-        if ($product->stock < 5) {
-            // Enviar notificación de stock bajo
+        if ($product->is_stackable && $product->stock < 5) {
             $this->sendLowStockNotification($product);
         }
     }
+
 
     private function restoreStockProduct($product_id, $quantity)
     {
         $product = Product::find($product_id);
-        $product->stock = $product->stock + $quantity;
+
+        if (!$product->is_stackable) {
+            return; // No restaura stock si no és stackable
+        }
+
+        $product->stock += $quantity;
         $product->save();
 
         if ($product->stock < 5) {
-            // Enviar notificación de stock bajo
             $this->sendLowStockNotification($product);
         }
     }
+
 
 
     public function send($invoiceId)

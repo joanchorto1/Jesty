@@ -8,6 +8,7 @@ use App\Models\Company;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class ProductController extends Controller
@@ -38,6 +39,7 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
+        Log::info('Request: '.$request);
         $request->validate([
             'name' => 'required',
             'category_id' => 'required',
@@ -45,12 +47,19 @@ class ProductController extends Controller
             'price' => 'required|numeric',
             'supplier_id' => 'required',
             'cost_price' => 'required|numeric',
-            'stock' => 'required|integer',
+            'stock' => 'required_if:is_stackable,true',
+            'is_stackable' => 'required'
         ]);
 
         $data = $request->all();
         $data['company_id'] = Auth::user()->company_id;
+        if (!$request->is_stackable) {
+            $data['stock'] = 0;
+        }
+
+        Log::info('Data: ', $data);
         Product::create($data);
+
 
 
         return Inertia::location(route('products.index'));
@@ -76,9 +85,10 @@ class ProductController extends Controller
             'description' => 'required',
             'category_id' => 'required',
             'price' => 'required',
-            'stock' => 'required',
+            'stock' => 'required_if:is_stackable,true',
             'cost_price' => 'required',
             'supplier_id' => 'required',
+            'is_stackable' => 'required'
         ]);
 
         $product->update($request->all());

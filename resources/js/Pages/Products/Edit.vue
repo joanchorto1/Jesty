@@ -35,8 +35,12 @@
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="price">Price</label>
                     <input v-model="form.price" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="price" type="number" step="0.01" placeholder="Enter price">
                 </div>
-
                 <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="cost_price">Es Stockable?</label>
+                    <input v-model="form.is_stackable" class="shadow appearance-none border rounded  py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="cost_price" type="checkbox" step="0.01" placeholder="Enter if is stackable">
+                </div>
+
+                <div class="mb-4" v-if="form.is_stackable">
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="stock">Stock</label>
                     <input v-model="form.stock" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="stock" type="number" placeholder="Enter stock quantity">
                 </div>
@@ -75,6 +79,7 @@ const form = useForm({
     supplier_id: props.product.supplier_id,
     price: props.product.price,
     stock: props.product.stock,
+    is_stackable: props.product.is_stackable,
 });
 
 const submitForm = () => {
