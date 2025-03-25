@@ -7,23 +7,22 @@
                     <!-- Informació del Abonament -->
                     <!-- Total sense IVA -->
                     <div class="w-full">
-                        <p><strong>IVA:</strong>{{creditNote.iva}}%</p>
-                        <p><strong>Base Imponible:</strong>{{creditNote.total_without_tax}}</p>
-                        <p><strong>Monto IVA:</strong>{{creditNote.tax_amount}}</p>
-                        <p><strong>Total:</strong>{{creditNote.total_with_tax}}</p>
+                        <p><strong>IVA:</strong>{{iva}}%</p>
+                        <p><strong>Base Imponible:</strong>{{newCreditNote.total_without_tax}}</p>
+                        <p><strong>Monto IVA:</strong>{{newCreditNote.tax_amount}}</p>
+                        <p><strong>Total:</strong>{{newCreditNote.total_with_tax}}</p>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="mb-4">
                             <label for="expense_category_id" class="block text-gray-700">Categoria d'Expense</label>
-                            <select v-model="creditNote.expense_category_id" id="expense_category_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                            <select v-model="newCreditNote.expense_category_id" id="expense_category_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
                                 <option v-for="category in expenseCategories" :key="category.id" :value="category.id">{{ category.name }}</option>
                             </select>
                         </div>
 
-                        <!-- Mètode de Pagament -->
                         <div class="mb-4">
                             <label for="payment_method_id" class="block text-gray-700">Mètode de Pagament</label>
-                            <select v-model="creditNote.payment_method_id" id="payment_method_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                            <select v-model="newCreditNote.payment_method_id" id="payment_method_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
                                 <option v-for="method in paymentMethods" :key="method.id" :value="method.id">{{ method.name }}</option>
                             </select>
                         </div>
@@ -83,7 +82,7 @@
 
                     <!-- Quadre de cerca i filtres -->
                     <input v-model="searchTerm" type="text" placeholder="Cerca producte" class="border-gray-300 rounded-md shadow-sm w-full mb-4">
-                    <select v-model="selectedCategory" class="border-gray-300 rounded-md shadow-sm w-full mb-4">
+                    <select class="border-gray-300 rounded-md shadow-sm w-full mb-4">
                         <option value="">Totes les categories</option>
                         <option v-for="category in expenseCategories" :key="category.id" :value="category.name">{{ category.name }}</option>
                     </select>
@@ -121,17 +120,29 @@ const props = defineProps({
     paymentMethods: Array,
     expenseCategories: Array,
     products: Array,
-    items: Array
+    items: Array,
+    invoice: Object,
+    invoiceItems: Array,
+    expense: Object
 });
 
 // Inicialitzar abonament
-const creditNote = ref({ ...props.creditNote });
+const newCreditNote = ref({
+    total_without_tax: props.creditNote.total_without_tax,
+    tax_amount: props.creditNote.tax_amount,
+    total_with_tax: props.creditNote.total_with_tax,
+    expense_category_id: props.expense.expense_category_id,
+    payment_method_id: props.expense.payment_method_id,
+});
+
+const iva = ((props.creditNote.total_with_tax - props.creditNote.total_without_tax) / props.creditNote.total_without_tax)*100
 
 // Inicialitzar ítems de l'Abonament
 const creditNoteItems = ref([...props.items]);
 
-const paymentMethod = ref(props.creditNote.payment_method_id);
-const expenseCategory = ref(props.creditNote.expense_category_id);
+// Inicializar valores por defecto
+const paymentMethod = ref(props.expense.payment_method_id || '');
+const expenseCategory = ref(props.expense.expense_category_id || '');
 const showProductModal = ref(false);
 const searchTerm = ref('');
 const selectedCategory = ref('');
@@ -148,21 +159,24 @@ const calculateTotal = () => {
     let totalWithoutTax = 0;
     let totalTax = 0;
 
-    let iva = (creditNote.total_with_tax - creditNote.total_without_tax) / creditNote.total_without_tax
+    // let iva = (creditNote.total_with_tax - creditNote.total_without_tax) / creditNote.total_without_tax
 
     creditNoteItems.value.forEach(item => {
-        totalWithoutTax += item.total;
-        totalTax += (item.total * iva ) / 100;
+        console.log(item)
+        totalWithoutTax += item.quantity * item.unit_price;
+        console.log(totalWithoutTax)
+        totalTax += ((item.quantity*item.unit_price) * iva ) / 100;
+        console.log(totalTax)
     });
-    creditNote.value.total_without_tax = totalWithoutTax;
-    creditNote.value.tax_amount = totalTax;
-    creditNote.value.total_with_tax = totalWithoutTax + totalTax;
+    newCreditNote.value.total_without_tax = totalWithoutTax;
+    newCreditNote.value.tax_amount = totalTax;
+    newCreditNote.value.total_with_tax = totalWithoutTax + totalTax;
 };
 
 // Validar stock
 const validateStock = (index) => {
     const item = creditNoteItems.value[index];
-    const selectedProduct = props.products.find(p => p.id === item.product_id);
+    const selectedProduct = props.invoiceItems.find(p => p.product_id === item.product_id);
     if (item.quantity > selectedProduct.quantity) {
         item.quantity = selectedProduct.quantity;
     }
@@ -186,30 +200,29 @@ const removeItem = (index) => {
 
 // Enviar formulario
 const submitForm = () => {
-    Inertia.put(route('credit-notes.update', { creditNote: creditNote.value.id }), {
-        ...creditNote.value,
+    Inertia.put(route('credit-notes.update', { creditNote: props.creditNote.id }), {
+        ...newCreditNote.value,
         items: creditNoteItems.value,
     });
 };
 
 // Filtrar productos
-const filteredProducts = computed(() => {
-    return props.products.filter(product => {
-        const matchesCategory = selectedCategory.value ? product.category === selectedCategory.value : true;
-        const matchesSearchTerm = product.name.toLowerCase().includes(searchTerm.value.toLowerCase());
-        return matchesCategory && matchesSearchTerm;
-    });
-});
+const filteredProducts = props.invoiceItems;
+
 
 // Seleccionar un producto
 const selectProduct = (product) => {
+
+    console.log(product)
+    showProductModal.value = false;
+
     creditNoteItems.value.push({
-        product_id: product.id,
+        id: product.id,
+        product_id: product.product_id,
         quantity: 1,
         unit_price: product.unit_price,
-        total: product.unit_price});
+        total_amount: product.unit_price});
     calculateTotal();
-    showProductModal.value = false;
 };
 
 </script>

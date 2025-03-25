@@ -83,21 +83,25 @@
                     </tr>
                     </tbody>
                 </table>
-            </div>
-            <div class="mb-6">
-                <h2 class="text-xl font-medium">Abonos</h2>
+
+                <div>
+
+                <h2 class="text-xl mt-10 border-b pb-2 mb-5 font-medium">Abonos</h2>
                 <div v-if="creditNotes.length === 0" class="text-gray-500">No hay abonos para esta factura.</div>
                 <div v-else>
-                    <div v-for="(creditNote, index) in creditNotes" :key="index" class="mb-4">
-                        <div class="border p-4 rounded-lg shadow-sm">
-                            <div><strong>Data:</strong> {{ creditNote.created_at }}</div>
+                    <div v-for="(creditNote, index) in creditNotes" :key="index" class=" flex space-x-5 mb-4">
+                        <div class="flex space-x-5">
+                            <div><strong>Data:</strong> {{ creditNote.updated_at }}</div>
                             <div><strong>Total sense IVA:</strong> {{ creditNote.total_without_tax }}</div>
                             <div><strong>Total amb IVA:</strong> {{ creditNote.total_with_tax }}</div>
-                            <NavLink :href="route('credit-notes.edit', creditNote.id)" class="btn btn-link">Editar</NavLink>
+                            <NavLink :href="route('credit-notes.edit', creditNote.id)" class="btn btn-link"><EditIcon class="w-5 h-5 fill-gray-950"/> </NavLink>
                         </div>
                     </div>
                 </div>
+                </div>
             </div>
+
+
         </div>
     </AppLayout>
 </template>

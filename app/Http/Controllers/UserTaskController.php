@@ -119,12 +119,15 @@ public function adminStore(Request $request)
     public function destroy(UserTask $userTask)
     {
         $userTask->delete();
-
-        if (Auth::user()->role_id == Role::where('company_id', Auth::user()->company_id)->where('name', 'Administrador')->first()->id){
+        $role = Auth::user()->role_id;
+        $adimistration_feature_id= \App\Models\Feature::where('name','Administradores')->first()->id;
+        $role_features = \App\Models\RoleFeature::where('role_id',$role)->where('feature_id',$adimistration_feature_id)->get();
+        if ($role_features->count()>0){
             return Inertia::location('/user_tasks');
         }else{
             return Inertia::location('/dashboard');
         }
+
     }
 
     public function markAsCompleted(UserTask $userTask)

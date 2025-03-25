@@ -179,7 +179,7 @@ const calculateTotal = () => {
 
 const validateStock = (index) => {
     const item = creditNoteItems.value[index];
-    const selectedProduct = props.invoiceItems.find(p => p.id === item.product_id);
+    const selectedProduct = props.invoiceItems.find(p => p.product_id === item.product_id);
     if (item.quantity > selectedProduct.quantity) {
         item.quantity = selectedProduct.quantity;
     }
