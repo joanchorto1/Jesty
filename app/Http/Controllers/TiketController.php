@@ -201,7 +201,7 @@ class TiketController extends Controller
     public function create()
     {
         return Inertia::render('Tikets/Create', [
-            'products' => Product::where('company_id', Auth::user()->company_id)->get(),
+            'products' => Product::where('company_id', Auth::user()->company_id)->where('disabled', false)->get(),
             'categories' => Category::where('company_id', Auth::user()->company_id)->get(),
         ]);
     }

@@ -227,14 +227,22 @@ const filteredProducts = computed(() => {
 
 // Seleccionar un producto
 const selectProduct = (product) => {
-    if ( product.stock > 0) {
+    if ( product.stock > 0 && product.is_stackable) {
         addItem();
         const lastIndex = budgetItems.value.length - 1;
         budgetItems.value[lastIndex].product_id = product.id;
         budgetItems.value[lastIndex].unit_price = product.price; // Asignar el precio unitario del producto
         updateItemTotal(lastIndex); // Actualizar total del item
         showProductModal.value = false; // Cerrar modal
-    }else {
+    }if (!product.is_stackable) {
+        addItem();
+        const lastIndex = budgetItems.value.length - 1;
+        budgetItems.value[lastIndex].product_id = product.id;
+        budgetItems.value[lastIndex].unit_price = product.price; // Asignar el precio unitario del producto
+        updateItemTotal(lastIndex); // Actualizar total del item
+        showProductModal.value = false; // Cerrar modal
+
+    }else{
         alert('Stock insuficiente');
         showProductModal.value = false; // Cerrar modal
     }
@@ -263,12 +271,17 @@ const submitForm = () => {
 };
 
 const validateStock = (index) => {
-    const item = budgetItems.value[index];
+    const item = invoiceItems.value[index];
     const selectedProduct = props.products.find(product => product.id === item.product_id);
-    if (item.quantity > selectedProduct.stock) {
-        alert(`Stock insuficiente para el producto ${selectedProduct.name}`);
-        item.quantity = selectedProduct.stock; // Ajusta al máximo disponible
+    if (!selectedProduct.is_stackable) {
+        updateItemTotal(index) ;
+    }else {
+        if (item.quantity > selectedProduct.stock) {
+            alert(`Stock insuficiente para el producto ${selectedProduct.name}`);
+            item.quantity = selectedProduct.stock; // Ajusta al máximo disponible
+        }
     }
+
     updateItemTotal(index);
 };
 

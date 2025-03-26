@@ -16,7 +16,7 @@ class ProductController extends Controller
     public function index()
     {
         $suppliers = Supplier::where('company_id',Auth::user()->company_id)->get();
-        $products = Product::where('company_id',Auth::user()->company_id)->get();
+        $products = Product::where('company_id',Auth::user()->company_id)->where('disabled', false)->get();
         $categories = Category::where('company_id',Auth::user()->company_id)->get();
         return Inertia::render('Products/Index', [
             'products' => $products,
@@ -105,8 +105,11 @@ class ProductController extends Controller
 
     public function destroy(Product $product)
     {
-        $product->delete();
-        print('Esti  elimina');
+
+
+        $product->update(['disabled' => true]);
         return Inertia::location(route('products.index'));
     }
+
+
 }

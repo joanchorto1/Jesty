@@ -71,6 +71,7 @@ class UserNotificationController extends Controller
         $company = Auth::user()->company;
 
 
+
         //crear la notificación
         foreach ($users as $user) {
             $notification = UserNotification::create([

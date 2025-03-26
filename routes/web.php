@@ -47,6 +47,9 @@ Route::get('/', function () {
     ]);
 });
 
+
+
+
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
@@ -102,6 +105,7 @@ Route::middleware('check.company.plan')->group(function () {
 });
 // Agrupación de rutas
     require __DIR__ . '/web/Administrador.php';
+    require __DIR__ . '/web/Stripe.php';
 
 
 

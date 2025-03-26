@@ -10,25 +10,18 @@ use App\Models\PlanFeature;
 use App\Models\Role;
 use App\Models\RoleFeature;
 use App\Models\User;
+use App\Services\StripeService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Stripe\Stripe;
 use Stripe\PaymentIntent;
+use Stripe\Checkout\Session;
+
 
 class AuthController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
 
     public function create()
     {
@@ -40,135 +33,90 @@ class AuthController extends Controller
         ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-
 
     public function store(Request $request)
     {
         $request->validate([
-            // Datos de la compañía
             'company_name' => 'required',
             'company_address' => 'required',
             'company_phone' => 'required',
             'company_nif' => 'required',
             'company_email' => 'required|email',
-
-            // Plan
             'plan_id' => 'required',
-
-            // Datos del usuario
             'name' => 'required',
             'email' => 'required|email',
             'password' => 'required|min:8',
             'address' => 'required',
             'phone' => 'required',
-
-            // Pago
-            'payment_method' => 'required', // Recibimos el token de pago
+            'payment_method' => 'required',
         ]);
 
-        $plan = Plan::findOrFail($request->plan_id);
+        $stripeService = new StripeService();
 
         try {
-            // Configurar Stripe
-            Stripe::setApiKey(env('STRIPE_SECRET'));
+            // Crear el cliente en Stripe
+            $customer = $stripeService->createCustomer($request);
 
-            // Crear Intento de Pago
-            $paymentIntent = PaymentIntent::create([
-                'amount' => $plan->price * 100, // Convertir a centavos
-                'currency' => 'usd',
-                'payment_method' => $request->payment_method,
-                'confirm' => true,
+            // Crear suscripción
+            $plan = Plan::findOrFail($request->plan_id);
+            $subscription = $stripeService->createSubscription($customer->id, $plan->stripe_price_id, $request->payment_method);
+
+            // Guardar la compañía y usuario
+            $company = Company::create([
+                'name' => $request->company_name,
+                'address' => $request->company_address,
+                'phone' => $request->company_phone,
+                'email' => $request->company_email,
+                'nif' => $request->company_nif,
+                'plan_id' => $request->plan_id,
+                'stripe_customer_id' => $customer->id,
+                'stripe_subscription_id' => $subscription->id,
             ]);
 
-            if ($paymentIntent->status === 'succeeded') {
-                // Crear compañía
-                $company = Company::create([
-                    'name' => $request->company_name,
-                    'address' => $request->company_address,
-                    'phone' => $request->company_phone,
-                    'email' => $request->company_email,
-                    'nif' => $request->company_nif,
-                    'plan_id' => $request->plan_id,
-                ]);
+            User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => bcrypt($request->password),
+                'company_id' => $company->id,
+            ]);
 
-                //Crear configuracion de email:
-                EmailConfiguration::create([
-                    'company_id' => $company->id,
-                    'host' => 'smtp.mailtrap.io',
-                    'port' => '2525',
-                    'username' => 'b1b1b1b1b1b1b1',
-                    'password' => 'a1a1a1a1a1a1a1',
-                    'encryption' => 'tls',
-                    'from_address' => ''
+            return redirect()->route('login')->with('success', 'Registro y suscripción completados.');
 
-                ]);
-
-                // Crear rol y características
-                $role = Role::create([
-                    'name' => 'Administrador',
-                    'description' => 'Administrador de la empresa',
-                    'company_id' => $company->id,
-                ]);
-
-                $planFeatures = PlanFeature::where('plan_id', $request->plan_id)->get();
-                foreach ($planFeatures as $feature) {
-                    RoleFeature::create([
-                        'role_id' => $role->id,
-                        'feature_id' => $feature->feature_id,
-                    ]);
-                }
-
-                // Crear usuario
-                User::create([
-                    'name' => $request->name,
-                    'email' => $request->email,
-                    'password' => bcrypt($request->password),
-                    'company_id' => $company->id,
-                    'role_id' => $role->id,
-                ]);
-
-                return redirect()->route('login')->with('success', 'Registro exitoso y pago procesado.');
-            }
-
-            return back()->withErrors('El pago no pudo ser procesado.');
         } catch (\Exception $e) {
-            return back()->withErrors('Error al procesar el pago: ' . $e->getMessage());
+            return back()->withErrors('Error: ' . $e->getMessage());
         }
     }
 
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function createCheckoutSession(Request $request)
     {
-        //
+        Stripe::setApiKey(env('STRIPE_SECRET'));
+
+        Log::info('Creating checkout session');
+
+        try {
+            $session = Session::create([
+                'payment_method_types' => ['card'],
+                'line_items' => [[
+                    'price_data' => [
+                        'currency' => 'usd',
+                        'product_data' => [
+                            'name' => 'Suscripción Premium',
+                        ],
+                        'unit_amount' => 1000,
+                    ],
+                    'quantity' => 1,
+                ]],
+                'mode' => 'subscription',
+                'success_url' => url('/success'),
+                'cancel_url' => url('/cancel'),
+            ]);
+        }catch (\Exception $e) {
+            return back()->withErrors('Error: ' . $e->getMessage());
+        }
+
+
+        return response()->json(['sessionId' => $session->id]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
     }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
-}

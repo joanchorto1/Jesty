@@ -34,7 +34,7 @@ class BudgetController extends Controller
     {
         $clients = Client::where('company_id', Auth::user()->company_id)->get();
         $companies = Company::all();
-        $products = Product::where('company_id', Auth::user()->company_id)->get();
+        $products = Product::where('company_id', Auth::user()->company_id)->where('disabled', false)->get();
         return Inertia::render('Budgets/Create', [
             'clients' => $clients,
             'companies' => $companies,

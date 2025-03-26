@@ -16,7 +16,7 @@
         "phpseclib/phpseclib": "^3.0",
         "setasign/fpdf": "^1.8",
         "setasign/fpdi": "^2.6",
-        "stripe/stripe-php": "^16.3",
+        "stripe/stripe-php": "^16.6",
         "tecnickcom/tcpdf": "^6.8",
         "tightenco/ziggy": "^2.0"
     },

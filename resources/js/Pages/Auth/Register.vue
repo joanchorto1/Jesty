@@ -37,12 +37,6 @@
                                 :required="field.required"
                             />
                         </div>
-                        <!-- Stripe Elements para datos de tarjeta -->
-                        <div class="mb-6">
-                            <label class="block text-sm font-semibold text-gray-600">Datos de Tarjeta</label>
-                            <div id="card-element" class="w-full px-5 py-3 mt-2 text-sm border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"></div>
-                            <p v-if="cardError" class="mt-2 text-sm text-red-600">{{ cardError }}</p>
-                        </div>
                     </div>
                 </div>
 
@@ -93,10 +87,9 @@
                 <div class="mt-8">
                     <button
                         type="submit"
-                        class="w-full px-6 py-3 text-lg font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                        :disabled="loading"
+                        class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg"
                     >
-                        {{ loading ? 'Procesando...' : 'Registrar y Pagar' }}
+                        Registrarse y Pagar
                     </button>
                 </div>
             </form>
@@ -132,8 +125,7 @@ const form = reactive({
     phone: '',
 });
 
-const loading = ref(false);
-const cardError = ref('');
+
 const price = ref(0);
 
 const props = defineProps({
@@ -148,8 +140,6 @@ const feturesByPlan = (plan) => {
     });
 };
 
-let stripe = null;
-let card = null;
 
 
 const companyFields = {
@@ -174,12 +164,8 @@ const updatePlanPrice = () => {
     price.value = selectedPlan ? selectedPlan.price : 0;
 };
 
-// Inicializar Stripe Elements
 onMounted(async () => {
-    stripe = await stripePromise;
-    const elements = stripe.elements();
-    card = elements.create('card');
-    card.mount('#card-element');
+
 });
 
 // Método para seleccionar un plan
@@ -190,30 +176,25 @@ const selectPlan = (planId) => {
 
 // Enviar formulario
 const submitForm = async () => {
-    loading.value = true;
-    cardError.value = '';
+    if (!form.plan_id) {
+        alert('Selecciona un plan abans de continuar.');
+        return;
+    }
+
     try {
-        const { paymentMethod, error } = await stripe.createPaymentMethod({
-            type: 'card',
-            card: card,
+        const stripe = await stripePromise;
+
+        const response = await axios.post(route('checkout.session'), {
+            plan_name: props.plans.find(plan => plan.id === form.plan_id)?.name,
+            price: price.value,
         });
 
-        if (error) {
-            cardError.value = error.message;
-            loading.value = false;
-            return;
-        }
+        await stripe.redirectToCheckout({ sessionId: response.data.sessionId });
 
-        form.payment_method = paymentMethod.id;
-
-        Inertia.post(route('register.store'), { ...form, price: price.value }, {
-            onSuccess: () => alert('Registro exitoso y pago procesado.'),
-            onError: (errors) => alert('Error al registrar: ' + Object.values(errors).join(', ')),
-        });
-    } catch (e) {
-        cardError.value = 'Error al procesar los datos de la tarjeta.';
-    } finally {
-        loading.value = false;
+    } catch (error) {
+        console.error('Error en la sessió de pagament:', error);
+        alert('Hi ha hagut un problema amb el pagament.');
     }
 };
+
 </script>

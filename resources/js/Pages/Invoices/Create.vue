@@ -205,14 +205,21 @@ const filteredProducts = computed(() => {
 });
 
 const selectProduct = (product) => {
-    if ( product.stock > 0) {
+    if ( product.stock > 0 && product.is_stackable) {
     addItem();
     const newItem = invoiceItems.value[invoiceItems.value.length - 1];
     newItem.product_id = product.id;
     newItem.unit_price = product.price;
     updateItemTotal(invoiceItems.value.length - 1);
     showProductModal.value = false; // Cerrar el modal después de seleccionar un producto
-    } else {
+    } if (!product.is_stackable) {
+        addItem();
+        const newItem = invoiceItems.value[invoiceItems.value.length - 1];
+        newItem.product_id = product.id;
+        newItem.unit_price = product.price;
+        updateItemTotal(invoiceItems.value.length - 1);
+        showProductModal.value = false; // Cerrar el modal después de seleccionar un producto
+    }    else {
         alert('Producto sin stock disponible');
     }
 };
@@ -244,10 +251,15 @@ const submitForm = () => {
 const validateStock = (index) => {
     const item = invoiceItems.value[index];
     const selectedProduct = props.products.find(product => product.id === item.product_id);
-    if (item.quantity > selectedProduct.stock) {
-        alert(`Stock insuficiente para el producto ${selectedProduct.name}`);
-        item.quantity = selectedProduct.stock; // Ajusta al máximo disponible
+    if (!selectedProduct.is_stackable) {
+        updateItemTotal(index) ;
+    }else {
+        if (item.quantity > selectedProduct.stock) {
+            alert(`Stock insuficiente para el producto ${selectedProduct.name}`);
+            item.quantity = selectedProduct.stock; // Ajusta al máximo disponible
+        }
     }
+
     updateItemTotal(index);
 };
 </script>
