@@ -70,7 +70,9 @@ class UserNotificationController extends Controller
 
         $company = Auth::user()->company;
 
-
+        $users = $users->filter(function ($user) use ($company) {
+            return $user->company_id == $company->id;
+        });
 
         //crear la notificación
         foreach ($users as $user) {

@@ -80,6 +80,20 @@ class AuthController extends Controller
                 'company_id' => $company->id,
             ]);
 
+            //default smtp configuration
+
+            EmailConfiguration::create([
+                'company_id' => $company->id,
+                'driver' => 'smtp',
+                'host' => 'smtp.mailtrap.io',
+                'port' => '2525',
+                'username' => 'your-username',
+                'password' => 'your-password',
+                'encryption' => 'tls',
+                'from_address' => 'your-email',
+                'from_name' => 'your-name',
+            ]);
+
             return redirect()->route('login')->with('success', 'Registro y suscripción completados.');
 
         } catch (\Exception $e) {
