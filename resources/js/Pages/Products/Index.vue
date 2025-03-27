@@ -83,6 +83,10 @@
                             <NavLink :href="route('products.edit', product.id)" class="text-yellow-500">
                                 <EditIcon class="w-5 h-5"/>
                             </NavLink>
+                            <button @click="downloadLabel(product.label_path)" class=" text-white p-2 rounded">
+
+                                <MenuExpenseIcon class="stroke-gray-400 w-5 h-5 " title="Descargar Etiqueta"/>
+                            </button>
                             <button @click="deleteProduct(product.id)" class="text-red-500">
                                 <DeleteIcon class="w-5 h-5"/>
                             </button>
@@ -104,6 +108,8 @@ import AddIcon from '@/Components/Icons/AddIcon.vue';
 import EditIcon from '@/Components/Icons/EditIcon.vue';
 import DeleteIcon from '@/Components/Icons/DeleteIcon.vue';
 import NavLink from "@/Components/NavLink.vue";
+import MenuPaymentIcon from "@/Components/Icons/MenuPaymentIcon.vue";
+import MenuExpenseIcon from "@/Components/Icons/MenuExpenseIcon.vue";
 
 const props = defineProps({
     products: Array,
@@ -136,6 +142,10 @@ const deleteProduct = (id) => {
     if (confirm("¿Estás seguro de que deseas eliminar este producto?")) {
         Inertia.delete(route('products.destroy', id));
     }
+};
+
+const downloadLabel = (labelPath) => {
+    window.open(`/storage/${labelPath}`, '_blank');
 };
 </script>
 

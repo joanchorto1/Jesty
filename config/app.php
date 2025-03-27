@@ -189,7 +189,11 @@ return [
     */
 
     'aliases' => Facade::defaultAliases()->merge([
-        // 'Example' => App\Facades\Example::class,
+        'DNS1D' => Milon\Barcode\Facades\DNS1D::class,
+        'DNS2D' => Milon\Barcode\Facades\DNS2D::class,
     ])->toArray(),
+
+
+
 
 ];

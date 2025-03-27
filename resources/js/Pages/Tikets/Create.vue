@@ -30,7 +30,33 @@
 
                 <!-- Vista de Venta (Categorías y Productos) -->
                 <div v-if="isVenta">
+
+<!--                    Seccion de buscadores-->
+
+                    <div class="grid grid-cols-3 gap-4 mb-6 pb-5 border-b-4">
+                        <div>
+                            <label for="codebar" class="block mb-2">Buscar por código de barras</label>
+                            <input id="codebar" v-model="codebar" type="text" class="w-full p-2 border rounded" />
+                        </div>
+                        <div>
+                            <label for="name" class="block mb-2">Buscar por nombre</label>
+                            <input id="name" v-model="name" type="text" class="w-full p-2 border rounded" />
+                        </div>
+
+<!--                        Limpiar filtros-->
+                        <div class="mt-6">
+                            <button @click="clearFilters" class="items-center justify-center text-white p-4 rounded-lg" title="Limpiar filtros">
+<DeleteIcon class="fill-gray-950 w-5 h-5 "/>
+                            </button>
+                        </div>
+                    </div>
+
+
+
+
                     <!-- Categorías (widgets) -->
+
+
                     <div class="grid grid-cols-3 gap-4 mb-6 pb-5 border-b-4">
                         <div v-for="category in categories" :key="category.id" @click="selectCategory(category)"
                              class="bg-blue-100 p-4 rounded-lg shadow-lg font-bold uppercase cursor-pointer hover:bg-blue-200 transition">
@@ -203,9 +229,28 @@ let tiketData = reactive({
 
 // Computed para filtrar los productos según la categoría seleccionada
 const filteredProducts = computed(() => {
-    if (!selectedCategory.value) return props.products;
-    return props.products.filter(product => product.category_id === selectedCategory.value.id);
+
+    if (codebar.value) {
+        return props.products.filter(product => product.codebar===codebar.value);
+    }else if (name.value) {
+        return props.products.filter(product =>
+            product.name.toLowerCase().includes(name.value.toLowerCase())
+        );
+    }else {
+        if (!selectedCategory.value) return props.products;
+        return props.products.filter(product => product.category_id === selectedCategory.value.id);
+    }
+
 });
+
+//Funcion para filtrar los productos por codebar
+const codebar = ref('');
+const name = ref('');
+
+const clearFilters = () => {
+    codebar.value = '';
+    name.value = '';
+};
 
 // Computed para obtener los 4 últimos ítems del ticket
 const latestItems = computed(() => tiketItems.slice(-4));
@@ -252,6 +297,9 @@ const addItemToTiket = (product) => {
             total: product.price,
         });
     }
+
+    codebar.value = '';
+    name.value = '';
 };
 
 const updateItemTotal = (item) => {
@@ -315,6 +363,8 @@ const closeImprimirModal = () => {
     tiketItems.splice(0, tiketItems.length);
     isImprimirModalOpen.value = false;
 };
+
+
 
 </script>
 

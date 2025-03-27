@@ -13,6 +13,7 @@
         "laravel/jetstream": "^4.3",
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
+        "milon/barcode": "^12.0",
         "phpseclib/phpseclib": "^3.0",
         "setasign/fpdf": "^1.8",
         "setasign/fpdi": "^2.6",
