@@ -7,80 +7,107 @@ use App\Models\EmailConfiguration;
 use App\Models\Feature;
 use App\Models\Plan;
 use App\Models\PlanFeature;
-use App\Models\Role;
-use App\Models\RoleFeature;
 use App\Models\User;
-use App\Services\StripeService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Stripe\Stripe;
-use Stripe\PaymentIntent;
 use Stripe\Checkout\Session;
-
+use Stripe\Webhook;
 
 class AuthController extends Controller
 {
-
     public function create()
     {
         return Inertia::render('Auth/Register', [
             'plans' => Plan::all(),
             'features' => Feature::all(),
-            'planFeatures' => PlanFeature::all()
-
+            'planFeatures' => PlanFeature::all(),
         ]);
     }
 
-
-    public function store(Request $request)
+    public function createCheckoutSession(Request $request)
     {
-        $request->validate([
-            'company_name' => 'required',
-            'company_address' => 'required',
-            'company_phone' => 'required',
-            'company_nif' => 'required',
-            'company_email' => 'required|email',
-            'plan_id' => 'required',
-            'name' => 'required',
-            'email' => 'required|email',
-            'password' => 'required|min:8',
-            'address' => 'required',
-            'phone' => 'required',
-            'payment_method' => 'required',
-        ]);
+        Log::info('Iniciando creación de sesión de checkout');
 
-        $stripeService = new StripeService();
+        Stripe::setApiKey(env('STRIPE_SECRET'));
+
+        $plan = Plan::findOrFail($request->plan_id);
 
         try {
-            // Crear el cliente en Stripe
-            $customer = $stripeService->createCustomer($request);
+            $session = Session::create([
+                'payment_method_types' => ['card'],
+                'line_items' => [[
+                    'price' => $plan->stripe_price_id,
+                    'quantity' => 1,
+                ]],
+                'mode' => 'subscription',
+                'success_url' => url('/login'),
+                'cancel_url' => url('/cancel'),
+                'metadata' => $request->except('_token'),
+            ]);
 
-            // Crear suscripción
-            $plan = Plan::findOrFail($request->plan_id);
-            $subscription = $stripeService->createSubscription($customer->id, $plan->stripe_price_id, $request->payment_method);
+            Log::info('Sesión de checkout creada correctamente', ['session_id' => $session->id]);
 
-            // Guardar la compañía y usuario
+            return response()->json(['sessionId' => $session->id]);
+
+        } catch (\Exception $e) {
+            Log::error('Error al crear la sesión de checkout', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return back()->withErrors('Error: ' . $e->getMessage());
+        }
+    }
+
+    public function handle(Request $request): JsonResponse
+    {
+        $payload = $request->getContent();
+        $sigHeader = $request->header('Stripe-Signature');
+        $secret = env('STRIPE_WEBHOOK_SECRET');
+
+        try {
+            $event = Webhook::constructEvent($payload, $sigHeader, $secret);
+        } catch (\Exception $e) {
+            Log::error('Webhook Stripe inválido', ['error' => $e->getMessage()]);
+            return response()->json(['error' => $e->getMessage()], 400);
+        }
+
+        if ($event->type === 'checkout.session.completed') {
+            $session = $event->data->object;
+            $data = $session->metadata;
+
+            if (!$data || !isset($data->email)) {
+                Log::error('Webhook incompleto: metadata faltante', ['session_id' => $session->id]);
+                return response()->json(['error' => 'Metadata incompleta'], 400);
+            }
+
+            Log::info('Webhook recibido: checkout.session.completed', ['email' => $data->email]);
+
+            if (User::where('email', $data->email)->exists()) {
+                Log::warning('Usuario ya existe en webhook', ['email' => $data->email]);
+                return response()->json(['status' => 'User already exists']);
+            }
+
             $company = Company::create([
-                'name' => $request->company_name,
-                'address' => $request->company_address,
-                'phone' => $request->company_phone,
-                'email' => $request->company_email,
-                'nif' => $request->company_nif,
-                'plan_id' => $request->plan_id,
-                'stripe_customer_id' => $customer->id,
-                'stripe_subscription_id' => $subscription->id,
+                'name' => $data->company_name ?? '',
+                'address' => $data->company_address ?? '',
+                'phone' => $data->company_phone ?? '',
+                'email' => $data->company_email ?? '',
+                'nif' => $data->company_nif ?? '',
+                'plan_id' => $data->plan_id ?? null,
+                'stripe_customer_id' => $session->customer,
+                'stripe_subscription_id' => $session->subscription,
             ]);
 
             User::create([
-                'name' => $request->name,
-                'email' => $request->email,
-                'password' => bcrypt($request->password),
+                'name' => $data->name ?? '',
+                'email' => $data->email,
+                'password' => bcrypt($data->password ?? 'defaultpassword'),
                 'company_id' => $company->id,
             ]);
-
-            //default smtp configuration
 
             EmailConfiguration::create([
                 'company_id' => $company->id,
@@ -94,43 +121,9 @@ class AuthController extends Controller
                 'from_name' => 'your-name',
             ]);
 
-            return redirect()->route('login')->with('success', 'Registro y suscripción completados.');
-
-        } catch (\Exception $e) {
-            return back()->withErrors('Error: ' . $e->getMessage());
-        }
-    }
-
-    public function createCheckoutSession(Request $request)
-    {
-        Stripe::setApiKey(env('STRIPE_SECRET'));
-
-        Log::info('Creating checkout session');
-
-        try {
-            $session = Session::create([
-                'payment_method_types' => ['card'],
-                'line_items' => [[
-                    'price_data' => [
-                        'currency' => 'usd',
-                        'product_data' => [
-                            'name' => 'Suscripción Premium',
-                        ],
-                        'unit_amount' => 1000,
-                    ],
-                    'quantity' => 1,
-                ]],
-                'mode' => 'subscription',
-                'success_url' => url('/success'),
-                'cancel_url' => url('/cancel'),
-            ]);
-        }catch (\Exception $e) {
-            return back()->withErrors('Error: ' . $e->getMessage());
+            Log::info('Usuario y compañía creados desde webhook', ['email' => $data->email]);
         }
 
-
-        return response()->json(['sessionId' => $session->id]);
+        return response()->json(['status' => 'success']);
     }
-
-
-    }
+}

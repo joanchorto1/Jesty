@@ -104,8 +104,7 @@
 
 
 <script setup>
-import {reactive, ref, onMounted, computed} from 'vue';
-import { Inertia } from '@inertiajs/inertia';
+import {reactive, ref, onMounted} from 'vue';
 import { loadStripe } from '@stripe/stripe-js';
 import NavLink from "../../../../vendor/laravel/jetstream/stubs/inertia/resources/js/Components/NavLink.vue";
 
@@ -177,7 +176,7 @@ const selectPlan = (planId) => {
 // Enviar formulario
 const submitForm = async () => {
     if (!form.plan_id) {
-        alert('Selecciona un plan abans de continuar.');
+        alert('Selecciona un pla abans de continuar.');
         return;
     }
 
@@ -185,16 +184,30 @@ const submitForm = async () => {
         const stripe = await stripePromise;
 
         const response = await axios.post(route('checkout.session'), {
-            plan_name: props.plans.find(plan => plan.id === form.plan_id)?.name,
-            price: price.value,
+            ...form,
         });
 
-        await stripe.redirectToCheckout({ sessionId: response.data.sessionId });
+        console.log('Response:', response.data);
+
+        if (response.data.sessionId) {
+            const result = await stripe.redirectToCheckout({
+                sessionId: response.data.sessionId
+            });
+
+            if (result.error) {
+                console.error('Stripe redirect error:', result.error.message);
+                alert('Error al redirigir a Stripe: ' + result.error.message);
+            }
+        } else {
+            alert('Error: no s\'ha rebut el sessionId de Stripe.');
+        }
 
     } catch (error) {
-        console.error('Error en la sessió de pagament:', error);
+        console.error('Error en la sessió de pagament (catch):', error);
         alert('Hi ha hagut un problema amb el pagament.');
     }
 };
+
+
 
 </script>
