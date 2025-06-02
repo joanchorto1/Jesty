@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('plans', function (Blueprint $table) {
-            Schema::table('main.plans', function (Blueprint $table) {
+            Schema::table('plans', function (Blueprint $table) {
                 $table->unsignedInteger('user_limit')->default(0)->after('price')->comment('Límite de usuarios permitidos en este plan');
             });
         });
