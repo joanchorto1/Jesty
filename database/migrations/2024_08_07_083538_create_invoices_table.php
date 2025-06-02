@@ -14,7 +14,7 @@ class CreateInvoicesTable extends Migration
             $table->foreignId('client_id')->constrained()->onDelete('cascade');
             $table->date('date');
             $table->text('name');
-            $table->text('state')->default('no_pagado');
+            $table->string('state')->default('in_process');
             $table->decimal('base_imponible', 10, 2)->default(0);
             $table->decimal('iva', 5, 2)->default(21); // IVA por defecto 21%
             $table->decimal('monto_iva', 10, 2)->default(0);
