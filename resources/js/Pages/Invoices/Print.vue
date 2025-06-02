@@ -5,7 +5,7 @@
             <!-- Company Details -->
             <div>
                 <img src="/storage/JCTLogo.jpeg" alt="Company Logo" class="w-16 rounded-md mb-4" />
-                <h1 class="text-xl font-bold ">{{ company.name }}</h1>
+                <h1 class="text-xl font-bold">{{ company.name }}</h1>
                 <p class="text-gray-600">{{ company.address }}</p>
                 <p class="text-gray-600">{{ company.phone }}</p>
                 <p class="text-gray-600">{{ company.nif }}</p>
@@ -13,7 +13,6 @@
             </div>
             <!-- Client Information -->
             <div class="text-right mt-20">
-
                 <h2 class="text-xl font-semibold text-gray-800">Informació del client</h2>
                 <p class="text-gray-600">{{ client.name }}</p>
                 <p class="text-gray-600">{{ client.address }}</p>
@@ -23,16 +22,18 @@
             </div>
         </div>
 
-        <!-- Budget Details -->
+        <!-- Invoice Details -->
         <div class="mb-8">
             <h2 class="text-lg font-semibold text-gray-800 border-b border-gray-300 pb-2">Detalls de la Factura</h2>
             <div class="mt-4 text-gray-600">
+
                 <p><strong>Data:</strong> {{ invoice.date }}</p>
-                <p><strong>ID:</strong> P{{ invoice.id }}</p>
+                <p><strong>Nº Factura:</strong> {{ invoice.name }}</p>
+<!--                <p><strong>ID:</strong> F{{ invoice.id }}</p>-->
             </div>
         </div>
 
-        <!-- Budget Items Table -->
+        <!-- Invoice Items Table -->
         <div>
             <table class="w-full table-auto border-collapse border border-gray-300 text-sm">
                 <thead>
@@ -59,12 +60,13 @@
             </table>
         </div>
 
-        <!-- Budget Totals -->
+        <!-- Invoice Totals -->
         <div class="flex justify-end mt-8 text-gray-800">
             <div class="text-right">
                 <p class="mb-2"><strong>Base Imponible:</strong> {{ invoice.base_imponible }}€</p>
                 <p class="mb-2"><strong>IVA (21%):</strong> {{ invoice.monto_iva }}€</p>
-                <p class="text-lg font-bold"><strong>Total:</strong> {{ invoice.total }}€</p>
+                <p class="mb-2"><strong>Retenció IRPF (15%):</strong> −{{ retencionIrpf.toFixed(2) }}€</p>
+                <p class="text-lg font-bold mt-2"><strong>Total a pagar:</strong> {{ totalFinal.toFixed(2) }}€</p>
             </div>
         </div>
 
@@ -72,7 +74,7 @@
         <div class="mt-6 flex justify-end">
             <button
                 id="print-button"
-                class="flex items-center space-x-2 bg-blue-500 text-white py-2 px-4 rounded-md shadow-md hover:bg-blue-600 transition "
+                class="flex items-center space-x-2 bg-blue-500 text-white py-2 px-4 rounded-md shadow-md hover:bg-blue-600 transition"
                 @click="printBudget"
             >
                 <span>Imprimir</span>
@@ -84,7 +86,7 @@
 
 <script setup>
 import html2pdf from "html2pdf.js";
-import PrintIcon from "@/Components/Icons/PrintIcon.vue"; // Si has instal·lat via npm
+import PrintIcon from "@/Components/Icons/PrintIcon.vue";
 
 const props = defineProps({
     company: Object,
@@ -94,7 +96,7 @@ const props = defineProps({
     products: Array,
 });
 
-//reducir los decimales a dos de los precios de los productos y de los totales
+// Format price fields
 const invoiceItems = props.invoiceItems.map((item) => {
     return {
         ...item,
@@ -102,6 +104,17 @@ const invoiceItems = props.invoiceItems.map((item) => {
         total: item.total.toFixed(2),
     };
 });
+
+// Calcular IRPF
+const irpfRate = 0.15;
+const retencionIrpf = +(props.invoice.base_imponible * irpfRate).toFixed(2);
+const totalFinal = +(
+    props.invoice.base_imponible +
+    props.invoice.monto_iva -
+    retencionIrpf
+).toFixed(2);
+
+// Format invoice fields
 const invoice = {
     ...props.invoice,
     base_imponible: props.invoice.base_imponible.toFixed(2),
@@ -109,35 +122,29 @@ const invoice = {
     total: props.invoice.total.toFixed(2),
 };
 
-
 const printBudget = () => {
-    const element = document.getElementById("invoice"); // Selecciona el contenidor del document
-    const printButton = document.getElementById("print-button"); // Elemento que deseas ocultar
-
-    // Ocultar el botón
+    const element = document.getElementById("invoice");
+    const printButton = document.getElementById("print-button");
     printButton.style.display = "none";
 
     const options = {
         margin: 10,
-        filename: `Factura${props.invoice.id}_${props.client.name}.pdf`, // Nom personalitzat
+        filename: `Factura${props.invoice.id}_${props.client.name}.pdf`,
         image: { type: "jpeg", quality: 0.98 },
         html2canvas: { scale: 2 },
         jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
     };
 
-    // Generar el PDF
     html2pdf()
         .set(options)
         .from(element)
         .save()
         .finally(() => {
-            // Mostrar nuevamente el botón
             printButton.style.display = "block";
         });
 };
 </script>
 
 <style scoped>
-
-
 </style>
+

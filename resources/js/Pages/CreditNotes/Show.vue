@@ -35,7 +35,8 @@
 
 <script>
 import { InertiaLink } from '@inertiajs/inertia-vue3';
-import AppLayout from '@/Layouts/AppLayout';
+import AppLayout from "@/Layouts/AppLayout.vue";
+// import AppLayout from '@/Layouts/AppLayout';
 
 export default {
     props: {

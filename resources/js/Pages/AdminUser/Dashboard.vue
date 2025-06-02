@@ -1,5 +1,5 @@
 <template>
-    <AdminLAyout>
+    <AppLayout>
     <div class="p-6 bg-gray-100 min-h-screen">
         <div class="mb-6 flex justify-between items-center">
             <h1 class="text-3xl font-bold text-blue-600">Admin Dashboard</h1>
@@ -55,15 +55,15 @@
             </div>
         </div>
     </div>
-    </AdminLAyout>
+    </AppLayout>
 </template>
 
 <script setup>
 import { defineProps, computed, onMounted } from 'vue'
 import Chart from 'chart.js/auto'
-import AdminLAyout from "@/Layouts/AdminLAyout.vue";
 import {Inertia} from "@inertiajs/inertia";
 import NavLink from "@/Components/NavLink.vue";
+import AppLayout from "@/Layouts/AppLayout.vue";
 
 const props = defineProps({
     companies: Array,

@@ -1,5 +1,5 @@
 <template>
-    <AdminLAyout>
+    <AppLayout>
     <div class="p-6 bg-gray-100 min-h-screen">
         <h1 class="text-3xl font-bold text-blue-600 mb-6">Crear Compañía</h1>
 
@@ -66,13 +66,13 @@
             </button>
         </form>
     </div>
-    </AdminLAyout>
+    </AppLayout>
 </template>
 
 <script setup>
 import {reactive, ref} from 'vue'
-import AdminLAyout from "@/Layouts/AdminLAyout.vue";
 import {Inertia} from "@inertiajs/inertia";
+import AppLayout from "@/Layouts/AppLayout.vue";
 
 const data = reactive({
     form:{
