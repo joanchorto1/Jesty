@@ -108,6 +108,9 @@ Route::middleware('check.company.plan')->group(function () {
 
 
 });
+
+
+
 // Agrupación de rutas
     require __DIR__ . '/web/Administrador.php';
     require __DIR__ . '/web/Stripe.php';
@@ -116,24 +119,3 @@ Route::middleware('check.company.plan')->group(function () {
 
 
 
-
-
-////outes for AdminUser
-//
-//Route::get('/jctagency/erp/superadmin/login', [AdminController::class, 'showLoginForm'])->name('admin.loginForm');
-//Route::post('/jctagency/erp/superadmin/login', [AdminController::class, 'login'])->name('admin.login');
-//
-//// Ruta para el logout del administrador
-//Route::post('/jctagency/erp/superadmin/logout', [AdminController::class, 'logout'])->name('admin.logout');
-//
-//// Rutas para el registro del administrador
-//Route::get('/jctagency/erp/superadmin/register', [AdminController::class, 'showRegisterForm'])->name('admin.registerForm');
-//Route::post('/jctagency/erp/superadmin/register', [AdminController::class, 'register'])->name('admin.register');
-//
-//// Ruta para el dashboard del administrador
-//Route::get('/jctagency/erp/superadmin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard')->middleware('auth:admin');
-//
-////Users routes
-//
-//Route::get('/jctagency/erp/superadmin/userAdmin/create', [AdminController::class, 'userAdminCreate'])->name('users.adminCreate');
-//Route::post('/jctagency/erp/superadmin/userAdmin/store', [AdminController::class, 'storeAdminUser'])->name('users.adminStore');
