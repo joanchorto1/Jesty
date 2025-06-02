@@ -163,8 +163,8 @@ const updatePlanPrice = () => {
     price.value = selectedPlan ? selectedPlan.price : 0;
 };
 
-onMounted(async () => {
-
+onMounted(() => {
+    console.log('🔑 Stripe key:', import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 });
 
 // Método para seleccionar un plan
