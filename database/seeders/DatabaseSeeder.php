@@ -71,36 +71,36 @@ class DatabaseSeeder extends Seeder
     $premiumPlan->features()->attach([$facturacion->id, $inventario->id, $crm->id, $contabilidad->id, $tpv->id, $clientes->id, $administradores->id, $rrhh->id]);
     $firstMonthFree->features()->attach([$facturacion->id,$administradores->id,$inventario->id,$clientes->id,$contabilidad->id,$tpv->id,$crm->id,$rrhh->id]);
 
-
-    // Crear Company
-    $company = Company::create([
-        'name' => 'Mi Empresa',
-        'address' => 'Calle Falsa, 123',
-        'phone' => '555-1234',
-        'email' => 'company@example.com',
-        'nif' => '12345678A',
-        'plan_id' => $premiumPlan->id,
-    ]);
-
-    //Crea role administador
-    $role = Role::create([
-        'name' => 'Administrador',
-        'description' => 'Rol de administrador con todos los permisos',
-        'company_id' => $company->id,
-    ]);
-
-    foreach (Feature::all() as $feature) {
-        $role->features()->attach($feature->id);
-    }
-
-    // Crear Usuario Administrador
-    $admin = User::create([
-        'name' => 'Administrador',
-        'email' => 'admin@example.com',
-        'password' => Hash::make('password'),
-        'company_id' => $company->id,
-        'role_id' => $role->id,
-    ]);
+//
+//    // Crear Company
+//    $company = Company::create([
+//        'name' => 'Mi Empresa',
+//        'address' => 'Calle Falsa, 123',
+//        'phone' => '555-1234',
+//        'email' => 'company@example.com',
+//        'nif' => '12345678A',
+//        'plan_id' => $premiumPlan->id,
+//    ]);
+//
+//    //Crea role administador
+//    $role = Role::create([
+//        'name' => 'Administrador',
+//        'description' => 'Rol de administrador con todos los permisos',
+//        'company_id' => $company->id,
+//    ]);
+//
+//    foreach (Feature::all() as $feature) {
+//        $role->features()->attach($feature->id);
+//    }
+//
+//    // Crear Usuario Administrador
+//    $admin = User::create([
+//        'name' => 'Administrador',
+//        'email' => 'admin@example.com',
+//        'password' => Hash::make('password'),
+//        'company_id' => $company->id,
+//        'role_id' => $role->id,
+//    ]);
 
 }
 }
