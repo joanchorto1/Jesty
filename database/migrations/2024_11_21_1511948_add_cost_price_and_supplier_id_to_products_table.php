@@ -17,7 +17,7 @@ class AddCostPriceAndSupplierIdToProductsTable extends Migration
             $table->unsignedBigInteger('supplier_id')->nullable()->after('cost_price')->comment('ID del proveedor');
 
             // Si la tabla suppliers existe, añadimos la relación con clave foránea
-            $table->foreign('supplier_id')->references('id')->on('suppliers')->onDelete('set null');
+            $table->foreignId('supplier_id')->nullable()->constrained()->nullOnDelete();
         });
     }
 
