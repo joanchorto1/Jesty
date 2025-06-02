@@ -79,6 +79,7 @@ class AuthController extends Controller
 
     public function handle(Request $request): JsonResponse
     {
+        Log::info('Iniciando manejo de webhook de Stripe');
         $payload = $request->getContent();
         $sigHeader = $request->header('Stripe-Signature');
 
