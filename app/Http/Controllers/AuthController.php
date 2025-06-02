@@ -81,7 +81,8 @@ class AuthController extends Controller
     {
         $payload = $request->getContent();
         $sigHeader = $request->header('Stripe-Signature');
-        $secret = env('STRIPE_WEBHOOK_SECRET');
+
+        $secret = config('services.stripe.webhook.secret');
 
         try {
             $event = Webhook::constructEvent($payload, $sigHeader, $secret);
