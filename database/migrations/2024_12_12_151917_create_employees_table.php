@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->string('address')->nullable();
             $table->string('job_title');
-            $table->foreignId('department_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('department_id'); // sense foreign key de moment
             $table->decimal('salary', 10, 2);
             $table->date('hire_date');
             $table->enum('status', ['activo', 'inactivo'])->default('activo');
