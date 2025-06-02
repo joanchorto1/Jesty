@@ -7,6 +7,7 @@ use App\Models\EmailConfiguration;
 use App\Models\Feature;
 use App\Models\Plan;
 use App\Models\PlanFeature;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -119,11 +120,21 @@ class AuthController extends Controller
                 'stripe_subscription_id' => $session->subscription,
             ]);
 
+           $role= Role::create([
+                'name' => 'Administrador',
+                'description' => 'Rol de administrador con todos los permisos',
+                'company_id' => $company->id,
+            ]);
+            foreach (Feature::all() as $feature) {
+                $role->features()->attach($feature->id);
+            }
+
             User::create([
                 'name' => $data->name ?? '',
                 'email' => $data->email,
                 'password' => bcrypt($data->password ?? 'defaultpassword'),
                 'company_id' => $company->id,
+                'role_id' => $role->id,
             ]);
 
             EmailConfiguration::create([
