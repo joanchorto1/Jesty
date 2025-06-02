@@ -21,7 +21,7 @@ class AddCostPriceAndSupplierIdToProductsTable extends Migration
             $table->foreignId('supplier_id')
                 ->nullable()
                 ->after('cost_price')
-                ->comment('ID del proveedor')
+                ->comment('ID del proveedor.')
                 ->constrained()
                 ->nullOnDelete();
         });
