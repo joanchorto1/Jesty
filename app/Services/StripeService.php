@@ -11,6 +11,8 @@ class StripeService
 {
     public function __construct()
     {
+
+
         Stripe::setApiKey(env('STRIPE_SECRET'));
     }
 
