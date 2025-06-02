@@ -164,6 +164,8 @@ const updatePlanPrice = () => {
 };
 
 onMounted(() => {
+    // Inicializar el precio al cargar la página
+    console.log('HOla, estoy en el onMounted');
     console.log('🔑 Stripe key:', import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 });
 
