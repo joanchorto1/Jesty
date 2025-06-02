@@ -41,7 +41,11 @@ class AuthController extends Controller
         Log::info('Iniciando creación de sesión de checkout');
 
         Log::info('Stripe API Key', ['key' => env('STRIPE_SECRET')]);
-        Stripe::setApiKey(env('STRIPE_SECRET'));
+        Log::info('Stripe API Key', ['key' => config('services.stripe.secret')]);
+
+//        Stripe::setApiKey(env('STRIPE_SECRET'));
+        Stripe::setApiKey(config('services.stripe.secret'));
+
 
 
         $plan = Plan::findOrFail($request->plan_id);
