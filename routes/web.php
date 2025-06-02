@@ -47,6 +47,10 @@ Route::get('/', function () {
     ]);
 });
 
+//ruta para el registro de usuario
+Route::get('/register', [\App\Http\Controllers\AuthController::class, 'create'])->name('auth.register.create');
+
+
 
 
 
@@ -71,6 +75,7 @@ Route::middleware([
 
     // Aquí puedes añadir otras rutas protegidas
 });
+
 
 
 //Register route:
