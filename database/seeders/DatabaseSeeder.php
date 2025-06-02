@@ -42,12 +42,52 @@ class DatabaseSeeder extends Seeder
 
     // Crear Planes
     $plans = [
-        ['name' => 'Básico', 'description' => 'Plan básico con funcionalidades limitadas', 'price' => 10, 'user_limit' => 1],
-        ['name' => 'Estándar', 'description' => 'Plan estándar con más funcionalidades', 'price' => 25, 'user_limit' => 3],
-        ['name' => 'Premium', 'description' => 'Plan premium con todas las funcionalidades', 'price' => 50, 'user_limit' => 10],
-        ['name'=>'FirstMonthFree','description'=>'Primer mes gratis','price'=>0,'user_limit'=>1]
-
+        [
+            'id' => 1,
+            'name' => 'Básico',
+            'description' => 'Plan básico con funcionalidades limitadas',
+            'price' => 15,
+            'created_at' => '2024-12-23 16:50:14',
+            'updated_at' => '2024-12-23 16:50:14',
+            'user_limit' => 1,
+            'stripe_price_id' => 'price_1R6bmeI5okcsCL1owbjuOEhi',
+            'stripe_product_id' => 'prod_S0d2pkh7Jc7wz8',
+        ],
+        [
+            'id' => 2,
+            'name' => 'Estándar',
+            'description' => 'Plan estándar con más funcionalidades',
+            'price' => 25,
+            'created_at' => '2024-12-23 16:50:14',
+            'updated_at' => '2024-12-23 16:50:14',
+            'user_limit' => 3,
+            'stripe_price_id' => 'price_1R6bmsI5okcsCL1oWqYAeXCt',
+            'stripe_product_id' => 'prod_S0d273tdy5ZgFQ',
+        ],
+        [
+            'id' => 3,
+            'name' => 'Premium',
+            'description' => 'Plan premium con todas las funcionalidades',
+            'price' => 50,
+            'created_at' => '2024-12-23 16:50:14',
+            'updated_at' => '2024-12-23 16:50:14',
+            'user_limit' => 10,
+            'stripe_price_id' => 'price_1R6bn3I5okcsCL1oCLF6TNbP',
+            'stripe_product_id' => 'prod_S0d34MpTeTLuUG',
+        ],
+        [
+            'id' => 4,
+            'name' => 'FirstMonthFree',
+            'description' => 'Primer mes gratis',
+            'price' => 0,
+            'created_at' => '2024-12-23 16:50:14',
+            'updated_at' => '2024-12-23 16:50:14',
+            'user_limit' => 1,
+            'stripe_price_id' => null,
+            'stripe_product_id' => null,
+        ],
     ];
+
 
     foreach ($plans as $plan) {
         Plan::create($plan);
