@@ -17,10 +17,13 @@ use App\Models\InvoiceItem;
 use App\Models\Budget;
 use App\Models\BudgetItem;
 use App\Models\Income;
+use Illuminate\Support\Facades\Log;
 
 class DatabaseSeeder extends Seeder
 {  public function run()
 {
+
+    Log::info('Iniciando el seeder de la base de datos');
     // Crear Features
     $features = [
         ['name' => 'Facturación', 'description' => 'Gestión de facturas'],
@@ -70,6 +73,8 @@ class DatabaseSeeder extends Seeder
     $standardPlan->features()->attach([$facturacion->id, $inventario->id, $crm->id, $clientes->id, $administradores->id]);
     $premiumPlan->features()->attach([$facturacion->id, $inventario->id, $crm->id, $contabilidad->id, $tpv->id, $clientes->id, $administradores->id, $rrhh->id]);
     $firstMonthFree->features()->attach([$facturacion->id,$administradores->id,$inventario->id,$clientes->id,$contabilidad->id,$tpv->id,$crm->id,$rrhh->id]);
+
+    Log::info('Features y planes creados correctamente');
 
 //
 //    // Crear Company

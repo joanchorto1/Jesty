@@ -20,6 +20,15 @@ class AuthController extends Controller
 {
     public function create()
     {
+
+        Log::info('Iniciando registro de usuario');
+        // Verificar si el usuario ya está autenticado
+      Log::info('Planes disponibles', ['plans' => Plan::all()]);
+      Log::info('Características disponibles', ['features' => Feature::all()]);
+      Log::info('Características de los planes', ['planFeatures' => PlanFeature::all()]);
+
+
+
         return Inertia::render('Auth/Register', [
             'plans' => Plan::all(),
             'features' => Feature::all(),
