@@ -48,7 +48,6 @@ class AuthController extends Controller
         Stripe::setApiKey(config('services.stripe.secret'));
 
 
-
         $plan = Plan::findOrFail($request->plan_id);
 
         try {
