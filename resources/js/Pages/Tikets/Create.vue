@@ -320,7 +320,9 @@ const closeCobrarModal = () => {
 };
 
 const calculateChange = () => {
-    change.value = (tiketData.base_imponible.value - total.value).toFixed(2);
+    const recibido = parseFloat(receivedAmount.value);
+    const totalPagar = parseFloat(total.value);
+    change.value = (recibido - totalPagar).toFixed(2);
 };
 
 const confirmCobro = () => {
