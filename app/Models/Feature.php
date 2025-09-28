@@ -9,7 +9,7 @@ class Feature extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'description'];
+    protected $fillable = ['name', 'description', 'is_active'];
 
     /**
      * Relación con los planes.

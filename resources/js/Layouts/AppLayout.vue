@@ -208,85 +208,6 @@
                         </NewNavLink>
                     </div>
 
-                    <template v-for="feature in props.features.value">
-                        <NewNavLink v-if="feature.name==='RRHH'" :href="route('dashboard.rrhh')" :active="route().current('dashboard.rrhh')" class="text-blue-500 hover:text-blue-700 py-2">
-                            <div class="flex items-center space-x-2">
-                                <MenuRRHHIcon class="h-5 w-5 fill-gray-950"/>
-                                <p class="text-base">RRHH</p>
-                                <DropdownIcon class="h-5 w-5 fill-blue-500 stroke-0"/>
-                            </div>
-                        </NewNavLink>
-                    </template>
-
-                    <div v-if="isRRHHPage" class="flex flex-col  border-blue-500 border-l-4 space-y-1 ml-4 ">
-
-                        <!--                        Employees-->
-                        <NewNavLink :href="route('employees.index')" :active="route().current('employees.index')"
-                                    class="text-sm text-gray-400 hover:text-gray-500 py-1">
-                            <div class="flex items-center space-x-2">
-                                <MenuClientsIcon class="h-5 w-5"/>
-                                <p class="text-sm">Empleados</p>
-                            </div>
-                        </NewNavLink>
-
-                        <!--                        Departments-->
-                        <NewNavLink :href="route('departments.index')" :active="route().current('departments.index')"
-                                    class="text-sm text-gray-400 hover:text-gray-500 py-1">
-                            <div class="flex items-center space-x-2">
-                                <MenuCategoryIcon class="h-5 w-5"/>
-                                <p class="text-sm">Departamentos</p>
-                            </div>
-                        </NewNavLink>
-
-                        <!--                        Nominas-->
-                        <NewNavLink :href="route('payrolls.index')" :active="route().current('payrolls.index')"
-                                    class="text-sm text-gray-400 hover:text-gray-500 py-1">
-                            <div class="flex items-center space-x-2">
-                                <MenuInvoiceIcon class="h-5 w-5"/>
-                                <p class="text-sm">Nóminas</p>
-                            </div>
-                        </NewNavLink>
-
-                        <!--                        Control de horas-->
-                        <NewNavLink :href="route('attendances.index')" :active="route().current('attendances.index')"
-                                    class="text-sm text-gray-400 hover:text-gray-500 py-1">
-                            <div class="flex items-center space-x-2">
-                                <MenuAccountingIcon class="h-5 w-5"/>
-                                <p class="text-sm">Control de horas</p>
-                            </div>
-                        </NewNavLink>
-
-                        <!--                        Evaluacion de desempeño-->
-                        <NewNavLink :href="route('performance-reviews.index')" :active="route().current('preformance-reviews.index')"
-                                    class="text-sm text-gray-400 hover:text-gray-500 py-1">
-                            <div class="flex items-center space-x-2">
-                                <MenuReportIcon class="h-5 w-5"/>
-                                <p class="text-sm">Desempeño</p>
-                            </div>
-                        </NewNavLink>
-
-                        <!--                    Vacaciones y dias libres    -->
-
-                        <NewNavLink :href="route('leaves.index')" :active="route().current('leaves.index')"
-                                    class="text-sm text-gray-400 hover:text-gray-500 py-1">
-                            <div class="flex items-center space-x-2">
-                                <MenuExpenseIcon class="h-5 w-5"/>
-                                <p class="text-sm">Vacaciones y dias libres</p>
-                            </div>
-                        </NewNavLink>
-
-                        <!--                        Formaciones-->
-
-                        <NewNavLink :href="route('trainings.index')" :active="route().current('trainings.index')"
-                                    class="text-sm text-gray-400 hover:text-gray-500 py-1">
-                            <div class="flex items-center space-x-2">
-                                <AddProductIcon class="stroke-black h-5 w-5"/>
-                                <p class="text-sm">Formaciones</p>
-                            </div>
-                        </NewNavLink>
-
-
-                    </div>
 
 
                     <template v-for="feature in props.features.value">
@@ -402,7 +323,6 @@ import AddProductIcon from "@/Components/Icons/AddProductIcon.vue";
 import IncomeIcon from "@/Components/Icons/IncomeIcon.vue";
 import {computed} from "vue";
 import {usePage} from "@inertiajs/vue3";
-import MenuRRHHIcon from "@/Components/Icons/MenuRRHHIcon.vue";
 import MenuHomeIcon from "@/Components/Icons/MenuHomeIcon.vue";
 
 
@@ -412,7 +332,6 @@ const props = {
     features: features,
 }
 
-const isRRHHPage = route().current('dashboard.rrhh') || route().current('employees.index') || route().current('departments.index') || route().current('payrolls.index') || route().current('attendances.index') || route().current('performance-reviews.index') || route().current('leaves.index') || route().current('trainings.index');
 const isBillingPage = route().current('dashboard.billing') || route().current('budgets.index') || route().current('invoices.index');
 const isProductsPage = route().current('products.index') || route().current('categories.index') || route().current('dashboard.products')||route().current('suppliers.index')||route().current('stockEntries.index');
 const isAccountingPage = route().current('expenses.index') || route().current('expenses.report') || route().current('dashboard.accounting') || route().current('expenseCategories.index') || route().current('paymentMethods.index')||route().current('incomes.index');
