@@ -2,7 +2,7 @@
     <AppLayout>
         <div class="w-full min-h-screen bg-gray-100 p-6">
             <div class="bg-white p-6 rounded-lg shadow-md max-w-3xl mx-auto">
-                <h1 class="text-2xl font-bold text-blue-500 mb-4">Crear Tarea</h1>
+                <h1 class="text-2xl font-bold text-blue-500 mb-4">Editar Tarea</h1>
 
                 <form @submit.prevent="submit" class="space-y-4">
                     <div>
@@ -102,7 +102,7 @@
                             type="submit"
                             class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
                         >
-                            Guardar
+                            Actualizar
                         </button>
                     </div>
                 </form>
@@ -112,18 +112,18 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { Inertia } from '@inertiajs/inertia';
 import AppLayout from '@/Layouts/AppLayout.vue';
 
 const props = defineProps({
+    task: { type: Object, required: true },
     leads: { type: Array, default: () => [] },
     opportunities: { type: Array, default: () => [] },
     clients: { type: Array, default: () => [] },
     projects: { type: Array, default: () => [] },
     typeOptions: { type: Array, default: () => [] },
     statusOptions: { type: Array, default: () => ['pendiente', 'en progreso', 'completada'] },
-    prefillTaskable: { type: Object, default: null },
 });
 
 const typeOptions = computed(() => props.typeOptions);
@@ -135,21 +135,13 @@ const groupedOptions = computed(() => ({
     project: props.projects,
 }));
 
-const defaultType = computed(() => {
-    if (props.prefillTaskable?.type) {
-        return props.prefillTaskable.type;
-    }
-
-    return typeOptions.value.length ? typeOptions.value[0].value : '';
-});
-
 const form = ref({
-    title: '',
-    description: '',
-    due_date: '',
-    status: props.statusOptions[0] ?? 'pendiente',
-    taskable_type: defaultType.value,
-    taskable_id: props.prefillTaskable?.id ?? '',
+    title: props.task.title ?? '',
+    description: props.task.description ?? '',
+    due_date: props.task.due_date ?? '',
+    status: props.task.status ?? (props.statusOptions[0] ?? 'pendiente'),
+    taskable_type: props.task.taskable_type_key ?? (typeOptions.value[0]?.value ?? ''),
+    taskable_id: props.task.taskable_id ?? '',
 });
 
 const availableOptions = computed(() => groupedOptions.value[form.value.taskable_type] ?? []);
@@ -163,15 +155,8 @@ watch(
     }
 );
 
-onMounted(() => {
-    if (props.prefillTaskable?.type && props.prefillTaskable?.id) {
-        form.value.taskable_type = props.prefillTaskable.type;
-        form.value.taskable_id = props.prefillTaskable.id;
-    }
-});
-
 const submit = () => {
-    Inertia.post(route('tasks.store'), form.value);
+    Inertia.put(route('tasks.update', props.task.id), form.value);
 };
 
 const cancel = () => {
@@ -179,5 +164,4 @@ const cancel = () => {
 };
 
 const capitalise = (value) => (value ? value.charAt(0).toUpperCase() + value.slice(1) : '');
-
 </script>

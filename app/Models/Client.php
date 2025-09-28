@@ -27,4 +27,9 @@ class Client extends Model
     {
         return $this->hasMany(Budget::class);
     }
+
+    public function tasks()
+    {
+        return $this->morphMany(Task::class, 'taskable');
+    }
 }

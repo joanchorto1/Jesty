@@ -26,7 +26,7 @@ Route::middleware(['route.features.access:4'])->group(function () {
             'opportunities' => Opportunity::where('company_id', $company->id)->get(),
             'activities' => Activity::where('company_id', $company->id)->get(),
             'notes' => Note::where('company_id', $company->id)->get(),
-            'tasks' => Task::where('company_id', $company->id)->get(),
+            'tasks' => Task::with('taskable')->where('company_id', $company->id)->get(),
         ]);
     })->name('dashboard.crm');
 
@@ -37,7 +37,7 @@ Route::middleware(['route.features.access:4'])->group(function () {
             'opportunities' => Opportunity::where('company_id', $company->id)->get(),
             'activities' => Activity::where('company_id', $company->id)->get(),
             'notes' => Note::where('company_id', $company->id)->get(),
-            'tasks' => Task::where('company_id', $company->id)->get(),
+            'tasks' => Task::with('taskable')->where('company_id', $company->id)->get(),
         ]);
     })->name('crm.all');
 
@@ -92,7 +92,7 @@ Route::middleware(['route.features.access:4'])->group(function () {
 
     Route::middleware(['auth'])->group(function () {
         Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
-        Route::get('/tasks/create', [TaskController::class, 'create'])->name('tasks.create');
+        Route::get('/tasks/create/{taskableType?}/{taskableId?}', [TaskController::class, 'create'])->name('tasks.create');
         Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
         Route::get('/tasks/{task}', [TaskController::class, 'show'])->name('tasks.show');
         Route::get('/tasks/{task}/edit', [TaskController::class, 'edit'])->name('tasks.edit');
