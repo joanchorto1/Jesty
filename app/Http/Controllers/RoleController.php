@@ -67,7 +67,8 @@ class RoleController extends Controller
         $role = \App\Models\Role::find($id);
         $roleFeatures = \App\Models\RoleFeature::where('role_id', $id)->get();
         $features =[];
-        foreach (\App\Models\Feature::all() as $feature) {
+        $activeFeatures = \App\Models\Feature::where('is_active', true)->get();
+        foreach ($activeFeatures as $feature) {
             $features[] = [
                 'id' => $feature->id,
                 'name' => $feature->name,
