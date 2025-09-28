@@ -10,8 +10,7 @@ class CreateTasksTable extends Migration
     {
         Schema::create('tasks', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('lead_id')->nullable()->constrained()->onDelete('cascade');
-            $table->foreignId('opportunity_id')->nullable()->constrained()->onDelete('cascade');
+            $table->nullableMorphs('taskable');
             $table->string('title');
             $table->text('description')->nullable();
             $table->date('due_date')->nullable();
