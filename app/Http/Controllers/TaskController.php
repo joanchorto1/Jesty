@@ -2,29 +2,30 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Client;
+
 use App\Models\Lead;
 use App\Models\Opportunity;
+use App\Models\Project;
 use App\Models\Task;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Http\Request;
+
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class TaskController extends Controller
 {
     public function index()
     {
-        $companyId = Auth::user()->company_id;
-
-        $tasks = Task::with(['company', 'taskable'])
-            ->where('company_id', $companyId)
-            ->latest()
+   
+        $tasks = Task::where('company_id', Auth::user()->company_id)
+            ->with(['lead', 'opportunity', 'project'])
+            ->orderByDesc('due_date')
             ->paginate(10);
 
         return Inertia::render('Tasks/Index', [
@@ -62,6 +63,7 @@ class TaskController extends Controller
             'typeOptions' => $this->taskableTypeOptions(array_keys($types)),
             'statusOptions' => $this->statusOptions(),
             'prefillTaskable' => $prefill,
+
         ]);
     }
 
@@ -93,6 +95,7 @@ class TaskController extends Controller
         ]);
 
         return Redirect::route('tasks.index')->with('success', 'Tarea creada con éxito.');
+
     }
 
     public function show(Task $task)
@@ -104,6 +107,7 @@ class TaskController extends Controller
 
         return Inertia::render('Tasks/Show', [
             'task' => $task,
+
         ]);
     }
 
@@ -129,6 +133,7 @@ class TaskController extends Controller
             'projects' => $this->projectsForCompany($companyId),
             'typeOptions' => $this->taskableTypeOptions(array_keys($types)),
             'statusOptions' => $this->statusOptions(),
+
         ]);
     }
 
@@ -137,6 +142,7 @@ class TaskController extends Controller
         $companyId = Auth::user()->company_id;
         $this->ensureTaskBelongsToCompany($task, $companyId);
         $types = $this->allowedTaskableTypes();
+
 
         $validated = $request->validate([
             'title' => 'required|string|max:255',
@@ -161,6 +167,7 @@ class TaskController extends Controller
         ]);
 
         return Redirect::route('tasks.index')->with('success', 'Tarea actualizada con éxito.');
+
     }
 
     public function destroy(Task $task)
@@ -258,5 +265,6 @@ class TaskController extends Controller
             ->orderBy('name')
             ->get(['id', 'name as label'])
             ->toArray();
+
     }
 }

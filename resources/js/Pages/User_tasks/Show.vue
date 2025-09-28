@@ -13,6 +13,7 @@
                 <p class="text-gray-600 mb-4"><strong>Descripción:</strong> {{ task.description }}</p>
                 <p class="text-gray-600 mb-4"><strong>Fecha de Finalización:</strong> {{ task.due_date }}</p>
                 <p class="text-gray-600 mb-4"><strong>Estado:</strong> <span>{{ task.status }}</span></p>
+                <p class="text-gray-600 mb-4"><strong>Proyecto:</strong> {{ task.project ? task.project.name : 'Sin proyecto' }}</p>
             </div>
 
             <!-- Botones de Acción -->

@@ -2,11 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\Feature;
-use App\Models\RoleFeature;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Inertia\Inertia;
 use Inertia\Middleware;
 
 
@@ -42,21 +38,11 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request)
     {
 
-        $features = [];
-
-        if (Auth::check()) {
-            // Obtener los features del rol del usuario autenticado
-            $roleFeatures = RoleFeature::where('role_id', Auth::user()->role_id)->get();
-            $features = Feature::whereIn('id', $roleFeatures->pluck('feature_id'))->get();
-
-            // Convertir la colección a un array
-            $features = $features->toArray();
-        }
 
         return array_merge(parent::share($request), [
             // Compartir los features con todas las vistas
             'auth.user' => fn () => $request->user() ? $request->user()->only('id', 'name', 'email') : null,
-            'features' => $features, // Aquí se agrega
+            'modules' => config('modules.modules', []),
         ]);
     }
 }

@@ -1,12 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
-use Illuminate\Http\Request;
-use Stripe\Webhook;
-
-Route::post('/stripe/webhook', [\App\Http\Controllers\AuthController::class, 'handle']);
-
-Route::post('/checkout', [\App\Http\Controllers\AuthController::class, 'createCheckoutSession'])->name('checkout.session');
+// Las rutas relacionadas con Stripe se han eliminado. El alta de compañías se
+// gestiona ahora mediante un formulario interno.
 

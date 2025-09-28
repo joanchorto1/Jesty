@@ -2,7 +2,7 @@
     <AppLayout>
         <div class="w-full bg-gray-100 p-10">
             <!-- Sección de Widgets Globales -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
                 <div class="bg-white shadow-lg p-4 rounded-lg text-center">
                     <p class="text-xl font-bold text-blue-300">{{ totalEmployees }}</p>
                     <p class="text-blue-700 font-semibold">Total de Empleados</p>
@@ -18,6 +18,14 @@
                 <div class="bg-white shadow-lg p-4 rounded-lg text-center">
                     <p class="text-xl font-bold text-blue-300">{{ totalEmployeesActive }}</p>
                     <p class="text-blue-700 font-semibold">Empleados Activos</p>
+                </div>
+                <div class="bg-white shadow-lg p-4 rounded-lg text-center">
+                    <p class="text-xl font-bold text-blue-300">{{ totalProjects }}</p>
+                    <p class="text-blue-700 font-semibold">Proyectos Totales</p>
+                </div>
+                <div class="bg-white shadow-lg p-4 rounded-lg text-center">
+                    <p class="text-xl font-bold text-blue-300">{{ activeProjects }}</p>
+                    <p class="text-blue-700 font-semibold">Proyectos Activos</p>
                 </div>
             </div>
 
@@ -54,6 +62,11 @@
                     <BarChart :data="departmentProjectComparisonData" />
                 </div>
             </div>
+
+            <h2 class="text-xl font-semibold text-gray-700 my-4">Estado de los Proyectos</h2>
+            <div class="bg-white p-4 rounded-lg shadow">
+                <BarChart :data="projectStatusData" />
+            </div>
         </div>
     </AppLayout>
 </template>
@@ -67,6 +80,7 @@ import PieChart from '@/Components/PieChart.vue';
 const props = defineProps({
     employees: Array,
     departments: Array,
+    projects: Array,
 });
 
 // Cálculos globales
@@ -74,9 +88,14 @@ const totalEmployees = computed(() => props.employees.length);
 const totalDepartments = computed(() => props.departments.length);
 const totalEmployeesActive = computed(() => props.employees.filter(employee => employee.status === 'active').length);
 const averageSalary = computed(() => {
-    const totalSalary = props.employees.reduce((acc, employee) => acc + employee.salary, 0);
-    return totalSalary / props.employees.length;
+    if (!props.employees.length) {
+        return 0;
+    }
+    const totalSalary = props.employees.reduce((acc, employee) => acc + (employee.salary || 0), 0);
+    return (totalSalary / props.employees.length).toFixed(2);
 });
+const totalProjects = computed(() => props.projects.length);
+const activeProjects = computed(() => props.projects.filter(project => project.status !== 'completed' && project.status !== 'archived').length);
 
 // Datos de Empleados por Departamento
 const employeeDepartmentData = computed(() => {
@@ -208,6 +227,27 @@ const departmentProjectComparisonData = computed(() => {
                 borderColor: 'rgba(59, 130, 246, 1)',
                 borderWidth: 1,
                 data: Object.values(projectTotals),
+            },
+        ],
+    };
+});
+
+const projectStatusData = computed(() => {
+    const statusTotals = props.projects.reduce((acc, project) => {
+        const status = project.status || 'Sin estado';
+        acc[status] = (acc[status] || 0) + 1;
+        return acc;
+    }, {});
+
+    return {
+        labels: Object.keys(statusTotals),
+        datasets: [
+            {
+                label: 'Proyectos por Estado',
+                backgroundColor: 'rgba(59, 130, 246, 0.5)',
+                borderColor: 'rgba(59, 130, 246, 1)',
+                borderWidth: 1,
+                data: Object.values(statusTotals),
             },
         ],
     };

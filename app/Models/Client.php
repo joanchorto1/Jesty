@@ -31,5 +31,9 @@ class Client extends Model
     public function tasks()
     {
         return $this->morphMany(Task::class, 'taskable');
+
+    public function projects()
+    {
+        return $this->hasMany(Project::class);
     }
 }

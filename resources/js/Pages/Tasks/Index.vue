@@ -53,6 +53,7 @@
             >Siguiente</button>
         </div>
     </div>
+
     </AppLayout>
 </template>
 
@@ -114,5 +115,6 @@ const statusClass = (status) => {
     }
 
     return base;
+
 };
 </script>

@@ -85,6 +85,7 @@
                                 </option>
                                 <option v-for="option in availableOptions" :key="option.id" :value="option.id">
                                     {{ option.label }}
+
                                 </option>
                             </select>
                         </div>
@@ -103,6 +104,7 @@
                             class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
                         >
                             Guardar
+
                         </button>
                     </div>
                 </form>
@@ -115,6 +117,7 @@
 import { computed, onMounted, ref, watch } from 'vue';
 import { Inertia } from '@inertiajs/inertia';
 import AppLayout from '@/Layouts/AppLayout.vue';
+
 
 const props = defineProps({
     leads: { type: Array, default: () => [] },
@@ -176,6 +179,7 @@ const submit = () => {
 
 const cancel = () => {
     Inertia.visit(route('tasks.index'));
+
 };
 
 const capitalise = (value) => (value ? value.charAt(0).toUpperCase() + value.slice(1) : '');

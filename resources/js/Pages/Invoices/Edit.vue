@@ -15,6 +15,13 @@
                     </select>
                 </div>
                 <div class="mb-4">
+                    <label for="project_id" class="block text-gray-700">Proyecto</label>
+                    <select v-model="form.project_id" id="project_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                        <option :value="null">Sin proyecto</option>
+                        <option v-for="project in filteredProjects" :key="project.id" :value="project.id">{{ project.name }}</option>
+                    </select>
+                </div>
+                <div class="mb-4">
                     <label for="name" class="block text-gray-700">Nombre de la Factura</label>
                     <input v-model="form.name" id="name" type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" placeholder="Nombre de la Factura">
                 </div>
@@ -127,6 +134,7 @@ const props = defineProps({
     products: Array,
     clients: Array,
     categories: Array,
+    projects: { type: Array, default: () => [] },
 });
 
 const form = ref({
@@ -138,6 +146,7 @@ const form = ref({
     iva: props.invoice.iva || 0,
     monto_iva: props.invoice.monto_iva || 0,
     total: props.invoice.total || 0,
+    project_id: props.invoice.project_id,
     items: props.invoiceItems.map(item => ({
         product_id: item.product_id,
         quantity: item.quantity,
@@ -191,6 +200,14 @@ const filteredProducts = computed(() => {
         filtered = filtered.filter(product => product.category.name === selectedCategory.value);
     }
     return filtered;
+});
+
+const filteredProjects = computed(() => {
+    if (!form.value.client_id) {
+        return props.projects;
+    }
+
+    return props.projects.filter(project => project.client_id === form.value.client_id);
 });
 
 // Selecciona un producto del modal

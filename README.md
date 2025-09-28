@@ -82,6 +82,35 @@ php artisan serve
 - **resources/js/Components/**: Componentes reutilizables en diferentes partes de la aplicación.
 - **resources/js/Layouts/**: El layout principal de la aplicación, que incluye el menú de navegación, el dashboard y otros componentes comunes.
 
+## Módulo de RRHH deshabilitado
+
+El módulo de recursos humanos (RRHH) està deshabilitat per defecte. Aquesta decisió garanteix que la navegació i les rutes públiques no exposin funcionalitats relacionades amb RRHH mentre roman inactiu.
+
+### Com reactivar-lo
+
+1. Habilita la característica al fitxer d'entorn establint `FEATURE_RRHH_ENABLED=true`.
+2. Marca la característica com a activa a la base de dades executant un script d'actualització, per exemple:
+
+   ```bash
+   php artisan tinker
+   >>> \App\Models\Feature::updateOrCreate(
+   ...     ['name' => 'RRHH'],
+   ...     ['description' => 'Gestió de recursos humans', 'is_active' => true]
+   ... )
+   ```
+
+3. Torna a assignar la característica RRHH als plans o rols que la necessitin:
+
+   ```php
+   >>> $featureId = \App\Models\Feature::where('name', 'RRHH')->value('id');
+   >>> \App\Models\Plan::whereIn('name', ['Premium', 'FirstMonthFree'])->each(fn($plan) => $plan->features()->syncWithoutDetaching([$featureId]));
+   >>> \App\Models\Role::where('name', 'Administrador')->each(fn($role) => $role->features()->syncWithoutDetaching([$featureId]));
+   ```
+
+4. Torna a iniciar la sessió dels usuaris que necessitin accedir al mòdul per actualitzar la navegació compartida per Inertia.
+
+Per invertir els canvis i tornar a deshabilitar el mòdul, estableix `FEATURE_RRHH_ENABLED=false` i assigna `is_active` a `false` per a la característica `RRHH`.
+
 ## Contribución
 
 Si deseas contribuir a este proyecto, por favor sigue estos pasos:

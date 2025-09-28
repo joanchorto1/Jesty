@@ -85,6 +85,7 @@
                                 </option>
                                 <option v-for="option in availableOptions" :key="option.id" :value="option.id">
                                     {{ option.label }}
+
                                 </option>
                             </select>
                         </div>
@@ -103,6 +104,7 @@
                             class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
                         >
                             Actualizar
+
                         </button>
                     </div>
                 </form>
@@ -115,6 +117,7 @@
 import { computed, ref, watch } from 'vue';
 import { Inertia } from '@inertiajs/inertia';
 import AppLayout from '@/Layouts/AppLayout.vue';
+
 
 const props = defineProps({
     task: { type: Object, required: true },
@@ -164,4 +167,5 @@ const cancel = () => {
 };
 
 const capitalise = (value) => (value ? value.charAt(0).toUpperCase() + value.slice(1) : '');
+
 </script>

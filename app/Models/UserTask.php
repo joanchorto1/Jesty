@@ -9,11 +9,16 @@ class UserTask extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['title', 'description', 'due_date', 'status', 'user_id'];
+    protected $fillable = ['title', 'description', 'due_date', 'status', 'user_id', 'project_id'];
 
     // Relación con el usuario
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function project()
+    {
+        return $this->belongsTo(Project::class);
     }
 }

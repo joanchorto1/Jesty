@@ -9,16 +9,7 @@ class Feature extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'description'];
-
-    /**
-     * Relación con los planes.
-     * Muchos a muchos: Un feature puede estar en varios planes.
-     */
-    public function plans()
-    {
-        return $this->belongsToMany(Plan::class, 'plan_feature');
-    }
+    protected $fillable = ['name', 'description', 'is_active'];
 
     /**
      * Relación con los roles.

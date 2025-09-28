@@ -1,106 +1,62 @@
 <template>
     <AppLayout>
-        <div class="w-full min-h-screen bg-gray-100 p-6">
-
-            <!-- Widgets informativos -->
-            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-6">
-                <div class="bg-white p-4 shadow-md rounded-lg flex items-center justify-between">
-                    <div>
-                        <h2 class="text-lg text-blue-500 font-semibold">Total Productos</h2>
-                        <p class="text-blue-300 text-2xl">{{ totalProducts }}</p>
-                    </div>
+        <div class="w-full min-h-screen bg-gray-100 p-6 space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white p-4 shadow-md rounded-lg">
+                    <p class="text-sm text-gray-500">Total de serveis</p>
+                    <p class="text-3xl font-semibold text-blue-500">{{ totalProducts }}</p>
                 </div>
-                <div class="bg-white p-4 shadow-md rounded-lg flex items-center justify-between">
-                    <div>
-                        <h2 class="text-lg text-blue-500 font-semibold">Productos en Stock</h2>
-                        <p class="text-blue-300 text-2xl">{{ inStock }}</p>
-                    </div>
+                <div class="bg-white p-4 shadow-md rounded-lg">
+                    <p class="text-sm text-gray-500">Preu mitjà</p>
+                    <p class="text-3xl font-semibold text-blue-500">{{ averagePrice }}</p>
                 </div>
-                <div class="bg-white p-4 shadow-md rounded-lg flex items-center justify-between">
-                    <div>
-                        <h2 class="text-lg text-blue-500 font-semibold">Productos Sin Stock</h2>
-                        <p class="text-blue-300 text-2xl">{{ outOfStock }}</p>
-                    </div>
+                <div class="bg-white p-4 shadow-md rounded-lg">
+                    <p class="text-sm text-gray-500">Periodicitat més comuna</p>
+                    <p class="text-xl font-semibold text-blue-500">{{ commonPeriodicity }}</p>
                 </div>
             </div>
 
-            <div class="mb-6 bg-white p-4 rounded-lg shadow-md">
-                <div class="flex flex-wrap gap-4">
-                    <!-- Filtro por categoría -->
-                    <div>
-                        <label class="text-blue-500 text-sm font-semibold">Categoría:</label>
-                        <select v-model="filters.category" class="w-full p-2 text-gray-500 border rounded-md">
-                            <option value="">Todas</option>
-                            <option v-for="category in categories" :key="category" :value="category">{{ category.name }}</option>
-                        </select>
-                    </div>
-                    <!-- Filtro por estado -->
-                    <div>
-                        <label class="text-blue-500 text-sm font-semibold">Estado:</label>
-                        <select v-model="filters.state" class="w-full p-2 text-gray-500 border rounded-md">
-                            <option value="">Todos</option>
-                            <option value="in_stock">En stock</option>
-                            <option value="out_of_stock">Sin stock</option>
-                        </select>
-                    </div>
-                    <!-- Botón Limpiar Filtros -->
-                    <div class="mt-6">
-                        <button @click="clearFilters" class="bg-red-500 w-full hover:bg-red-600 text-white font-bold py-2 px-4 rounded">
-                            Limpiar Filtros
-                        </button>
-                    </div>
+            <div class="flex justify-between items-center bg-white p-4 rounded-lg shadow-md">
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-700">Catàleg de serveis</h2>
+                    <p class="text-sm text-gray-500">Gestiona els serveis disponibles per a la facturació recurrent.</p>
                 </div>
+                <NavLink :href="route('products.create')" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center space-x-2">
+                    <AddIcon class="w-5 h-5"/>
+                    <span>Nou servei</span>
+                </NavLink>
             </div>
 
-            <!-- Tabla de productos -->
-            <div class="bg-white p-6 rounded-lg shadow-md">
-                <!-- Botón para crear un nuevo producto -->
-                <div class="mb-6 w-1/6">
-                    <NavLink :href="route('products.create')" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center space-x-2">
-                        <AddIcon class="w-5 h-5"/>
-                        <span>Crear Nuevo Producto</span>
-                    </NavLink>
+            <div class="bg-white p-6 rounded-lg shadow-md space-y-4">
+                <div v-if="!filteredServices.length" class="text-center text-gray-500 py-10">
+                    No hi ha serveis registrats encara.
                 </div>
-                <table class="w-full table-auto">
-                    <thead>
-                    <tr class="bg-gray-100">
-                        <th class="px-4 py-2 text-left">Nombre</th>
-                        <th class="px-4 py-2 text-left">Categoría</th>
-                        <th class="px-4 py-2 text-left">Precio</th>
-                        <th class="px-4 py-2 text-left">Stock</th>
-                        <th class="px-4 py-2 text-left">Acciones</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr v-for="product in filteredProducts" :key="product.id" class="border-t">
-                        <td class="px-4 py-2">{{ product.name }}</td>
-                        <template v-for="category in categories">
-                            <td v-if="category.id === product.category_id" class="px-4 py-2">{{ category.name }}</td>
-                        </template>
-                        <td class="px-4 py-2">{{ product.price  }}</td>
-                        <td class="px-4 py-2">{{ product.stock }}</td>
-                        <td class="px-4 py-2 flex space-x-2">
-                            <NavLink :href="route('products.edit', product.id)" class="text-yellow-500">
+                <div v-for="service in filteredServices" :key="service.id" class="border border-gray-200 rounded-lg p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                    <div>
+                        <h3 class="text-lg font-semibold text-blue-700">{{ service.name }}</h3>
+                        <p class="text-sm text-gray-500" v-if="service.category">{{ service.category.name }}</p>
+                        <p class="mt-2 text-gray-600">{{ service.description }}</p>
+                    </div>
+                    <div class="flex flex-col md:items-end space-y-2">
+                        <p class="text-sm text-gray-500">Preu</p>
+                        <p class="text-2xl font-semibold text-blue-500">€ {{ Number(service.price).toFixed(2) }}</p>
+                        <p class="text-sm text-gray-500" v-if="service.periodicity">Periodicitat: {{ service.periodicity }}</p>
+                        <div class="flex space-x-3">
+                            <NavLink :href="route('products.edit', service.id)" class="text-yellow-500">
                                 <EditIcon class="w-5 h-5"/>
                             </NavLink>
-                            <button @click="downloadLabel(product.label_path)" class=" text-white p-2 rounded">
-
-                                <MenuExpenseIcon class="stroke-gray-400 w-5 h-5 " title="Descargar Etiqueta"/>
-                            </button>
-                            <button @click="deleteProduct(product.id)" class="text-red-500">
+                            <button @click="deleteProduct(service.id)" class="text-red-500">
                                 <DeleteIcon class="w-5 h-5"/>
                             </button>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </AppLayout>
 </template>
 
 <script setup>
-import { ref, onMounted, reactive } from 'vue';
 import { computed } from 'vue';
 import { Inertia } from '@inertiajs/inertia';
 import AppLayout from '@/Layouts/AppLayout.vue';
@@ -108,44 +64,65 @@ import AddIcon from '@/Components/Icons/AddIcon.vue';
 import EditIcon from '@/Components/Icons/EditIcon.vue';
 import DeleteIcon from '@/Components/Icons/DeleteIcon.vue';
 import NavLink from "@/Components/NavLink.vue";
-import MenuPaymentIcon from "@/Components/Icons/MenuPaymentIcon.vue";
-import MenuExpenseIcon from "@/Components/Icons/MenuExpenseIcon.vue";
 
 const props = defineProps({
     products: Array,
     categories: Array,
 });
 
-const filters = reactive({
-    category: '',
-    state: ''
+const categoryMap = computed(() => {
+    return props.categories.reduce((map, category) => {
+        map[category.id] = category;
+        return map;
+    }, {});
 });
 
-const filteredProducts = computed(() => {
-    return props.products.filter(product => {
-        const matchesCategory = !filters.category || product.category_id === filters.category.id;
-        const matchesState = !filters.state || (filters.state === 'in_stock' ? product.stock > 0 : product.stock === 0);
-        return matchesCategory && matchesState;
-    });
+const services = computed(() => {
+    return props.products.map(product => ({
+        ...product,
+        category: categoryMap.value[product.category_id] ?? null,
+    }));
 });
 
-const totalProducts = computed(() => filteredProducts.value.length);
-const inStock = computed(() => filteredProducts.value.filter(product => product.stock > 0).length);
-const outOfStock = computed(() => totalProducts.value - inStock.value);
+const filteredServices = services;
 
-const clearFilters = () => {
-    filters.category = '';
-    filters.state = '';
-};
+const totalProducts = computed(() => services.value.length);
+
+const averagePrice = computed(() => {
+    if (!services.value.length) {
+        return '€ 0.00';
+    }
+
+    const total = services.value.reduce((sum, service) => sum + Number(service.price || 0), 0);
+    return `€ ${ (total / services.value.length).toFixed(2) }`;
+});
+
+const commonPeriodicity = computed(() => {
+    if (!services.value.length) {
+        return 'Sense definir';
+    }
+
+    const frequency = services.value.reduce((acc, service) => {
+        if (!service.periodicity) {
+            return acc;
+        }
+
+        acc[service.periodicity] = (acc[service.periodicity] || 0) + 1;
+        return acc;
+    }, {});
+
+    const entries = Object.entries(frequency);
+    if (!entries.length) {
+        return 'Sense definir';
+    }
+
+    return entries.sort((a, b) => b[1] - a[1])[0][0];
+});
 
 const deleteProduct = (id) => {
-    if (confirm("¿Estás seguro de que deseas eliminar este producto?")) {
+    if (confirm("Vols eliminar aquest servei?")) {
         Inertia.delete(route('products.destroy', id));
     }
-};
-
-const downloadLabel = (labelPath) => {
-    window.open(`/storage/${labelPath}`, '_blank');
 };
 </script>
 

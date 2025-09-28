@@ -10,7 +10,7 @@ class Company extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name', 'nif', 'phone', 'email', 'address', 'plan_id', 'public_key', 'private_key'
+        'name', 'nif', 'phone', 'email', 'address', 'public_key', 'private_key'
     ];
 
     public function users()
@@ -47,11 +47,6 @@ class Company extends Model
         return $this->hasMany(Income::class);
     }
 
-    public function plan()
-    {
-        return $this->belongsTo(Plan::class);
-    }
-
     public function roles()
     {
         return $this->hasMany(Role::class);
@@ -65,5 +60,10 @@ class Company extends Model
     public function trainings()
     {
         return $this->hasMany(Training::class);
+    }
+
+    public function projects()
+    {
+        return $this->hasMany(Project::class);
     }
 }

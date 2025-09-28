@@ -31,6 +31,7 @@ class Task extends Model
         'taskable_type_key',
     ];
 
+
     public function company()
     {
         return $this->belongsTo(Company::class);
@@ -76,5 +77,10 @@ class Task extends Model
         }
 
         return Str::snake(class_basename($this->taskable_type));
+    }
+
+    public function project()
+    {
+        return $this->belongsTo(Project::class);
     }
 }
