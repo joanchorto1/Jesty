@@ -28,6 +28,14 @@
                 </select>
             </div>
 
+            <div class="mb-4">
+                <label class="block text-gray-600 font-medium">Proyecto asociado</label>
+                <select v-model="form.project_id" class="w-full p-2 border rounded-lg">
+                    <option :value="null">Sin proyecto</option>
+                    <option v-for="project in projects" :key="project.id" :value="project.id">{{ project.name }}</option>
+                </select>
+            </div>
+
             <button type="submit" class="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600">Actualizar Tarea</button>
         </form>
     </div>
@@ -42,6 +50,7 @@ import {Inertia} from "@inertiajs/inertia";
 const props = defineProps({
     task: Object,
     users: Array,
+    projects: { type: Array, default: () => [] },
 });
 
 const form = ref({
@@ -49,6 +58,7 @@ const form = ref({
     description: props.task.description,
     due_date: props.task.due_date,
     user_id: props.task.user_id,
+    project_id: props.task.project_id,
 });
 
 function updateTask() {

@@ -67,4 +67,5 @@ class DatabaseSeeder extends Seeder
             'from_name' => config('mail.from.name', $company->name),
         ]);
     }
+
 }

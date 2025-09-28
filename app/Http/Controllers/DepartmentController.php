@@ -16,7 +16,9 @@ class DepartmentController extends Controller
 {
     public function index()
     {
-        $departments = Department::where('company_id', Auth::user()->company_id)->get();
+        $departments = Department::with('projects')
+            ->where('company_id', Auth::user()->company_id)
+            ->get();
         $employees = Employee::where('company_id', Auth::user()->company_id)->get();
 
         return Inertia::render('Departments/Index', [
@@ -28,7 +30,7 @@ class DepartmentController extends Controller
     public function show($id)
     {
         $department = Department::where('company_id', auth()->user()->company_id)
-            ->with('manager', 'employees')
+            ->with(['manager', 'employees', 'projects.phases', 'projects.responsibles.employee'])
             ->findOrFail($id);
 
         return Inertia::render('Departments/Show', [

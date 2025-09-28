@@ -6,8 +6,6 @@ import SaveIcon from "@/Components/Icons/SaveIcon.vue";
 
 const props = defineProps({
     categories: Array,
-    suppliers: Array,
-    // Lista de proveedores
 });
 
 const data = reactive({
@@ -16,17 +14,15 @@ const data = reactive({
         category_id: '',
         description: '',
         price: '',
-        cost_price: '', // Nuevo campo
-        stock: '',
-        supplier_id: '', // Nuevo campo
-        is_stackable: false, // Nuevo campo
+        periodicity: '',
+        is_stackable: false,
     },
 });
 
 const submitForm = () => {
     Inertia.post(route('products.store'), data.form, {
         onSuccess: () => {
-            Inertia.visit(route('dashboard.products'));
+            Inertia.visit(route('dashboard.services'));
         },
     });
 };
@@ -35,23 +31,23 @@ const submitForm = () => {
 <template>
     <AppLayout>
         <div class="p-5 bg-gray-50 min-h-screen mx-auto">
-            <h1 class="text-3xl text-blue-700 font-bold mb-8">Create Product</h1>
+            <h1 class="text-3xl text-blue-700 font-bold mb-8">Crear servei</h1>
             <form @submit.prevent="submitForm">
                 <!-- Campos del formulario -->
                 <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="name">Product Name</label>
-                    <input v-model="data.form.name" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="name" type="text" placeholder="Enter product name">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="name">Nom del servei</label>
+                    <input v-model="data.form.name" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="name" type="text" placeholder="Introdueix el nom del servei">
                 </div>
 
                 <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="description">Description</label>
-                    <textarea v-model="data.form.description" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="description" placeholder="Enter product description"></textarea>
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="description">Descripció</label>
+                    <textarea v-model="data.form.description" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="description" placeholder="Descriu el servei"></textarea>
                 </div>
 
                 <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="category">Category</label>
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="category">Categoria</label>
                     <select v-model="data.form.category_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="category">
-                        <option value="">Select a category</option>
+                        <option value="">Selecciona una categoria</option>
                         <template v-for="category in categories">
                             <option :value="category.id">{{ category.name }}</option>
                         </template>
@@ -59,32 +55,13 @@ const submitForm = () => {
                 </div>
 
                 <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="supplier">Supplier</label>
-                    <select v-model="data.form.supplier_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="supplier">
-                        <option value="">Select a supplier</option>
-                        <template v-for="supplier in suppliers">
-                            <option :value="supplier.id">{{ supplier.name }}</option>
-                        </template>
-                    </select>
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="price">Preu</label>
+                    <input v-model="data.form.price" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="price" type="number" step="0.01" placeholder="Introdueix el preu">
                 </div>
 
                 <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="price">Price</label>
-                    <input v-model="data.form.price" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="price" type="number" step="0.01" placeholder="Enter price">
-                </div>
-
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="cost_price">Base Price</label>
-                    <input v-model="data.form.cost_price" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="cost_price" type="number" step="0.01" placeholder="Enter base price">
-                </div>
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="cost_price">Es stockable?</label>
-                    <input type="checkbox" v-model="data.form.is_stackable" class="shadow appearance-none border rounded  py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="is_stackable" step="0.01" placeholder="Enter if is stackable">
-                </div>
-
-                <div class="mb-4" v-if="data.form.is_stackable">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="stock">Stock</label>
-                    <input v-model="data.form.stock" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="stock" type="number" placeholder="Enter stock quantity">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="periodicity">Periodicitat</label>
+                    <input v-model="data.form.periodicity" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="periodicity" type="text" placeholder="Mensual, trimestral...">
                 </div>
 
                 <div class="flex items-center justify-between">

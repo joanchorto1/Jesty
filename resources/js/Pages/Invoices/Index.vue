@@ -78,6 +78,7 @@
                     <tr class="bg-gray-100">
                         <th class="px-4 py-2 text-left">Identificador</th>
                         <th class="px-4 py-2 text-left">Cliente</th>
+                        <th class="px-4 py-2 text-left">Proyecto</th>
                         <th class="px-4 py-2 text-left">Fecha</th>
                         <th class="px-4 py-2 text-left">Estado</th>
                         <th class="px-4 py-2 text-left">Total</th>
@@ -94,6 +95,8 @@
                                 <span v-if="client.id === invoice.client_id">{{ client.name }}</span>
                             </template>
                         </td>
+
+                        <td class="px-4 py-2">{{ invoice.project ? invoice.project.name : '—' }}</td>
 
                         <td class="px-4 py-2">{{ invoice.date }}</td>
 
@@ -156,7 +159,7 @@ const endDate = ref('');
 // Filtrar las facturas basadas en los filtros seleccionados
 const filteredInvoices = computed(() => {
     return props.invoices.filter(invoice => {
-        const clientMatch = selectedClient.value === '' || invoice.client_id === selectedClient.value;
+        const clientMatch = selectedClient.value === '' || String(invoice.client_id) === String(selectedClient.value);
         const statusMatch = selectedStatus.value === '' || invoice.state === selectedStatus.value;
 
         // Convertir las fechas de las facturas y los filtros a objetos Date para comparar

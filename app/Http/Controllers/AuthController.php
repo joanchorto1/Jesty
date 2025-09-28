@@ -17,7 +17,9 @@ class AuthController extends Controller
 {
     public function create()
     {
-        return Inertia::render('Auth/Register');
+
+      return Inertia::render('Auth/Register');
+
     }
 
     public function store(Request $request)

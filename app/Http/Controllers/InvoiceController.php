@@ -13,6 +13,7 @@ use App\Models\InvoiceItem;
 use App\Models\Client;
 use App\Models\Company;
 use App\Models\Product;
+use App\Models\Project;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -33,7 +34,9 @@ class InvoiceController extends Controller
 {
     public function index()
     {
-        $invoices = Invoice::where('company_id', auth()->user()->company_id)->get();
+        $invoices = Invoice::where('company_id', auth()->user()->company_id)
+            ->with('project')
+            ->get();
         $clients = Client::where('company_id', auth()->user()->company_id)->get();
         return Inertia::render('Invoices/Index', [
             'invoices' => $invoices,
@@ -49,7 +52,8 @@ class InvoiceController extends Controller
         return Inertia::render('Invoices/Create', [
             'clients' => $clients,
             'companies' => $companies,
-            'products' => $products
+            'products' => $products,
+            'projects' => Project::where('company_id', Auth::user()->company_id)->get(),
         ]);
     }
 
@@ -63,12 +67,15 @@ class InvoiceController extends Controller
                 'iva' => 'nullable|numeric',
                 'name' => 'required|string|max:255',
                 'state' => 'required|string|in:pagado,no_pagado',
+                'project_id' => 'nullable|exists:projects,id',
             ]);
 
             $data = $request->all();
             $data['company_id'] = Auth::user()->company_id;
 
-            Invoice::create($data);
+            $invoice = Invoice::create($data);
+
+            $this->syncProjectBilling($invoice);
 
             return response()->json(['status' => 'success']);
         } catch (\Exception $e) {
@@ -94,9 +101,14 @@ class InvoiceController extends Controller
             'invoiceItems.*.discount' => 'required|numeric',
             'invoiceItems.*.unit_price' => 'required|numeric',
             'invoiceItems.*.total' => 'required|numeric',
+            'project_id' => 'nullable|exists:projects,id',
         ]);
 
-        $data = $request->only('date', 'name', 'base_imponible', 'state', 'client_id', 'total', 'iva', 'monto_iva');
+        if (!empty($validated['project_id'])) {
+            Project::where('company_id', Auth::user()->company_id)->findOrFail($validated['project_id']);
+        }
+
+        $data = $request->only('date', 'name', 'base_imponible', 'state', 'client_id', 'total', 'iva', 'monto_iva', 'project_id');
         $data['company_id'] = Auth::user()->company_id;
         $invoice = Invoice::create($data);
 
@@ -115,6 +127,8 @@ class InvoiceController extends Controller
             $this->createIncomeFromInvoice($invoice);
         }
 
+        $this->syncProjectBilling($invoice);
+
         app('App\Http\Controllers\UserNotificationController')->createNotification('Nueva factura', 'Se ha creado una nueva factura', 'Facturación');
 
         return Inertia::location(route('invoices.index'));
@@ -128,6 +142,7 @@ class InvoiceController extends Controller
             'invoiceItems' => $invoiceItems,
             'products' => Product::where('company_id', Auth::user()->company_id)->get(),
             'clients' => Client::where('company_id', Auth::user()->company_id)->get(),
+            'projects' => Project::where('company_id', Auth::user()->company_id)->get(),
         ]);
     }
 
@@ -148,11 +163,16 @@ class InvoiceController extends Controller
             'items.*.unit_price' => 'required|numeric|min:0',
             'items.*.discount' => 'required|numeric|min:0',
             'items.*.total' => 'required|numeric|min:0',
+            'project_id' => 'nullable|exists:projects,id',
         ]);
 
         $invoice = Invoice::findOrFail($id);
 
-        $data = $request->only(['client_id', 'date', 'base_imponible', 'iva', 'name', 'state', 'total', 'monto_iva']);
+        if (!empty($request->project_id)) {
+            Project::where('company_id', Auth::user()->company_id)->findOrFail($request->project_id);
+        }
+
+        $data = $request->only(['client_id', 'date', 'base_imponible', 'iva', 'name', 'state', 'total', 'monto_iva', 'project_id']);
         $invoice->update($data);
 
         $oldItems = InvoiceItem::where('invoice_id', $id)->get();
@@ -181,6 +201,8 @@ class InvoiceController extends Controller
 
         $this->updateIncomeFromInvoice($invoice);
 
+        $this->syncProjectBilling($invoice);
+
 
 
         return Inertia::location(route('invoices.index'));
@@ -198,8 +220,25 @@ class InvoiceController extends Controller
         return Inertia::location(route('invoices.index'));
     }
 
+    protected function syncProjectBilling(Invoice $invoice): void
+    {
+        if (!$invoice->relationLoaded('project')) {
+            $invoice->load('project');
+        }
+
+        if (!$invoice->project) {
+            return;
+        }
+
+        $state = strtolower($invoice->state);
+        if (in_array($state, ['paid', 'pagado'])) {
+            $invoice->project->update(['status' => 'invoiced']);
+        }
+    }
+
     public function show(Invoice $invoice)
     {
+        $invoice->load('project');
         $invoiceItems = InvoiceItem::where('invoice_id', $invoice->id)->get();
         $creditNotes = CreditNote::where('invoice_id', $invoice->id)->get();
 

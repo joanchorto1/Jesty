@@ -20,7 +20,6 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\StockEntryController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\TaskController;
-use App\Http\Controllers\TiketController;
 use App\Models\Invoice;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -72,11 +71,16 @@ Route::middleware([
     require __DIR__ . '/web/Inventario.php';
     require __DIR__ . '/web/CRM.php';
     require __DIR__ . '/web/Contabilidad.php';
-    require __DIR__ . '/web/TPV.php';
     require __DIR__ . '/web/Clients.php';
     require __DIR__ . '/web/Facturacion.php';
+    require __DIR__ . '/web/Projects.php';
+
+
 //    require __DIR__ . '/web/Proyectos.php';
-    require __DIR__ . '/web/RRHH.php';
+    if (config('features.rrhh_enabled')) {
+        require __DIR__ . '/web/RRHH.php';
+    }
+
     require __DIR__ . '/web/Notifications.php';
     require __DIR__ . '/web/Administrador.php';
 });

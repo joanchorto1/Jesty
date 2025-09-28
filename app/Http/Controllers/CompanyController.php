@@ -67,6 +67,8 @@ class CompanyController extends Controller
         return redirect()->route('companies.index');
     }
 
+
+  
     public function updateKeys(Request $request, Company $company)
     {
         $request->validate([
