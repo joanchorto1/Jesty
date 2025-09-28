@@ -27,7 +27,6 @@ class DatabaseSeeder extends Seeder
         ['name' => 'Contabilidad', 'description' => 'Gestión contable'],
         ['name' => 'Inventario', 'description' => 'Gestión de inventarios'],
         ['name' => 'CRM', 'description' => 'Gestión de relaciones con clientes'],
-        ['name' => 'TPV', 'description' => 'Gestión de puntos de venta'],
         ['name' => 'Clientes', 'description' => 'Gestión de clientes'],
         ['name' => 'Administradores', 'description' => 'Gestión de administradores'],
         ['name' => 'RRHH', 'description' => 'Gestión de recursos humanos'],
@@ -60,7 +59,6 @@ class DatabaseSeeder extends Seeder
     $contabilidad = Feature::where('name', 'Contabilidad')->first();
     $inventario = Feature::where('name', 'Inventario')->first();
     $crm = Feature::where('name', 'CRM')->first();
-    $tpv = Feature::where('name', 'TPV')->first();
     $clientes = Feature::where('name', 'Clientes')->first();
     $administradores = Feature::where('name', 'Administradores')->first();
     $rrhh = Feature::where('name', 'RRHH')->first();
@@ -68,8 +66,8 @@ class DatabaseSeeder extends Seeder
 
     $basicPlan->features()->attach([$facturacion->id,$administradores->id,$inventario->id,$clientes->id]);
     $standardPlan->features()->attach([$facturacion->id, $inventario->id, $crm->id, $clientes->id, $administradores->id]);
-    $premiumPlan->features()->attach([$facturacion->id, $inventario->id, $crm->id, $contabilidad->id, $tpv->id, $clientes->id, $administradores->id, $rrhh->id]);
-    $firstMonthFree->features()->attach([$facturacion->id,$administradores->id,$inventario->id,$clientes->id,$contabilidad->id,$tpv->id,$crm->id,$rrhh->id]);
+    $premiumPlan->features()->attach([$facturacion->id, $inventario->id, $crm->id, $contabilidad->id, $clientes->id, $administradores->id, $rrhh->id]);
+    $firstMonthFree->features()->attach([$facturacion->id,$administradores->id,$inventario->id,$clientes->id,$contabilidad->id,$crm->id,$rrhh->id]);
 
 
     // Crear Company
