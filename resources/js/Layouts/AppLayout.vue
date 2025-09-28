@@ -36,8 +36,8 @@
                     </NewNavLink>
 
                     <!-- Enlace principal de Facturación -->
-                    <template v-for="feature in props.features.value">
-                    <NewNavLink  v-if="feature.name === 'Facturación'" :href="route('dashboard.billing')" :active="route().current('dashboard.billing')"
+                    <template v-for="module in props.modules.value">
+                    <NewNavLink  v-if="module.name === 'Facturación'" :href="route('dashboard.billing')" :active="route().current('dashboard.billing')"
                                        class="hover:text-blue-700  py-2">
                         <div class="flex items-center space-x-2">
                             <MenuBillingIcon class="h-5 w-5"/>
@@ -66,8 +66,8 @@
                     </div>
 
                     <!-- Otros enlaces del menú -->
-                    <template v-for="feature in props.features.value">
-                    <NewNavLink v-if="feature.name === 'Inventario'" :href="route('dashboard.products')" :active="route().current('dashboard.products')"
+                    <template v-for="module in props.modules.value">
+                    <NewNavLink v-if="module.name === 'Inventario'" :href="route('dashboard.products')" :active="route().current('dashboard.products')"
                                        class="text-blue-500 hover:text-blue-700 py-2">
                         <div class="flex items-center space-x-2">
                             <MenuInventoryIcon class="h-5 w-5"/>
@@ -109,8 +109,8 @@
                             </div>
                         </NewNavLink>
                     </div>
-                    <template v-for="feature in props.features.value">
-                    <NewNavLink v-if="feature.name==='Clientes'" :href="route('dashboard.clients')" :active="route().current('dashboard.clients')"
+                    <template v-for="module in props.modules.value">
+                    <NewNavLink v-if="module.name==='Clientes'" :href="route('dashboard.clients')" :active="route().current('dashboard.clients')"
                                        class="text-blue-500 hover:text-blue-700 py-2">
                         <div class="flex items-center space-x-2">
                             <MenuClientsIcon class="h-5 w-5"/>
@@ -120,8 +120,8 @@
                     </template>
 
                     <!-- Enlaces vacíos para futuras funcionalidades -->
-                    <template v-for="feature in props.features.value">
-                    <NewNavLink v-if="feature.name==='Contabilidad'" :href="route('dashboard.accounting')" :active="route().current('dashboard.accounting')"
+                    <template v-for="module in props.modules.value">
+                    <NewNavLink v-if="module.name==='Contabilidad'" :href="route('dashboard.accounting')" :active="route().current('dashboard.accounting')"
                                        class="text-blue-500 hover:text-blue-700 py-2">
                         <div class="flex w-full items-center space-x-2">
                             <MenuAccountingIcon class="h-5 w-5"/>
@@ -173,8 +173,8 @@
                     </div>
 
 
-                    <template v-for="feature in props.features.value">
-                    <NewNavLink v-if="feature.name === 'TPV'" :href="route('dashboard.tpv')"  :active="route().current('dashboard.tpv')" class="text-blue-500 hover:text-blue-700 py-2">
+                    <template v-for="module in props.modules.value">
+                    <NewNavLink v-if="module.name === 'TPV'" :href="route('dashboard.tpv')"  :active="route().current('dashboard.tpv')" class="text-blue-500 hover:text-blue-700 py-2">
                         <div class="flex items-center space-x-2">
                             <PayIcon class="h-5 w-5"/>
 
@@ -208,8 +208,8 @@
                         </NewNavLink>
                     </div>
 
-                    <template v-for="feature in props.features.value">
-                        <NewNavLink v-if="feature.name==='RRHH'" :href="route('dashboard.rrhh')" :active="route().current('dashboard.rrhh')" class="text-blue-500 hover:text-blue-700 py-2">
+                    <template v-for="module in props.modules.value">
+                        <NewNavLink v-if="module.name==='RRHH'" :href="route('dashboard.rrhh')" :active="route().current('dashboard.rrhh')" class="text-blue-500 hover:text-blue-700 py-2">
                             <div class="flex items-center space-x-2">
                                 <MenuRRHHIcon class="h-5 w-5 fill-gray-950"/>
                                 <p class="text-base">RRHH</p>
@@ -289,8 +289,8 @@
                     </div>
 
 
-                    <template v-for="feature in props.features.value">
-                        <NewNavLink v-if="feature.name==='CRM'" :href="route('dashboard.crm')" :active="route().current('dashboard.crm')" class="text-blue-500 hover:text-blue-700 py-2">
+                    <template v-for="module in props.modules.value">
+                        <NewNavLink v-if="module.name==='CRM'" :href="route('dashboard.crm')" :active="route().current('dashboard.crm')" class="text-blue-500 hover:text-blue-700 py-2">
                         <div class="flex items-center space-x-2">
                             <MenuCRMIcon class="h-5 w-5"/>
                             <p class="text-base">CRM</p>
@@ -326,8 +326,8 @@
 
                     </div>
 
-                    <template v-for="feature in props.features.value">
-                        <NewNavLink v-if="feature.name==='Administradores'" :href="route('dashboard.admin')" :active="route().current('dashboard.admin')" class="text-blue-500 hover:text-blue-700 py-2">
+                    <template v-for="module in props.modules.value">
+                        <NewNavLink v-if="module.name==='Administradores'" :href="route('dashboard.admin')" :active="route().current('dashboard.admin')" class="text-blue-500 hover:text-blue-700 py-2">
                         <div class="flex items-center space-x-2">
                             <MenuReportIcon class="h-5 w-5"/>
                             <p class="text-base">Administración</p>
@@ -406,10 +406,10 @@ import MenuRRHHIcon from "@/Components/Icons/MenuRRHHIcon.vue";
 import MenuHomeIcon from "@/Components/Icons/MenuHomeIcon.vue";
 
 
-const features = computed(() => usePage().props.features)
+const modules = computed(() => usePage().props.modules || [])
 
 const props = {
-    features: features,
+    modules,
 }
 
 const isRRHHPage = route().current('dashboard.rrhh') || route().current('employees.index') || route().current('departments.index') || route().current('payrolls.index') || route().current('attendances.index') || route().current('performance-reviews.index') || route().current('leaves.index') || route().current('trainings.index');

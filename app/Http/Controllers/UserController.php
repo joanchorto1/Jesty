@@ -16,11 +16,9 @@ class UserController extends Controller
         $users = \App\Models\User::where('company_id', Auth::user()->company_id)->get();
         $roles = \App\Models\Role::where('company_id', Auth::user()->company_id)->get();
         $company = \App\Models\Company::where('id', Auth::user()->company_id)->first();
-        $plan = \App\Models\Plan::where('id', $company->plan_id)->first();
         return Inertia::render('Users/Index', [
             'users' => $users,
             'roles' => $roles,
-            'plan' => $plan,
             'company' => $company,
         ]);
     }

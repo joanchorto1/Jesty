@@ -4,18 +4,10 @@
             <div class="bg-white p-6 rounded-lg shadow-md mb-6 flex justify-between items-center">
                 <h1 class="text-lg text-blue-500 font-semibold">Usuarios</h1>
                 <NavLink
-                    v-if="canCreateUser"
                     :href="route('users.create')"
                     class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
                     <AddIcon class="w-5 h-5 inline-block mr-2" /> Nuevo Usuario
                 </NavLink>
-                <span v-else class="bg-gray-300 text-gray-500 font-bold py-2 px-4 rounded cursor-not-allowed">
-                    <NavLink :href="route('company.changePlan', props.company)" class="text-gray-500 font-bold py-2 px-4 rounded">
-                        <AddIcon class="w-5 h-5 inline-block mr-2" /> Límite alcanzado
-                    </NavLink>
-
-                </span>
-
             </div>
 
             <div class="bg-white p-6 rounded-lg shadow-md">
@@ -59,14 +51,11 @@ import AppLayout from "@/Layouts/AppLayout.vue";
 import AddIcon from "@/Components/Icons/AddIcon.vue";
 import EditIcon from "@/Components/Icons/EditIcon.vue";
 import DeleteIcon from "@/Components/Icons/DeleteIcon.vue";
-import InfoIcon from "@/Components/Icons/InfoIcon.vue";
 import NavLink from "@/Components/NavLink.vue";
-import {computed} from "vue";
 
 const props = defineProps({
     users: Array,
     roles: Array,
-    plan: Object, // { user_limit: Number, current_users: Number }
     company: Object
 });
 
@@ -75,11 +64,6 @@ const getUserRole = (roleId) => {
     const role = props.roles.find((r) => r.id === roleId);
     return role ? role.name : 'Sin Rol';
 };
-
-const canCreateUser = computed(() => {
-    return props.users.length < props.plan.user_limit;
-});
-
 
 const deleteUser = (userId) => {
     if (confirm("¿Estás seguro de que deseas eliminar este usuario?")) {

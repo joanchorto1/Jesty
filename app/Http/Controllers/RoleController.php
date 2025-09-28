@@ -24,7 +24,9 @@ class RoleController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Roles/Create');
+        return Inertia::render('Roles/Create', [
+            'features' => \App\Models\Feature::all(),
+        ]);
     }
 
     /**

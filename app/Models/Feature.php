@@ -12,15 +12,6 @@ class Feature extends Model
     protected $fillable = ['name', 'description'];
 
     /**
-     * Relación con los planes.
-     * Muchos a muchos: Un feature puede estar en varios planes.
-     */
-    public function plans()
-    {
-        return $this->belongsToMany(Plan::class, 'plan_feature');
-    }
-
-    /**
      * Relación con los roles.
      * Muchos a muchos: Un feature puede estar disponible para varios roles.
      */

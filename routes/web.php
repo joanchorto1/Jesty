@@ -25,6 +25,7 @@ use App\Models\Invoice;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\UserTaskController;
 
 /*
 |--------------------------------------------------------------------------
@@ -54,7 +55,6 @@ Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
     'verified',
-    'check.company.plan', // Middleware personalizado
 ])->group(function () {
 
     Route::get('/dashboard', function () {
@@ -69,28 +69,6 @@ Route::middleware([
         ]);
     })->name('dashboard');
 
-    // Aquí puedes añadir otras rutas protegidas
-});
-
-
-//Register route:
-
-Route::post('/register/company/user', [\App\Http\Controllers\AuthController::class, 'store'])->name('auth.register');
-
-//Rutas basicas de qualquier usuario
-use App\Http\Controllers\UserTaskController;
-
-Route::middleware(['auth'])->group(function () {
-    Route::resource('user_tasks', UserTaskController::class);
-    Route::get('user_tasks/{user_task}/complete', [UserTaskController::class, 'markAsCompleted'])->name('user_tasks.mark_as_completed');
-    Route::get('user_tasks/{user_task}/in_progress', [UserTaskController::class, 'markAsInProgress'])->name('user_tasks.mark_as_in_progress');
-    Route::get('user_tasks/{user_task}', [UserTaskController::class, 'show'])->name('user_tasks.show');
-});
-
-
-
-Route::middleware('check.company.plan')->group(function () {
-
     require __DIR__ . '/web/Inventario.php';
     require __DIR__ . '/web/CRM.php';
     require __DIR__ . '/web/Contabilidad.php';
@@ -100,12 +78,22 @@ Route::middleware('check.company.plan')->group(function () {
 //    require __DIR__ . '/web/Proyectos.php';
     require __DIR__ . '/web/RRHH.php';
     require __DIR__ . '/web/Notifications.php';
-
-
-});
-// Agrupación de rutas
     require __DIR__ . '/web/Administrador.php';
-    require __DIR__ . '/web/Stripe.php';
+});
+
+
+//Register route:
+
+Route::post('/register/company/user', [\App\Http\Controllers\AuthController::class, 'store'])->name('auth.register');
+
+Route::middleware(['auth'])->group(function () {
+    Route::resource('user_tasks', UserTaskController::class);
+    Route::get('user_tasks/{user_task}/complete', [UserTaskController::class, 'markAsCompleted'])->name('user_tasks.mark_as_completed');
+    Route::get('user_tasks/{user_task}/in_progress', [UserTaskController::class, 'markAsInProgress'])->name('user_tasks.mark_as_in_progress');
+    Route::get('user_tasks/{user_task}', [UserTaskController::class, 'show'])->name('user_tasks.show');
+});
+
+require __DIR__ . '/web/Stripe.php';
 
 
 
