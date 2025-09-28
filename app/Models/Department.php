@@ -32,4 +32,9 @@ class Department extends Model
     {
         return $this->belongsTo(Company::class);
     }
+
+    public function projects()
+    {
+        return $this->hasMany(Project::class);
+    }
 }

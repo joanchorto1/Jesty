@@ -73,4 +73,14 @@ class Employee extends Model
     {
         return $this->belongsTo(Company::class);
     }
+
+    public function projectPhases()
+    {
+        return $this->hasMany(ProjectPhase::class, 'responsible_id');
+    }
+
+    public function projectResponsibilities()
+    {
+        return $this->hasMany(ProjectResponsible::class);
+    }
 }

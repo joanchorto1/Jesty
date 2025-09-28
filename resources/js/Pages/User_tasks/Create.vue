@@ -24,6 +24,14 @@
                         <input type="date" v-model="form.due_date" id="due_date" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                     </div>
 
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="project_id">Proyecto asociado</label>
+                        <select v-model="form.project_id" id="project_id" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option :value="null">Sin proyecto</option>
+                            <option v-for="project in projects" :key="project.id" :value="project.id">{{ project.name }}</option>
+                        </select>
+                    </div>
+
                     <div class="flex justify-end">
                         <NavLink :href="route('user_tasks.index')" class="text-gray-700 bg-gray-300 hover:bg-gray-400 rounded-lg px-4 py-2 mr-2">Cancelar</NavLink>
                         <button type="submit" class="bg-blue-500 text-white hover:bg-blue-600 rounded-lg px-4 py-2">Crear Tarea</button>
@@ -40,10 +48,15 @@ import { router } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import NavLink from '@/Components/NavLink.vue';
 
+const props = defineProps({
+    projects: { type: Array, default: () => [] },
+});
+
 const form = reactive({
     title: '',
     description: '',
-    due_date: ''
+    due_date: '',
+    project_id: null,
 });
 
 function submit() {

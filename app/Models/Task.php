@@ -9,7 +9,7 @@ class Task extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['lead_id', 'opportunity_id', 'title', 'description', 'due_date', 'status', 'company_id'];
+    protected $fillable = ['lead_id', 'opportunity_id', 'project_id', 'title', 'description', 'due_date', 'status', 'company_id'];
 
     public function company()
     {
@@ -25,5 +25,10 @@ class Task extends Model
     public function opportunity()
     {
         return $this->belongsTo(Opportunity::class);
+    }
+
+    public function project()
+    {
+        return $this->belongsTo(Project::class);
     }
 }
