@@ -12,23 +12,19 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('leads', function (Blueprint $table) {
-            $table->foreignId('company_id')->constrained()->onDelete('cascade');
+            $table->foreignId('company_id')->constrained()->cascadeOnDelete();
         });
 
         Schema::table('opportunities', function (Blueprint $table) {
-            $table->foreignId('company_id')->constrained()->onDelete('cascade');
+            $table->foreignId('company_id')->constrained()->cascadeOnDelete();
         });
 
         Schema::table('activities', function (Blueprint $table) {
-            $table->foreignId('company_id')->constrained()->onDelete('cascade');
+            $table->foreignId('company_id')->constrained()->cascadeOnDelete();
         });
 
         Schema::table('notes', function (Blueprint $table) {
-            $table->foreignId('company_id')->constrained()->onDelete('cascade');
-        });
-
-        Schema::table('tasks', function (Blueprint $table) {
-            $table->foreignId('company_id')->constrained()->onDelete('cascade');
+            $table->foreignId('company_id')->constrained()->cascadeOnDelete();
         });
     }
 
@@ -37,8 +33,20 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('leads_opportunities_activities_notes_tasks', function (Blueprint $table) {
-            //
+        Schema::table('notes', function (Blueprint $table) {
+            $table->dropConstrainedForeignId('company_id');
+        });
+
+        Schema::table('activities', function (Blueprint $table) {
+            $table->dropConstrainedForeignId('company_id');
+        });
+
+        Schema::table('opportunities', function (Blueprint $table) {
+            $table->dropConstrainedForeignId('company_id');
+        });
+
+        Schema::table('leads', function (Blueprint $table) {
+            $table->dropConstrainedForeignId('company_id');
         });
     }
 };

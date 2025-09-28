@@ -1,72 +1,65 @@
 <template>
     <AppLayout>
-        <div class="p-6 bg-gray-100 min-h-screen">
-            <div class="max-w-6xl mx-auto bg-white shadow rounded-lg p-6">
-                <div class="flex justify-between items-center mb-4">
-                    <h1 class="text-2xl font-semibold text-gray-800">Tareas CRM</h1>
-                    <Link :href="route('tasks.create')" class="px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700">
-                        Crear Tarea
-                    </Link>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Título</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vencimiento</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Proyecto</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lead</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Oportunidad</th>
-                                <th class="px-4 py-2" />
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            <tr v-for="task in tasks.data" :key="task.id">
-                                <td class="px-4 py-2 text-sm text-gray-700">
-                                    <Link :href="route('tasks.show', task.id)" class="text-blue-600 hover:underline">
-                                        {{ task.title }}
-                                    </Link>
-                                </td>
-                                <td class="px-4 py-2 text-sm text-gray-700 capitalize">{{ statusLabel(task.status) }}</td>
-                                <td class="px-4 py-2 text-sm text-gray-700">{{ formatDate(task.due_date) }}</td>
-                                <td class="px-4 py-2 text-sm text-gray-700">{{ task.project?.name ?? '—' }}</td>
-                                <td class="px-4 py-2 text-sm text-gray-700">{{ task.lead?.name ?? '—' }}</td>
-                                <td class="px-4 py-2 text-sm text-gray-700">{{ task.opportunity?.name ?? '—' }}</td>
-                                <td class="px-4 py-2 text-right text-sm">
-                                    <div class="flex justify-end gap-2">
-                                        <Link :href="route('tasks.edit', task.id)" class="text-blue-500 hover:underline">Editar</Link>
-                                        <button @click="deleteTask(task.id)" class="text-red-600 hover:underline">Eliminar</button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="mt-4 flex justify-between items-center" v-if="tasks.links?.length">
-                    <div class="text-sm text-gray-600">
-                        Mostrando {{ tasks.from }}-{{ tasks.to }} de {{ tasks.total }} tareas
-                    </div>
-                    <div class="flex gap-2">
-                        <Link
-                            v-for="link in tasks.links"
-                            :key="link.label"
-                            :href="link.url || '#'"
-                            class="px-3 py-1 rounded border"
-                            :class="link.active ? 'bg-blue-600 text-white border-blue-600' : 'text-gray-700 border-gray-300 hover:bg-gray-100'"
-                            v-html="link.label"
-                            preserve-scroll
-                        />
-                    </div>
-                </div>
-            </div>
+    <div>
+        <h1>Tareas</h1>
+        <inertia-link :href="route('tasks.create')" class="btn btn-primary">Crear Tarea</inertia-link>
+        <table class="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
+            <thead class="bg-gray-100 text-left">
+            <tr>
+                <th class="px-4 py-3 text-sm font-semibold text-gray-600">Título</th>
+                <th class="px-4 py-3 text-sm font-semibold text-gray-600">Relacionado con</th>
+                <th class="px-4 py-3 text-sm font-semibold text-gray-600">Fecha de vencimiento</th>
+                <th class="px-4 py-3 text-sm font-semibold text-gray-600">Estado</th>
+                <th class="px-4 py-3 text-sm font-semibold text-gray-600 text-right">Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-for="task in tasks.data" :key="task.id" class="border-b last:border-b-0 hover:bg-gray-50">
+                <td class="px-4 py-3 text-gray-800">
+                    <p class="font-medium">{{ task.title }}</p>
+                    <p v-if="task.description" class="text-sm text-gray-500">{{ task.description }}</p>
+                </td>
+                <td class="px-4 py-3">
+                    <p class="text-xs uppercase tracking-wide text-gray-400">{{ task.taskable_type_label || 'Sin relación' }}</p>
+                    <p class="text-gray-700">{{ task.taskable_label || '—' }}</p>
+                </td>
+                <td class="px-4 py-3 text-gray-700">{{ task.due_date }}</td>
+                <td class="px-4 py-3">
+                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold"
+                          :class="statusClass(task.status)">
+                        {{ formatStatus(task.status) }}
+                    </span>
+                </td>
+                <td class="px-4 py-3 text-right space-x-2">
+                    <inertia-link :href="route('tasks.show', task.id)" class="text-blue-500 hover:text-blue-700 text-sm">Ver</inertia-link>
+                    <inertia-link :href="route('tasks.edit', task.id)" class="text-yellow-500 hover:text-yellow-600 text-sm">Editar</inertia-link>
+                    <button @click="deleteTask(task.id)" class="text-red-500 hover:text-red-700 text-sm">Eliminar</button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="mt-4 flex justify-between items-center" v-if="tasks.links">
+            <button
+                v-if="tasks.prev_page_url"
+                class="px-3 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
+                @click="changePage(tasks.current_page - 1)"
+            >Anterior</button>
+            <span class="text-sm text-gray-600">Página {{ tasks.current_page }} de {{ tasks.last_page }}</span>
+            <button
+                v-if="tasks.next_page_url"
+                class="px-3 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
+                @click="changePage(tasks.current_page + 1)"
+            >Siguiente</button>
         </div>
+    </div>
+
     </AppLayout>
 </template>
 
 <script setup>
+import { Inertia } from '@inertiajs/inertia';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { Link, router } from '@inertiajs/vue3';
 
 const props = defineProps({
     tasks: { type: Object, required: true },
@@ -74,25 +67,54 @@ const props = defineProps({
 
 const deleteTask = (id) => {
     if (confirm('¿Estás seguro de eliminar esta tarea?')) {
-        router.delete(route('tasks.destroy', id));
+        Inertia.delete(route('tasks.destroy', id));
     }
 };
 
-const statusLabel = (status) => {
-    switch (status) {
-        case 'in_progress':
+const changePage = (page) => {
+    Inertia.get(route('tasks.index'), { page }, { preserveScroll: true });
+};
+
+const formatStatus = (status) => {
+    if (!status) {
+        return '';
+    }
+
+    const lower = status.toLowerCase();
+
+    switch (lower) {
+        case 'pendiente':
+            return 'Pendiente';
+        case 'en progreso':
             return 'En progreso';
-        case 'completed':
+        case 'completada':
             return 'Completada';
         default:
-            return 'Pendiente';
+            return status;
     }
 };
 
-const formatDate = (date) => {
-    if (!date) {
-        return '—';
+const statusClass = (status) => {
+    const base = 'bg-gray-200 text-gray-700';
+    if (!status) {
+        return base;
     }
-    return new Date(date).toLocaleDateString();
+
+    const lower = status.toLowerCase();
+
+    if (lower === 'pendiente') {
+        return 'bg-yellow-100 text-yellow-700';
+    }
+
+    if (lower === 'en progreso') {
+        return 'bg-blue-100 text-blue-700';
+    }
+
+    if (lower === 'completada') {
+        return 'bg-green-100 text-green-700';
+    }
+
+    return base;
+
 };
 </script>

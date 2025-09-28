@@ -31,6 +31,6 @@ class Lead extends Model
 
     public function tasks()
     {
-        return $this->hasMany(Task::class);
+        return $this->morphMany(Task::class, 'taskable');
     }
 }

@@ -10,12 +10,12 @@ class CreateTasksTable extends Migration
     {
         Schema::create('tasks', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('lead_id')->nullable()->constrained()->onDelete('cascade');
-            $table->foreignId('opportunity_id')->nullable()->constrained()->onDelete('cascade');
+            $table->foreignId('company_id')->constrained()->cascadeOnDelete();
+            $table->nullableMorphs('taskable');
             $table->string('title');
             $table->text('description')->nullable();
             $table->date('due_date')->nullable();
-            $table->string('status')->default('Pendiente');
+            $table->string('status')->default('pendiente');
             $table->timestamps();
         });
     }
