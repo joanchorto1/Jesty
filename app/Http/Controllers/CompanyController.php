@@ -85,7 +85,7 @@ return Inertia::location(route('dashboard.admin'));
             'plans' => Plan::where('name', '!=', 'FirstMonthFree')->get(),
 
             'plan' => Plan::where('id', $company->plan_id)->first(),
-            'features' => Feature::all(),
+            'features' => Feature::where('is_active', true)->get(),
             'planFeatures' => PlanFeature::all()
 
         ]);

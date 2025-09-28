@@ -96,7 +96,9 @@ Route::middleware('check.company.plan')->group(function () {
     require __DIR__ . '/web/Clients.php';
     require __DIR__ . '/web/Facturacion.php';
 //    require __DIR__ . '/web/Proyectos.php';
-    require __DIR__ . '/web/RRHH.php';
+    if (config('features.rrhh_enabled')) {
+        require __DIR__ . '/web/RRHH.php';
+    }
     require __DIR__ . '/web/Notifications.php';
 
 

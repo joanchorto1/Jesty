@@ -22,7 +22,7 @@ class AuthController extends Controller
     {
         return Inertia::render('Auth/Register', [
             'plans' => Plan::all(),
-            'features' => Feature::all(),
+            'features' => Feature::where('is_active', true)->get(),
             'planFeatures' => PlanFeature::all(),
         ]);
     }

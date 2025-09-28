@@ -47,7 +47,9 @@ class HandleInertiaRequests extends Middleware
         if (Auth::check()) {
             // Obtener los features del rol del usuario autenticado
             $roleFeatures = RoleFeature::where('role_id', Auth::user()->role_id)->get();
-            $features = Feature::whereIn('id', $roleFeatures->pluck('feature_id'))->get();
+            $features = Feature::whereIn('id', $roleFeatures->pluck('feature_id'))
+                ->where('is_active', true)
+                ->get();
 
             // Convertir la colección a un array
             $features = $features->toArray();

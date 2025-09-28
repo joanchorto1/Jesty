@@ -37,7 +37,7 @@ class GastromarSeeder extends Seeder
         ]);
 
         // Asignar todas las características al rol
-        foreach (Feature::all() as $feature) {
+        foreach (Feature::where('is_active', true)->get() as $feature) {
             $role->features()->attach($feature->id);
         }
 

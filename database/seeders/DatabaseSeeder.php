@@ -29,7 +29,6 @@ class DatabaseSeeder extends Seeder
         ['name' => 'CRM', 'description' => 'Gestión de relaciones con clientes'],
         ['name' => 'Clientes', 'description' => 'Gestión de clientes'],
         ['name' => 'Administradores', 'description' => 'Gestión de administradores'],
-        ['name' => 'RRHH', 'description' => 'Gestión de recursos humanos'],
     ];
 
     foreach ($features as $feature) {
@@ -61,13 +60,11 @@ class DatabaseSeeder extends Seeder
     $crm = Feature::where('name', 'CRM')->first();
     $clientes = Feature::where('name', 'Clientes')->first();
     $administradores = Feature::where('name', 'Administradores')->first();
-    $rrhh = Feature::where('name', 'RRHH')->first();
-
-
     $basicPlan->features()->attach([$facturacion->id,$administradores->id,$inventario->id,$clientes->id]);
     $standardPlan->features()->attach([$facturacion->id, $inventario->id, $crm->id, $clientes->id, $administradores->id]);
     $premiumPlan->features()->attach([$facturacion->id, $inventario->id, $crm->id, $contabilidad->id, $clientes->id, $administradores->id, $rrhh->id]);
     $firstMonthFree->features()->attach([$facturacion->id,$administradores->id,$inventario->id,$clientes->id,$contabilidad->id,$crm->id,$rrhh->id]);
+
 
 
     // Crear Company
@@ -87,7 +84,7 @@ class DatabaseSeeder extends Seeder
         'company_id' => $company->id,
     ]);
 
-    foreach (Feature::all() as $feature) {
+    foreach (Feature::where('is_active', true)->get() as $feature) {
         $role->features()->attach($feature->id);
     }
 
