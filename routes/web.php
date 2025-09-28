@@ -20,7 +20,6 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\StockEntryController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\TaskController;
-use App\Http\Controllers\TiketController;
 use App\Models\Invoice;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -94,7 +93,6 @@ Route::middleware('check.company.plan')->group(function () {
     require __DIR__ . '/web/Inventario.php';
     require __DIR__ . '/web/CRM.php';
     require __DIR__ . '/web/Contabilidad.php';
-    require __DIR__ . '/web/TPV.php';
     require __DIR__ . '/web/Clients.php';
     require __DIR__ . '/web/Facturacion.php';
 //    require __DIR__ . '/web/Proyectos.php';

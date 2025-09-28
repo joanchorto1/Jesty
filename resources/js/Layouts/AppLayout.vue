@@ -4,7 +4,7 @@
         <title>POPERP by JCTAgency</title>
         <!-- Descripción -->
         <meta name="description"
-              content="Un ERP online desarrollado para medianas empresas y pymes que contiene módulos de facturación, contabilidad, TPV, CRM, Gestión de clientes, Gestión de productos...">
+              content="Un ERP online desarrollado para medianas empresas y pymes que contiene módulos de facturación, contabilidad, CRM, Gestión de clientes, Gestión de productos...">
     </head>
     <div class="min-h-screen min-w-full  flex flex-col">
         <!-- Top Bar -->
@@ -173,41 +173,6 @@
                     </div>
 
 
-                    <template v-for="feature in props.features.value">
-                    <NewNavLink v-if="feature.name === 'TPV'" :href="route('dashboard.tpv')"  :active="route().current('dashboard.tpv')" class="text-blue-500 hover:text-blue-700 py-2">
-                        <div class="flex items-center space-x-2">
-                            <PayIcon class="h-5 w-5"/>
-
-                            <p class="text-base">TPV</p>
-                            <DropdownIcon class="h-5 w-5 fill-blue-500 stroke-0"/>
-                        </div>
-                    </NewNavLink>
-                    </template>
-
-
-                    <div v-if="isTpvPage" class="flex border-l-4 border-blue-500 flex-col space-y-1 ml-4   ">
-                        <NewNavLink :href="route('tikets.create')" :active="route().current('tikets.create')"
-                                    class="text-sm text-gray-400 hover:text-gray-500 py-1">
-                            <div class="flex items-center space-x-2">
-                            <MenuPaymentIcon class="h-5 w-5"/>
-                            <p class="text-sm">Venta</p>
-                            </div>
-                        </NewNavLink>
-                        <NewNavLink :href="route('tikets.index')" :active="route().current('tikets.index')"
-                                    class="text-sm text-gray-400 hover:text-gray-500 py-1">
-                            <div class="flex items-center space-x-2"><MenuInvoiceIcon class="w-5 h-5"/>
-                            <p class="text-sm">Tickets</p>
-                            </div>
-                        </NewNavLink>
-                        <NewNavLink :href="route('tikets.productReport')" :active="route().current('tikets.productReport')"
-                                    class="text-sm text-gray-400 hover:text-gray-500 py-1">
-                            <div class="flex items-center space-x-2">
-                                <MenuReportIcon class="w-5 h-5"/>
-                            <p class="text-sm">Informe de Productos</p>
-                            </div>
-                        </NewNavLink>
-                    </div>
-
 
 
                     <template v-for="feature in props.features.value">
@@ -317,7 +282,6 @@ import MenuCRMIcon from "@/Components/Icons/MenuCRMIcon.vue";
 import DropdownIcon from "@/Components/Icons/DropdownIcon.vue";
 import NewNavLink from "@/Components/NewNavLink.vue";
 import InfoIcon from "@/Components/Icons/InfoIcon.vue";
-import PayIcon from "@/Components/Icons/PayIcon.vue";
 import AddIcon from "@/Components/Icons/AddIcon.vue";
 import AddProductIcon from "@/Components/Icons/AddProductIcon.vue";
 import IncomeIcon from "@/Components/Icons/IncomeIcon.vue";
@@ -335,7 +299,6 @@ const props = {
 const isBillingPage = route().current('dashboard.billing') || route().current('budgets.index') || route().current('invoices.index');
 const isProductsPage = route().current('products.index') || route().current('categories.index') || route().current('dashboard.products')||route().current('suppliers.index')||route().current('stockEntries.index');
 const isAccountingPage = route().current('expenses.index') || route().current('expenses.report') || route().current('dashboard.accounting') || route().current('expenseCategories.index') || route().current('paymentMethods.index')||route().current('incomes.index');
-const isTpvPage = route().current('dashboard.tpv') || route().current('tikets.create') || route().current('tikets.index')|| route().current('tikets.productReport');
 const isCrmPage = route().current('dashboard.crm')|| route().current('leads.index')|| route().current('opportunities.index')|| route().current('tasks.index')|| route().current('activities.index')|| route().current('notes.index')||route().current('leads.create')||route().current('opportunities.create')||route().current('tasks.create')||route().current('activities.create')||route().current('notes.create')||route().current('leads.edit')||route().current('opportunities.edit')||route().current('tasks.edit')||route().current('activities.edit')||route().current('notes.edit')||route().current('leads.show')||route().current('opportunities.show')||route().current('tasks.show')||route().current('activities.show')||route().current('notes.show');
 const isAdminPage = route().current('dashboard.admin')|| route().current('users.index')|| route().current('roles.index')|| route().current('permissions.index')|| route().current('users.create')|| route().current('roles.create')|| route().current('permissions.create')|| route().current('users.edit')|| route().current('roles.edit')|| route().current('permissions.edit')|| route().current('users.show')|| route().current('roles.show')|| route().current('permissions.show')|| route().current('users.destroy')|| route().current('roles.destroy')|| route().current('permissions.destroy')||route().current('user_tasks.index')||route().current('user_tasks.adminCreate')||route().current('user_tasks.adminEdit')||route().current('user_tasks.destroy');
 </script>
