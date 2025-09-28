@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Role;
 use App\Models\User;
 use App\Models\UserTask;
+use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -18,17 +18,26 @@ class UserTaskController extends Controller
         $company_users = User::where('company_id',Auth::user()->company_id)->get();
         return Inertia::render('User_tasks/Index', [
             //tareas de todos los usuarios de la empresa
-            'tasks' => UserTask::whereIn('user_id',$company_users->pluck('id'))->orderBy('created_at', 'desc')->get(),
-            'users'=>User::where('company_id',Auth::user()->company_id)->get()
+            'tasks' => UserTask::whereIn('user_id',$company_users->pluck('id'))
+                ->with(['user','project'])
+                ->orderBy('created_at', 'desc')
+                ->get(),
+            'users'=>User::where('company_id',Auth::user()->company_id)->get(),
+            'projects' => Project::where('company_id', Auth::user()->company_id)->get(),
         ]);
     }
     public function create()
     {
-        return Inertia::render('User_tasks/Create');
+        return Inertia::render('User_tasks/Create', [
+            'projects' => Project::where('company_id', Auth::user()->company_id)->get(),
+        ]);
     }
     public function adminCreate()
     {
-        return Inertia::render('User_tasks/AdminCreate',['users'=>User::where('company_id',Auth::user()->company_id)->get()]);
+        return Inertia::render('User_tasks/AdminCreate',[
+            'users'=>User::where('company_id',Auth::user()->company_id)->get(),
+            'projects' => Project::where('company_id', Auth::user()->company_id)->get(),
+        ]);
     }
 
 
@@ -39,6 +48,7 @@ class UserTaskController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'due_date' => 'required|date',
+            'project_id' => 'nullable|exists:projects,id',
         ]);
 
             UserTask::create([
@@ -47,6 +57,7 @@ class UserTaskController extends Controller
                 'due_date' => $request->due_date,
                 'status' => 'pending',
                 'user_id'=> Auth::user()->id,
+                'project_id' => $request->project_id,
             ]);
 
         return Inertia::location('/dashboard');
@@ -58,6 +69,7 @@ public function adminStore(Request $request)
             'description' => 'nullable|string',
             'due_date' => 'required|date',
             'user_id' => 'required|exists:users,id',
+            'project_id' => 'nullable|exists:projects,id',
         ]);
 
             UserTask::create([
@@ -66,6 +78,7 @@ public function adminStore(Request $request)
                 'due_date' => $request->due_date,
                 'status' => 'pending',
                 'user_id'=> $request->user_id,
+                'project_id' => $request->project_id,
             ]);
 
         return Inertia::location('/user_tasks');
@@ -76,7 +89,8 @@ public function adminStore(Request $request)
     {
 
         return Inertia::render('User_tasks/Edit', [
-            'task' => $userTask
+            'task' => $userTask,
+            'projects' => Project::where('company_id', Auth::user()->company_id)->get(),
         ]);
     }
     public function adminEdit(UserTask $userTask)
@@ -84,7 +98,8 @@ public function adminStore(Request $request)
 
         return Inertia::render('User_tasks/AdminEdit', [
             'task' => $userTask,
-            'users'=>User::where('company_id',Auth::user()->company_id)->get()
+            'users'=>User::where('company_id',Auth::user()->company_id)->get(),
+            'projects' => Project::where('company_id', Auth::user()->company_id)->get(),
         ]);
     }
 
@@ -95,9 +110,15 @@ public function adminStore(Request $request)
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'due_date' => 'required|date',
+            'project_id' => 'nullable|exists:projects,id',
         ]);
 
-        $userTask->update($request->all());
+        $userTask->update([
+            'title' => $request->title,
+            'description' => $request->description,
+            'due_date' => $request->due_date,
+            'project_id' => $request->project_id,
+        ]);
 
         return Inertia::location('/dashboard');
     }
@@ -109,9 +130,16 @@ public function adminStore(Request $request)
             'description' => 'nullable|string',
             'due_date' => 'required|date',
             'user_id' => 'required|exists:users,id',
+            'project_id' => 'nullable|exists:projects,id',
         ]);
 
-        $userTask->update($request->all());
+        $userTask->update([
+            'title' => $request->title,
+            'description' => $request->description,
+            'due_date' => $request->due_date,
+            'user_id' => $request->user_id,
+            'project_id' => $request->project_id,
+        ]);
 
         return Inertia::location('/user_tasks');
     }
@@ -149,7 +177,7 @@ public function adminStore(Request $request)
     {
 
         return Inertia::render('User_tasks/Show', [
-            'task' => $userTask
+            'task' => $userTask->load('project'),
         ]);
 
     }

@@ -95,10 +95,14 @@ Route::middleware('check.company.plan')->group(function () {
     require __DIR__ . '/web/Contabilidad.php';
     require __DIR__ . '/web/Clients.php';
     require __DIR__ . '/web/Facturacion.php';
+    require __DIR__ . '/web/Projects.php';
+
+
 //    require __DIR__ . '/web/Proyectos.php';
     if (config('features.rrhh_enabled')) {
         require __DIR__ . '/web/RRHH.php';
     }
+
     require __DIR__ . '/web/Notifications.php';
 
 

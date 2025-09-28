@@ -66,4 +66,9 @@ class Company extends Model
     {
         return $this->hasMany(Training::class);
     }
+
+    public function projects()
+    {
+        return $this->hasMany(Project::class);
+    }
 }

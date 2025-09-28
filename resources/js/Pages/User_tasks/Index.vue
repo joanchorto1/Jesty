@@ -16,6 +16,7 @@
                     <th class="px-4 py-2 text-gray-700">Descripción</th>
                     <th class="px-4 py-2 text-gray-700">Fecha de Finalización</th>
                     <th class="px-4 py-2 text-gray-700">Estado</th>
+                    <th class="px-4 py-2 text-gray-700">Proyecto</th>
                     <th class="px-4 py-2 text-gray-700">Usuario Asignado</th>
                     <th class="px-4 py-2 text-gray-700">Acciones</th>
                 </tr>
@@ -26,9 +27,8 @@
                     <td class="px-4 py-3 text-gray-500 truncate w-40">{{ task.description }}</td>
                     <td class="px-4 py-3 text-gray-400">{{ task.due_date }}</td>
                     <td class="px-4 py-3 text-gray-400">{{ task.status }}</td>
-                    <template v-for="user in users">
-                        <td class="px-4 py-3 text-gray-500" v-if="task.user_id===user.id">{{ user.name }}</td>
-                    </template>
+                    <td class="px-4 py-3 text-gray-500">{{ task.project ? task.project.name : '—' }}</td>
+                    <td class="px-4 py-3 text-gray-500">{{ task.user ? task.user.name : assignedUser(task.user_id) }}</td>
                     <td class="px-4 py-3 flex space-x-2">
                         <NavLink :href="route('user_tasks.adminEdit', task.id)" class="text-yellow-500 hover:text-yellow-700"><EditIcon class="w-5 h-5 fill-gray-950"/></NavLink>
                         <button @click="deleteTask(task.id)" class="text-red-500 hover:text-red-700"><DeleteIcon class="w-5 h-5 fill-gray-950"/></button>
@@ -59,5 +59,10 @@ const deleteTask = (id) => {
     if (confirm('¿Estás seguro de que deseas eliminar esta tarea?')) {
         router.delete(route('user_tasks.destroy', id));
     }
+};
+
+const assignedUser = (userId) => {
+    const user = props.users.find((candidate) => candidate.id === userId);
+    return user ? user.name : '—';
 };
 </script>

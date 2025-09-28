@@ -2,7 +2,7 @@
     <AppLayout>
         <div class="p-6 bg-gray-100 min-h-screen">
             <div class="max-w-3xl mx-auto bg-white shadow rounded-lg p-6">
-                <h1 class="text-2xl font-semibold mb-6 text-gray-800">Crear Tarea CRM</h1>
+                <h1 class="text-2xl font-semibold mb-6 text-gray-800">Editar Tarea</h1>
                 <form @submit.prevent="submit">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
@@ -95,7 +95,7 @@
                             class="px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700"
                             :disabled="form.processing"
                         >
-                            Guardar tarea
+                            Guardar cambios
                         </button>
                     </div>
                 </form>
@@ -109,22 +109,23 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 import { Link, useForm } from '@inertiajs/vue3';
 
 const props = defineProps({
+    task: { type: Object, required: true },
     leads: { type: Array, default: () => [] },
     opportunities: { type: Array, default: () => [] },
     projects: { type: Array, default: () => [] },
 });
 
 const form = useForm({
-    title: '',
-    description: '',
-    due_date: '',
-    status: 'pending',
-    lead_id: null,
-    opportunity_id: null,
-    project_id: null,
+    title: props.task.title ?? '',
+    description: props.task.description ?? '',
+    due_date: props.task.due_date ?? '',
+    status: props.task.status ?? 'pending',
+    lead_id: props.task.lead_id,
+    opportunity_id: props.task.opportunity_id,
+    project_id: props.task.project_id,
 });
 
 const submit = () => {
-    form.post(route('tasks.store'));
+    form.put(route('tasks.update', props.task.id));
 };
 </script>

@@ -9,6 +9,7 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\PerformanceReviewController;
+use App\Models\Project;
 use Inertia\Inertia;
 
 
@@ -17,8 +18,13 @@ Route::middleware(['route.features.access:8'])->group(function () {
 
     Route::get('/dashboard/rrhh', function () {
         return Inertia::render('DashboardRRHH',[
-            'employees' => \App\Models\Employee::where('company_id', Auth::user()->company_id)->get(),
-            'departments' => \App\Models\Department::where('company_id', Auth::user()->company_id)->get(),
+            'employees' => \App\Models\Employee::where('company_id', Auth::user()->company_id)->with('department')->get(),
+            'departments' => \App\Models\Department::where('company_id', Auth::user()->company_id)
+                ->with('projects')
+                ->get(),
+            'projects' => Project::where('company_id', Auth::user()->company_id)
+                ->with(['department', 'phases', 'responsibles.employee'])
+                ->get(),
         ]);
     })->name('dashboard.rrhh');
 

@@ -26,6 +26,14 @@
                 </select>
             </div>
 
+            <div class="mb-4">
+                <label class="block text-gray-600 mb-2">Proyecto asociado</label>
+                <select v-model="form.project_id" class="w-full p-2 border rounded-lg">
+                    <option :value="null">Sin proyecto</option>
+                    <option v-for="project in projects" :key="project.id" :value="project.id">{{ project.name }}</option>
+                </select>
+            </div>
+
             <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600">Crear Tarea</button>
         </form>
     </div>
@@ -39,6 +47,7 @@ import AppLayout from "@/Layouts/AppLayout.vue";
 
 const props = defineProps({
     users: Array,
+    projects: { type: Array, default: () => [] },
 });
 
 const form = ref({
@@ -46,6 +55,7 @@ const form = ref({
     description: '',
     due_date: '',
     user_id: '',
+    project_id: null,
 });
 
 function createTask() {

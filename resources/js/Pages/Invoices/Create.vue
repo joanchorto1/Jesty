@@ -40,6 +40,17 @@
                     </div>
 
                     <div class="mb-4">
+                        <label for="project_id" class="block text-gray-700">Proyecto</label>
+                        <select v-model="invoice.project_id" id="project_id"
+                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                            <option :value="null">Sin proyecto</option>
+                            <option v-for="project in filteredProjects" :key="project.id" :value="project.id">
+                                {{ project.name }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
                     <label for="total" class="block text-gray-700">Total</label>
                     <input v-model="invoice.total" id="total" type="number" step="0.01" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" disabled>
                 </div>
@@ -145,6 +156,7 @@ const props = defineProps({
     clients: Array,
     products: Array,
     categories: Array,
+    projects: { type: Array, default: () => [] },
 });
 
 // Inicializar la factura
@@ -155,6 +167,7 @@ const invoice = ref({
     client_id: '',
     total: 0,
     iva: '',
+    project_id: null,
 });
 
 // Inicializar items de la factura
@@ -235,6 +248,14 @@ const filteredClients = computed(() => {
     return props.clients.filter(client => {
         return client.name.toLowerCase().includes(clientSearchTerm.value.toLowerCase());
     });
+});
+
+const filteredProjects = computed(() => {
+    if (!invoice.value.client_id) {
+        return props.projects;
+    }
+
+    return props.projects.filter(project => project.client_id === invoice.value.client_id);
 });
 
 

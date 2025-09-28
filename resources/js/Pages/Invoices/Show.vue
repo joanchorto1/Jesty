@@ -13,6 +13,15 @@
                         <p><strong>Identificador:</strong> {{ invoice.name }}</p>
                         <p><strong>Fecha:</strong> {{ invoice.date }}</p>
                         <p><strong>Estado:</strong> {{ invoice.state }}</p>
+                        <p>
+                            <strong>Proyecto:</strong>
+                            <template v-if="invoice.project">
+                                <Link :href="route('projects.show', invoice.project.id)" class="text-blue-600 hover:underline">
+                                    {{ invoice.project.name }}
+                                </Link>
+                            </template>
+                            <span v-else>—</span>
+                        </p>
                     </div>
                     <div>
                         <p><strong>Total:</strong> {{ invoice.total }}</p>
@@ -116,6 +125,7 @@ import NavLink from "@/Components/NavLink.vue";
 import CopyIcon from "@/Components/Icons/CopyIcon.vue";
 import SendIcon from "@/Components/Icons/SendIcon.vue";
 import { ref } from "vue";
+import { Link } from '@inertiajs/vue3';
 import MenuBillingIcon from "@/Components/Icons/MenuBillingIcon.vue";
 
 const props = defineProps({
