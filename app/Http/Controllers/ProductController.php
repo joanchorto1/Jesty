@@ -4,11 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Product;
-use App\Models\Company;
-use App\Models\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -19,25 +16,19 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $suppliers = Supplier::where('company_id',Auth::user()->company_id)->get();
         $products = Product::where('company_id',Auth::user()->company_id)->where('disabled', false)->get();
         $categories = Category::where('company_id',Auth::user()->company_id)->get();
         return Inertia::render('Products/Index', [
             'products' => $products,
             'categories' => $categories,
-            'suppliers' => $suppliers
         ]);
     }
 
     public function create()
     {
-        $companies = Company::all();
         $categories = Category::where('company_id',Auth::user()->company_id)->get();
-        $suppliers = Supplier::where('company_id',Auth::user()->company_id)->get();
         return Inertia::render('Products/Create', [
-            'companies' => $companies,
             'categories' => $categories,
-            'suppliers' => $suppliers
         ]);
     }
 
@@ -48,41 +39,53 @@ class ProductController extends Controller
             'category_id' => 'required',
             'description' => 'required',
             'price' => 'required|numeric',
-            'supplier_id' => 'required',
-            'cost_price' => 'required|numeric',
-            'stock' => 'required_if:is_stackable,true',
-            'is_stackable' => 'required'
+            'periodicity' => 'nullable|string',
+            'supplier_id' => 'required_if:is_stackable,true|nullable|exists:suppliers,id',
+            'cost_price' => 'required_if:is_stackable,true|nullable|numeric',
+            'stock' => 'required_if:is_stackable,true|nullable|integer',
+            'is_stackable' => 'sometimes|boolean'
         ]);
 
-        $data = $request->all();
-        $data['company_id'] = Auth::user()->company_id;
+        $data = $request->only([
+            'name',
+            'category_id',
+            'description',
+            'price',
+            'periodicity',
+            'supplier_id',
+            'cost_price',
+            'stock',
+            'is_stackable',
+        ]);
 
-        if (!$request->is_stackable) {
-            $data['stock'] = 0;
+        $data['company_id'] = Auth::user()->company_id;
+        $data['is_stackable'] = $request->boolean('is_stackable', false);
+
+        if (! $data['is_stackable']) {
+            $data['stock'] = null;
+            $data['supplier_id'] = null;
+            $data['cost_price'] = null;
+            $data['codebar'] = null;
+            $data['label_path'] = null;
+        } else {
+            $data['codebar'] = $data['codebar'] ?? Str::random(12);
         }
 
-        // Generar código de barras único
-        $data['codebar'] = Str::random(12);
-
-        // Guardar producto
         $product = Product::create($data);
 
-        // Generar y guardar la etiqueta del producto
-        $labelPath = $this->generateProductLabel($product);
-        $product->update(['label_path' => $labelPath]);
+        if ($product->is_stackable) {
+            $labelPath = $this->generateProductLabel($product);
+            $product->update(['label_path' => $labelPath]);
+        }
 
         return Inertia::location(route('products.index'));
     }
     public function edit(Product $product)
     {
-        $companies = Company::all();
-        $suppliers = Supplier::where('company_id',Auth::user()->company_id)->get();
         $categories = Category::where('company_id',Auth::user()->company_id)->get();
         return Inertia::render('Products/Edit', [
             'product' => $product,
-            'companies' => $companies,
             'categories' => $categories,
-            'suppliers' => $suppliers
         ]);
     }
 
@@ -92,48 +95,67 @@ class ProductController extends Controller
             'name' => 'required',
             'description' => 'required',
             'category_id' => 'required',
-            'price' => 'required',
-            'stock' => 'required_if:is_stackable,true',
-            'cost_price' => 'required',
-            'supplier_id' => 'required',
-            'is_stackable' => 'required'
+            'price' => 'required|numeric',
+            'periodicity' => 'nullable|string',
+            'stock' => 'required_if:is_stackable,true|nullable|integer',
+            'cost_price' => 'required_if:is_stackable,true|nullable|numeric',
+            'supplier_id' => 'required_if:is_stackable,true|nullable|exists:suppliers,id',
+            'is_stackable' => 'sometimes|boolean'
         ]);
 
-        // Actualizar los datos del producto
-        $product->update($request->all());
+        $data = $request->only([
+            'name',
+            'description',
+            'category_id',
+            'price',
+            'periodicity',
+            'stock',
+            'cost_price',
+            'supplier_id',
+            'is_stackable',
+        ]);
 
-        // Volver a generar el PDF con la nueva información
-        $this->generateProductLabel($product);
+        $data['is_stackable'] = $request->boolean('is_stackable', false);
+
+        if (! $data['is_stackable']) {
+            $data['stock'] = null;
+            $data['supplier_id'] = null;
+            $data['cost_price'] = null;
+            $data['codebar'] = null;
+            $data['label_path'] = null;
+        } else {
+            $data['codebar'] = $product->codebar ?? Str::random(12);
+        }
+
+        $product->update($data);
+
+        if ($product->is_stackable) {
+            $labelPath = $this->generateProductLabel($product);
+            $product->update(['label_path' => $labelPath]);
+        }
 
         return Inertia::location(route('products.index'));
     }
-
-
-
     public function generateProductLabel($product)
     {
         $barcodePath = 'barcodes/product_' . $product->id . '.png';
 
-        // Si el código de barras no existe, generarlo
         if (!Storage::disk('public')->exists($barcodePath)) {
             $barcodeGenerator = new DNS1D();
             $barcodeData = $barcodeGenerator->getBarcodePNG($product->codebar, 'C128', 2, 50);
             Storage::disk('public')->put($barcodePath, base64_decode($barcodeData));
         }
 
-        // Generar el PDF con la información actualizada del producto
         $pdf = Pdf::loadView('pdfs.product_label', [
             'product' => $product,
-            'barcodePath' => $barcodePath
+            'barcodePath' => $barcodePath,
         ]);
 
-        // Guardar el PDF sobrescribiendo el anterior
         $pdfPath = 'labels/product_' . $product->id . '.pdf';
         Storage::disk('public')->put($pdfPath, $pdf->output());
 
         return $pdfPath;
     }
-
 
     //show
 

@@ -67,11 +67,11 @@
 
                     <!-- Otros enlaces del menú -->
                     <template v-for="feature in props.features.value">
-                    <NewNavLink v-if="feature.name === 'Inventario'" :href="route('dashboard.products')" :active="route().current('dashboard.products')"
+                    <NewNavLink v-if="feature.name === 'Inventario'" :href="route('dashboard.services')" :active="route().current('dashboard.services')"
                                        class="text-blue-500 hover:text-blue-700 py-2">
                         <div class="flex items-center space-x-2">
                             <MenuInventoryIcon class="h-5 w-5"/>
-                            <p class="text-base">Almacén</p>
+                            <p class="text-base">Serveis</p>
                                 <DropdownIcon class="h-5 w-5 fill-blue-500 stroke-0"/>
                         </div>
                     </NewNavLink>
@@ -81,22 +81,7 @@
                                            class="text-sm text-gray-400 hover:text-gray-500 py-1">
                             <div class="flex items-center space-x-2">
                                 <MenuProductIcon class="h-5 w-5"/>
-                                <p class="text-sm">Productos</p>
-                            </div>
-                        </NewNavLink>
-                        <NewNavLink :href="route('suppliers.index')" :active="route().current('suppliers.index')"
-                                           class="text-sm text-gray-400 hover:text-gray-500 py-1">
-                            <div class="flex items-center space-x-2">
-                                <MenuClientsIcon class="h-5 w-5"/>
-                                <p class="text-sm">Proveedores</p>
-                            </div>
-                        </NewNavLink>
-                        <NewNavLink :href="route('stockEntries.index')" :active="route().current('stockEntries.index')"
-                                           class="text-sm text-gray-400 hover:text-gray-500 py-1">
-                            <div class="flex items-center space-x-2">
-                                <AddProductIcon class="h-5 stroke-black w-5"/>
-
-                                <p class="text-sm">Entradas de Stock</p>
+                                <p class="text-sm">Catàleg de serveis</p>
                             </div>
                         </NewNavLink>
                         <NewNavLink :href="route('categories.index')"
@@ -105,7 +90,7 @@
                             <div class="flex items-center space-x-2">
                                 <MenuCategoryIcon class="h-5 w-5"/>
 
-                                <p class="text-sm">Categorías</p>
+                                <p class="text-sm">Categories</p>
                             </div>
                         </NewNavLink>
                     </div>
@@ -297,7 +282,7 @@ const props = {
 }
 
 const isBillingPage = route().current('dashboard.billing') || route().current('budgets.index') || route().current('invoices.index');
-const isProductsPage = route().current('products.index') || route().current('categories.index') || route().current('dashboard.products')||route().current('suppliers.index')||route().current('stockEntries.index');
+const isProductsPage = route().current('products.index') || route().current('categories.index') || route().current('dashboard.services');
 const isAccountingPage = route().current('expenses.index') || route().current('expenses.report') || route().current('dashboard.accounting') || route().current('expenseCategories.index') || route().current('paymentMethods.index')||route().current('incomes.index');
 const isCrmPage = route().current('dashboard.crm')|| route().current('leads.index')|| route().current('opportunities.index')|| route().current('tasks.index')|| route().current('activities.index')|| route().current('notes.index')||route().current('leads.create')||route().current('opportunities.create')||route().current('tasks.create')||route().current('activities.create')||route().current('notes.create')||route().current('leads.edit')||route().current('opportunities.edit')||route().current('tasks.edit')||route().current('activities.edit')||route().current('notes.edit')||route().current('leads.show')||route().current('opportunities.show')||route().current('tasks.show')||route().current('activities.show')||route().current('notes.show');
 const isAdminPage = route().current('dashboard.admin')|| route().current('users.index')|| route().current('roles.index')|| route().current('permissions.index')|| route().current('users.create')|| route().current('roles.create')|| route().current('permissions.create')|| route().current('users.edit')|| route().current('roles.edit')|| route().current('permissions.edit')|| route().current('users.show')|| route().current('roles.show')|| route().current('permissions.show')|| route().current('users.destroy')|| route().current('roles.destroy')|| route().current('permissions.destroy')||route().current('user_tasks.index')||route().current('user_tasks.adminCreate')||route().current('user_tasks.adminEdit')||route().current('user_tasks.destroy');
