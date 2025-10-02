@@ -1,134 +1,210 @@
+<script setup>
+import { computed } from 'vue';
+import { useForm } from '@inertiajs/inertia-vue3';
+import AppLayout from '@/Layouts/AppLayout.vue';
+import CrudPageHeader from '@/Components/Crud/CrudPageHeader.vue';
+import CrudStatCard from '@/Components/Crud/CrudStatCard.vue';
+import FormSection from '@/Components/FormSection.vue';
+import InputLabel from '@/Components/InputLabel.vue';
+import TextInput from '@/Components/TextInput.vue';
+import SelectInput from '@/Components/SelectInput.vue';
+import InputError from '@/Components/InputError.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
+import MenuRRHHIcon from '@/Components/Icons/MenuRRHHIcon.vue';
+import InfoIcon from '@/Components/Icons/InfoIcon.vue';
+
+const props = defineProps({
+    employee: {
+        type: Object,
+        required: true,
+    },
+    departments: {
+        type: Array,
+        default: () => [],
+    },
+});
+
+const form = useForm({
+    name: props.employee.name ?? '',
+    email: props.employee.email ?? '',
+    phone: props.employee.phone ?? '',
+    address: props.employee.address ?? '',
+    job_title: props.employee.job_title ?? '',
+    department_id: props.employee.department_id ?? '',
+    salary: props.employee.salary ?? '',
+    hire_date: props.employee.hire_date ?? '',
+    status: props.employee.status ?? 'activo',
+    dni: props.employee.dni ?? '',
+    nnss: props.employee.nnss ?? '',
+    iban: props.employee.iban ?? '',
+    birth_date: props.employee.birth_date ?? '',
+});
+
+const submit = () => {
+    form.put(route('employees.update', props.employee.id));
+};
+
+const departmentName = computed(
+    () => props.departments.find((department) => department.id === form.department_id)?.name ?? '—',
+);
+
+const statusLabel = computed(() => (form.status === 'activo' ? 'Actiu' : 'Inactiu'));
+</script>
+
 <template>
-    <AppLayout>
-        <div class="w-full min-h-screen bg-gray-100 p-6">
-            <div class="bg-white p-6 rounded-lg shadow-md">
-                <h2 class="text-xl text-blue-500 font-semibold mb-6">Editar Empleado</h2>
+    <AppLayout title="Edita empleat">
+        <div class="min-h-screen bg-slate-100/80 py-12">
+            <div class="mx-auto flex max-w-6xl flex-col gap-10 px-6">
+                <CrudPageHeader
+                    title="Actualitza la fitxa de l'empleat"
+                    description="Revisa i corregeix les dades perquè nòmines, RRHH i finances treballin amb informació fiable."
+                    :icon="MenuRRHHIcon"
+                >
+                    <template #actions>
+                        <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing" @click="submit">
+                            Guardar canvis
+                        </PrimaryButton>
+                    </template>
+                </CrudPageHeader>
 
-                <form @submit.prevent="submitForm">
-                    <!-- Nombre -->
-                    <div class="mb-4">
-                        <label for="name" class="block text-sm font-medium text-gray-700">Nombre</label>
-                        <input type="text" v-model="form.name" id="name" class="w-full p-2 mt-2 border border-gray-300 rounded-lg" required/>
-                    </div>
+                <div class="grid gap-6 md:grid-cols-3">
+                    <CrudStatCard
+                        label="Departament"
+                        :value="departmentName"
+                        :icon="MenuRRHHIcon"
+                        icon-background="bg-indigo-500/10 text-indigo-600"
+                    />
+                    <CrudStatCard
+                        label="Estat"
+                        :value="statusLabel"
+                        :icon="InfoIcon"
+                        icon-background="bg-emerald-500/10 text-emerald-600"
+                    />
+                    <CrudStatCard
+                        label="Sou anual"
+                        :value="form.salary ? Number(form.salary).toFixed(2) + ' €' : '—'"
+                        :icon="MenuRRHHIcon"
+                        icon-background="bg-amber-500/10 text-amber-600"
+                    />
+                </div>
 
-                    <!-- Correo Electrónico -->
-                    <div class="mb-4">
-                        <label for="email" class="block text-sm font-medium text-gray-700">Correo Electrónico</label>
-                        <input type="email" v-model="form.email" id="email" class="w-full p-2 mt-2 border border-gray-300 rounded-lg" required/>
-                    </div>
+                <FormSection @submitted="submit">
+                    <template #title>
+                        Fitxa de l'empleat
+                    </template>
+                    <template #description>
+                        Repassa les dades personals, laborals i administratives i confirma els canvis.
+                    </template>
 
-                    <!-- Teléfono -->
-                    <div class="mb-4">
-                        <label for="phone" class="block text-sm font-medium text-gray-700">Teléfono</label>
-                        <input type="text" v-model="form.phone" id="phone" class="w-full p-2 mt-2 border border-gray-300 rounded-lg" required/>
-                    </div>
+                    <template #form>
+                        <div class="col-span-6 space-y-6 rounded-3xl border border-slate-200/80 bg-white/70 p-6 shadow-sm">
+                            <div>
+                                <h3 class="text-sm font-semibold uppercase tracking-wide text-slate-500">Identificació i contacte</h3>
+                                <p class="mt-1 text-sm text-slate-500">Confirma les dades bàsiques i els canals de comunicació.</p>
+                            </div>
+                            <div class="grid grid-cols-6 gap-6">
+                                <div class="col-span-6 sm:col-span-3">
+                                    <InputLabel for="name" value="Nom complet" />
+                                    <TextInput id="name" v-model="form.name" type="text" class="mt-2 block w-full" />
+                                    <InputError :message="form.errors.name" class="mt-2" />
+                                </div>
+                                <div class="col-span-6 sm:col-span-3">
+                                    <InputLabel for="email" value="Correu electrònic" />
+                                    <TextInput id="email" v-model="form.email" type="email" class="mt-2 block w-full" />
+                                    <InputError :message="form.errors.email" class="mt-2" />
+                                </div>
+                                <div class="col-span-6 sm:col-span-3">
+                                    <InputLabel for="phone" value="Telèfon" />
+                                    <TextInput id="phone" v-model="form.phone" type="tel" class="mt-2 block w-full" />
+                                    <InputError :message="form.errors.phone" class="mt-2" />
+                                </div>
+                                <div class="col-span-6 sm:col-span-3">
+                                    <InputLabel for="address" value="Adreça" />
+                                    <TextInput id="address" v-model="form.address" type="text" class="mt-2 block w-full" />
+                                    <InputError :message="form.errors.address" class="mt-2" />
+                                </div>
+                                <div class="col-span-6 sm:col-span-3">
+                                    <InputLabel for="dni" value="DNI" />
+                                    <TextInput id="dni" v-model="form.dni" type="text" class="mt-2 block w-full" />
+                                    <InputError :message="form.errors.dni" class="mt-2" />
+                                </div>
+                                <div class="col-span-6 sm:col-span-3">
+                                    <InputLabel for="birth_date" value="Data de naixement" />
+                                    <TextInput id="birth_date" v-model="form.birth_date" type="date" class="mt-2 block w-full" />
+                                    <InputError :message="form.errors.birth_date" class="mt-2" />
+                                </div>
+                            </div>
+                        </div>
 
-                    <!-- Dirección -->
-                    <div class="mb-4">
-                        <label for="address" class="block text-sm font-medium text-gray-700">Dirección</label>
-                        <input type="text" v-model="form.address" id="address" class="w-full p-2 mt-2 border border-gray-300 rounded-lg"/>
-                    </div>
+                        <div class="col-span-6 space-y-6 rounded-3xl border border-slate-200/80 bg-white/70 p-6 shadow-sm">
+                            <div>
+                                <h3 class="text-sm font-semibold uppercase tracking-wide text-slate-500">Dades laborals</h3>
+                                <p class="mt-1 text-sm text-slate-500">Actualitza posició, equip i condicions.</p>
+                            </div>
+                            <div class="grid grid-cols-6 gap-6">
+                                <div class="col-span-6 sm:col-span-3">
+                                    <InputLabel for="job_title" value="Càrrec" />
+                                    <TextInput id="job_title" v-model="form.job_title" type="text" class="mt-2 block w-full" />
+                                    <InputError :message="form.errors.job_title" class="mt-2" />
+                                </div>
+                                <div class="col-span-6 sm:col-span-3">
+                                    <InputLabel for="department_id" value="Departament" />
+                                    <SelectInput id="department_id" v-model="form.department_id" class="mt-2 block w-full">
+                                        <option value="">Selecciona un departament</option>
+                                        <option v-for="department in departments" :key="department.id" :value="department.id">
+                                            {{ department.name }}
+                                        </option>
+                                    </SelectInput>
+                                    <InputError :message="form.errors.department_id" class="mt-2" />
+                                </div>
+                                <div class="col-span-6 sm:col-span-3">
+                                    <InputLabel for="hire_date" value="Data d'incorporació" />
+                                    <TextInput id="hire_date" v-model="form.hire_date" type="date" class="mt-2 block w-full" />
+                                    <InputError :message="form.errors.hire_date" class="mt-2" />
+                                </div>
+                                <div class="col-span-6 sm:col-span-3">
+                                    <InputLabel for="status" value="Estat" />
+                                    <SelectInput id="status" v-model="form.status" class="mt-2 block w-full">
+                                        <option value="activo">Actiu</option>
+                                        <option value="inactivo">Inactiu</option>
+                                    </SelectInput>
+                                    <InputError :message="form.errors.status" class="mt-2" />
+                                </div>
+                                <div class="col-span-6 sm:col-span-3">
+                                    <InputLabel for="salary" value="Sou anual (€)" />
+                                    <TextInput id="salary" v-model="form.salary" type="number" min="0" step="0.01" class="mt-2 block w-full" />
+                                    <InputError :message="form.errors.salary" class="mt-2" />
+                                </div>
+                            </div>
+                        </div>
 
-                    <!-- Cargo -->
-                    <div class="mb-4">
-                        <label for="position" class="block text-sm font-medium text-gray-700">Cargo</label>
-                        <input type="text" v-model="form.job_title" id="position" class="w-full p-2 mt-2 border border-gray-300 rounded-lg" required/>
-                    </div>
+                        <div class="col-span-6 space-y-6 rounded-3xl border border-slate-200/80 bg-white/70 p-6 shadow-sm">
+                            <div>
+                                <h3 class="text-sm font-semibold uppercase tracking-wide text-slate-500">Informació administrativa</h3>
+                                <p class="mt-1 text-sm text-slate-500">Garantitza la correcta gestió de nòmines i tràmits oficials.</p>
+                            </div>
+                            <div class="grid grid-cols-6 gap-6">
+                                <div class="col-span-6 sm:col-span-3">
+                                    <InputLabel for="nnss" value="Número de Seguretat Social" />
+                                    <TextInput id="nnss" v-model="form.nnss" type="text" class="mt-2 block w-full" />
+                                    <InputError :message="form.errors.nnss" class="mt-2" />
+                                </div>
+                                <div class="col-span-6 sm:col-span-3">
+                                    <InputLabel for="iban" value="IBAN" />
+                                    <TextInput id="iban" v-model="form.iban" type="text" class="mt-2 block w-full" />
+                                    <InputError :message="form.errors.iban" class="mt-2" />
+                                </div>
+                            </div>
+                        </div>
+                    </template>
 
-                    <!-- Departamento -->
-                    <div class="mb-4">
-                        <label for="department_id" class="block text-sm font-medium text-gray-700">Departamento</label>
-                        <select v-model="form.department_id" id="department_id" class="w-full p-2 mt-2 border border-gray-300 rounded-lg">
-                            <option v-for="department in departments" :key="department.id" :value="department.id">{{ department.name }}</option>
-                        </select>
-                    </div>
-
-                    <!-- Salario -->
-                    <div class="mb-4">
-                        <label for="salary" class="block text-sm font-medium text-gray-700">Salario</label>
-                        <input type="number" v-model="form.salary" id="salary" class="w-full p-2 mt-2 border border-gray-300 rounded-lg" required/>
-                    </div>
-
-                    <!-- Fecha de Contratación -->
-                    <div class="mb-4">
-                        <label for="hire_date" class="block text-sm font-medium text-gray-700">Fecha de Contratación</label>
-                        <input type="date" v-model="form.hire_date" id="hire_date" class="w-full p-2 mt-2 border border-gray-300 rounded-lg" required/>
-                    </div>
-
-                    <!-- Estado -->
-                    <div class="mb-4">
-                        <label for="status" class="block text-sm font-medium text-gray-700">Estado</label>
-                        <select v-model="form.status" id="status" class="w-full p-2 mt-2 border border-gray-300 rounded-lg" required>
-                            <option value="activo">Activo</option>
-                            <option value="inactivo">Inactivo</option>
-                        </select>
-                    </div>
-
-                    <!-- DNI -->
-                    <div class="mb-4">
-                        <label for="dni" class="block text-sm font-medium text-gray-700">DNI</label>
-                        <input type="text" v-model="form.dni" id="dni" class="w-full p-2 mt-2 border border-gray-300 rounded-lg"/>
-                    </div>
-
-                    <!-- Número de Seguridad Social -->
-                    <div class="mb-4">
-                        <label for="nnss" class="block text-sm font-medium text-gray-700">Número de Seguridad Social</label>
-                        <input type="text" v-model="form.nnss" id="nnss" class="w-full p-2 mt-2 border border-gray-300 rounded-lg"/>
-                    </div>
-
-                    <!-- IBAN -->
-                    <div class="mb-4">
-                        <label for="iban" class="block text-sm font-medium text-gray-700">IBAN</label>
-                        <input type="text" v-model="form.iban" id="iban" class="w-full p-2 mt-2 border border-gray-300 rounded-lg"/>
-                    </div>
-
-                    <!-- Fecha de Nacimiento -->
-                    <div class="mb-4">
-                        <label for="birth_date" class="block text-sm font-medium text-gray-700">Fecha de Nacimiento</label>
-                        <input type="date" v-model="form.birth_date" id="birth_date" class="w-full p-2 mt-2 border border-gray-300 rounded-lg"/>
-                    </div>
-
-                    <!-- Submit -->
-                    <div class="mb-4">
-                        <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded-lg">Actualizar Empleado</button>
-                    </div>
-                </form>
+                    <template #actions>
+                        <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                            Guardar canvis
+                        </PrimaryButton>
+                    </template>
+                </FormSection>
             </div>
         </div>
     </AppLayout>
 </template>
-
-<script setup>
-import { ref } from 'vue';
-import AppLayout from "@/Layouts/AppLayout.vue";
-import { Inertia } from "@inertiajs/inertia";
-
-const props = defineProps({
-    employee: Object,
-    departments: Array,
-});
-
-const form = ref({
-    name: props.employee.name,
-    email: props.employee.email,
-    phone: props.employee.phone,
-    address: props.employee.address,
-    job_title: props.employee.job_title,
-    department_id: props.employee.department_id,
-    salary: props.employee.salary,
-    hire_date: props.employee.hire_date,
-    status: props.employee.status,
-    dni: props.employee.dni,
-    nnss: props.employee.nnss,
-    iban: props.employee.iban,
-    birth_date: props.employee.birth_date,
-});
-
-const submitForm = () => {
-    Inertia.put(route('employees.update', props.employee.id), form.value);
-};
-</script>
-
-<style scoped>
-/* Estilos personalizados */
-</style>

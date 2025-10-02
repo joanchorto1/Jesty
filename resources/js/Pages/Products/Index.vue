@@ -1,154 +1,215 @@
-<template>
-    <AppLayout>
-        <div class="w-full min-h-screen bg-gray-100 p-6">
-
-            <!-- Widgets informativos -->
-            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-6">
-                <div class="bg-white p-4 shadow-md rounded-lg flex items-center justify-between">
-                    <div>
-                        <h2 class="text-lg text-blue-500 font-semibold">Total Productos</h2>
-                        <p class="text-blue-300 text-2xl">{{ totalProducts }}</p>
-                    </div>
-                </div>
-                <div class="bg-white p-4 shadow-md rounded-lg flex items-center justify-between">
-                    <div>
-                        <h2 class="text-lg text-blue-500 font-semibold">Productos en Stock</h2>
-                        <p class="text-blue-300 text-2xl">{{ inStock }}</p>
-                    </div>
-                </div>
-                <div class="bg-white p-4 shadow-md rounded-lg flex items-center justify-between">
-                    <div>
-                        <h2 class="text-lg text-blue-500 font-semibold">Productos Sin Stock</h2>
-                        <p class="text-blue-300 text-2xl">{{ outOfStock }}</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mb-6 bg-white p-4 rounded-lg shadow-md">
-                <div class="flex flex-wrap gap-4">
-                    <!-- Filtro por categoría -->
-                    <div>
-                        <label class="text-blue-500 text-sm font-semibold">Categoría:</label>
-                        <select v-model="filters.category" class="w-full p-2 text-gray-500 border rounded-md">
-                            <option value="">Todas</option>
-                            <option v-for="category in categories" :key="category" :value="category">{{ category.name }}</option>
-                        </select>
-                    </div>
-                    <!-- Filtro por estado -->
-                    <div>
-                        <label class="text-blue-500 text-sm font-semibold">Estado:</label>
-                        <select v-model="filters.state" class="w-full p-2 text-gray-500 border rounded-md">
-                            <option value="">Todos</option>
-                            <option value="in_stock">En stock</option>
-                            <option value="out_of_stock">Sin stock</option>
-                        </select>
-                    </div>
-                    <!-- Botón Limpiar Filtros -->
-                    <div class="mt-6">
-                        <button @click="clearFilters" class="bg-red-500 w-full hover:bg-red-600 text-white font-bold py-2 px-4 rounded">
-                            Limpiar Filtros
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Tabla de productos -->
-            <div class="bg-white p-6 rounded-lg shadow-md">
-                <!-- Botón para crear un nuevo producto -->
-                <div class="mb-6 w-1/6">
-                    <NavLink :href="route('products.create')" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center space-x-2">
-                        <AddIcon class="w-5 h-5"/>
-                        <span>Crear Nuevo Producto</span>
-                    </NavLink>
-                </div>
-                <table class="w-full table-auto">
-                    <thead>
-                    <tr class="bg-gray-100">
-                        <th class="px-4 py-2 text-left">Nombre</th>
-                        <th class="px-4 py-2 text-left">Categoría</th>
-                        <th class="px-4 py-2 text-left">Precio</th>
-                        <th class="px-4 py-2 text-left">Stock</th>
-                        <th class="px-4 py-2 text-left">Acciones</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr v-for="product in filteredProducts" :key="product.id" class="border-t">
-                        <td class="px-4 py-2">{{ product.name }}</td>
-                        <template v-for="category in categories">
-                            <td v-if="category.id === product.category_id" class="px-4 py-2">{{ category.name }}</td>
-                        </template>
-                        <td class="px-4 py-2">{{ product.price  }}</td>
-                        <td class="px-4 py-2">{{ product.stock }}</td>
-                        <td class="px-4 py-2 flex space-x-2">
-                            <NavLink :href="route('products.edit', product.id)" class="text-yellow-500">
-                                <EditIcon class="w-5 h-5"/>
-                            </NavLink>
-                            <button @click="downloadLabel(product.label_path)" class=" text-white p-2 rounded">
-
-                                <MenuExpenseIcon class="stroke-gray-400 w-5 h-5 " title="Descargar Etiqueta"/>
-                            </button>
-                            <button @click="deleteProduct(product.id)" class="text-red-500">
-                                <DeleteIcon class="w-5 h-5"/>
-                            </button>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </AppLayout>
-</template>
-
 <script setup>
-import { ref, onMounted, reactive } from 'vue';
-import { computed } from 'vue';
+import { computed, reactive } from 'vue';
 import { Inertia } from '@inertiajs/inertia';
+import { Link } from '@inertiajs/inertia-vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import AddIcon from '@/Components/Icons/AddIcon.vue';
+import CrudPageHeader from '@/Components/Crud/CrudPageHeader.vue';
+import CrudStatCard from '@/Components/Crud/CrudStatCard.vue';
+import CrudFilterBar from '@/Components/Crud/CrudFilterBar.vue';
+import CrudTable from '@/Components/Crud/CrudTable.vue';
+import InputLabel from '@/Components/InputLabel.vue';
+import TextInput from '@/Components/TextInput.vue';
+import SelectInput from '@/Components/SelectInput.vue';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
+import MenuProductIcon from '@/Components/Icons/MenuProductIcon.vue';
+import AddProductIcon from '@/Components/Icons/AddProductIcon.vue';
 import EditIcon from '@/Components/Icons/EditIcon.vue';
 import DeleteIcon from '@/Components/Icons/DeleteIcon.vue';
-import NavLink from "@/Components/NavLink.vue";
-import MenuPaymentIcon from "@/Components/Icons/MenuPaymentIcon.vue";
-import MenuExpenseIcon from "@/Components/Icons/MenuExpenseIcon.vue";
+import MenuExpenseIcon from '@/Components/Icons/MenuExpenseIcon.vue';
 
 const props = defineProps({
-    products: Array,
-    categories: Array,
+    products: {
+        type: Array,
+        default: () => [],
+    },
+    categories: {
+        type: Array,
+        default: () => [],
+    },
 });
 
 const filters = reactive({
-    category: '',
-    state: ''
+    search: '',
+    category_id: '',
+    status: '',
 });
 
 const filteredProducts = computed(() => {
-    return props.products.filter(product => {
-        const matchesCategory = !filters.category || product.category_id === filters.category.id;
-        const matchesState = !filters.state || (filters.state === 'in_stock' ? product.stock > 0 : product.stock === 0);
-        return matchesCategory && matchesState;
+    const searchTerm = filters.search.trim().toLowerCase();
+
+    return props.products.filter((product) => {
+        const matchesSearch =
+            !searchTerm ||
+            product.name?.toLowerCase().includes(searchTerm) ||
+            product.description?.toLowerCase().includes(searchTerm);
+        const matchesCategory = !filters.category_id || Number(filters.category_id) === Number(product.category_id);
+        const matchesStatus =
+            !filters.status ||
+            (filters.status === 'in_stock' ? Number(product.stock) > 0 : Number(product.stock) === 0);
+
+        return matchesSearch && matchesCategory && matchesStatus;
     });
 });
 
 const totalProducts = computed(() => filteredProducts.value.length);
-const inStock = computed(() => filteredProducts.value.filter(product => product.stock > 0).length);
-const outOfStock = computed(() => totalProducts.value - inStock.value);
+const inStock = computed(() => filteredProducts.value.filter((product) => Number(product.stock) > 0).length);
+const outOfStock = computed(() => filteredProducts.value.filter((product) => Number(product.stock) === 0).length);
 
 const clearFilters = () => {
-    filters.category = '';
-    filters.state = '';
+    filters.search = '';
+    filters.category_id = '';
+    filters.status = '';
 };
 
 const deleteProduct = (id) => {
-    if (confirm("¿Estás seguro de que deseas eliminar este producto?")) {
+    if (confirm('Segur que vols eliminar aquest producte?')) {
         Inertia.delete(route('products.destroy', id));
     }
 };
 
 const downloadLabel = (labelPath) => {
-    window.open(`/storage/${labelPath}`, '_blank');
+    if (labelPath) {
+        window.open(`/storage/${labelPath}`, '_blank');
+    }
 };
+
+const categoryName = (categoryId) =>
+    props.categories.find((category) => Number(category.id) === Number(categoryId))?.name ?? '—';
 </script>
 
-<style scoped>
-/* Estilos personalizados aquí */
-</style>
+<template>
+    <AppLayout title="Catàleg de productes">
+        <div class="min-h-screen bg-slate-100/80 py-12">
+            <div class="mx-auto flex max-w-7xl flex-col gap-10 px-6">
+                <CrudPageHeader
+                    title="Catàleg de productes"
+                    description="Consulta, filtra i gestiona els productes disponibles per a la venda i el control d'estoc."
+                    :icon="MenuProductIcon"
+                >
+                    <template #actions>
+                        <Link
+                            :href="route('products.create')"
+                            class="inline-flex items-center gap-2 rounded-full bg-sky-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-sky-200 transition hover:bg-sky-500"
+                        >
+                            <AddProductIcon class="h-5 w-5" />
+                            Nou producte
+                        </Link>
+                    </template>
+                </CrudPageHeader>
+
+                <div class="grid gap-6 md:grid-cols-3">
+                    <CrudStatCard
+                        label="Total de productes"
+                        :value="totalProducts"
+                        :icon="MenuProductIcon"
+                        icon-background="bg-indigo-500/10 text-indigo-600"
+                    />
+                    <CrudStatCard
+                        label="En estoc"
+                        :value="inStock"
+                        :icon="AddProductIcon"
+                        icon-background="bg-emerald-500/10 text-emerald-600"
+                    />
+                    <CrudStatCard
+                        label="Sense estoc"
+                        :value="outOfStock"
+                        :icon="MenuProductIcon"
+                        icon-background="bg-rose-500/10 text-rose-600"
+                    />
+                </div>
+
+                <CrudFilterBar>
+                    <div class="flex flex-1 flex-col gap-2">
+                        <InputLabel for="search" value="Cerca" />
+                        <TextInput
+                            id="search"
+                            v-model="filters.search"
+                            type="search"
+                            class="block w-full"
+                            placeholder="Nom o descripció"
+                        />
+                    </div>
+
+                    <div class="flex flex-1 flex-col gap-2">
+                        <InputLabel for="category" value="Categoria" />
+                        <SelectInput id="category" v-model="filters.category_id" class="block w-full">
+                            <option value="">Totes</option>
+                            <option v-for="category in categories" :key="category.id" :value="category.id">
+                                {{ category.name }}
+                            </option>
+                        </SelectInput>
+                    </div>
+
+                    <div class="flex flex-1 flex-col gap-2">
+                        <InputLabel for="status" value="Disponibilitat" />
+                        <SelectInput id="status" v-model="filters.status" class="block w-full">
+                            <option value="">Tots</option>
+                            <option value="in_stock">En estoc</option>
+                            <option value="out_of_stock">Sense estoc</option>
+                        </SelectInput>
+                    </div>
+
+                    <template #actions>
+                        <SecondaryButton type="button" @click="clearFilters">
+                            Netejar filtres
+                        </SecondaryButton>
+                    </template>
+                </CrudFilterBar>
+
+                <CrudTable>
+                    <template #head>
+                        <tr>
+                            <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Nom</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Categoria</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Preu (€)</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Estoc</th>
+                            <th class="px-6 py-4 text-right text-xs font-semibold uppercase tracking-wide text-slate-500">Accions</th>
+                        </tr>
+                    </template>
+
+                    <tr v-for="product in filteredProducts" :key="product.id" class="hover:bg-slate-50/60">
+                        <td class="px-6 py-4 text-sm font-medium text-slate-700">{{ product.name }}</td>
+                        <td class="px-6 py-4 text-sm text-slate-500">{{ categoryName(product.category_id) }}</td>
+                        <td class="px-6 py-4 text-sm text-slate-500">{{ Number(product.price).toFixed(2) }}</td>
+                        <td class="px-6 py-4 text-sm font-semibold" :class="Number(product.stock) > 0 ? 'text-emerald-600' : 'text-rose-500'">
+                            {{ product.stock ?? 0 }}
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center justify-end gap-2">
+                                <Link
+                                    :href="route('products.edit', product.id)"
+                                    class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-amber-500/10 text-amber-600 transition hover:bg-amber-500/20"
+                                >
+                                    <EditIcon class="h-5 w-5" />
+                                </Link>
+                                <button
+                                    type="button"
+                                    class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-sky-500/10 text-sky-600 transition hover:bg-sky-500/20"
+                                    @click="downloadLabel(product.label_path)"
+                                    :title="product.label_path ? 'Descarregar etiqueta' : 'Sense etiqueta disponible'"
+                                >
+                                    <MenuExpenseIcon class="h-5 w-5" />
+                                </button>
+                                <button
+                                    type="button"
+                                    class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-rose-500/10 text-rose-600 transition hover:bg-rose-500/20"
+                                    @click="deleteProduct(product.id)"
+                                >
+                                    <DeleteIcon class="h-5 w-5" />
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <template v-if="!filteredProducts.length">
+                        <tr>
+                            <td colspan="5" class="px-6 py-10 text-center text-sm text-slate-500">
+                                Cap resultat coincideix amb els filtres actuals.
+                            </td>
+                        </tr>
+                    </template>
+                </CrudTable>
+            </div>
+        </div>
+    </AppLayout>
+</template>
