@@ -1,57 +1,85 @@
 <template>
     <AppLayout>
-        <div class="w-full bg-gray-100 p-10">
-            <!-- Sección de Widgets Globales -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                <div class="bg-white shadow-lg p-4 rounded-lg text-center">
-                    <p class="text-xl font-bold text-blue-300">{{ totalEmployees }}</p>
-                    <p class="text-blue-700 font-semibold">Total de Empleados</p>
-                </div>
-                <div class="bg-white shadow-lg p-4 rounded-lg text-center">
-                    <p class="text-xl font-bold text-blue-300">{{ totalDepartments }}</p>
-                    <p class="text-blue-700 font-semibold">Total de Departamentos</p>
-                </div>
-                <div class="bg-white shadow-lg p-4 rounded-lg text-center">
-                    <p class="text-xl font-bold text-blue-300">{{ averageSalary }}</p>
-                    <p class="text-blue-700 font-semibold">Salario Promedio</p>
-                </div>
-                <div class="bg-white shadow-lg p-4 rounded-lg text-center">
-                    <p class="text-xl font-bold text-blue-300">{{ totalEmployeesActive }}</p>
-                    <p class="text-blue-700 font-semibold">Empleados Activos</p>
-                </div>
-            </div>
-
-            <!-- Sección de Gráficos de Empleados -->
-            <h2 class="text-xl font-semibold text-gray-700 mb-4">Gráficos de Empleados</h2>
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-                <div class="bg-white p-4 rounded-lg shadow">
-                    <h3 class="text-lg font-semibold text-gray-700">Distribución de Empleados por Departamento</h3>
-                    <PieChart :data="employeeDepartmentData" />
-                </div>
-                <div class="bg-white p-4 rounded-lg shadow">
-                    <h3 class="text-lg font-semibold text-gray-700">Empleados por Año de Contratación</h3>
-                    <BarChart :data="employeeHiringYearData" />
-                </div>
-                <div class="bg-white p-4 rounded-lg shadow">
-                    <h3 class="text-lg font-semibold text-gray-700">Comparación de Salarios por Departamento</h3>
-                    <BarChart :data="departmentSalaryComparisonData" />
+        <div class="min-h-screen bg-slate-950">
+            <div class="bg-gradient-to-r from-cyan-700 via-blue-700 to-indigo-700 pb-24">
+                <div class="max-w-7xl mx-auto px-6 pt-10">
+                    <div class="space-y-2">
+                        <p class="text-cyan-200 text-sm uppercase tracking-widest">Talento y cultura</p>
+                        <h1 class="text-3xl sm:text-4xl font-semibold text-white">Radiografía del equipo humano</h1>
+                        <p class="text-sm text-cyan-200">Analiza la composición, crecimiento y distribución de tu organización.</p>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 mt-10">
+                        <div class="rounded-2xl border border-white/20 bg-white/10 backdrop-blur p-6 text-white shadow-lg">
+                            <p class="text-xs uppercase tracking-[0.3em] text-cyan-200">Empleados</p>
+                            <p class="text-3xl font-semibold mt-2">{{ totalEmployees }}</p>
+                            <p class="text-sm text-cyan-200 mt-3">{{ headcountGrowth }}% crecimiento anual</p>
+                        </div>
+                        <div class="rounded-2xl border border-white/20 bg-white/10 backdrop-blur p-6 text-white shadow-lg">
+                            <p class="text-xs uppercase tracking-[0.3em] text-cyan-200">Departamentos</p>
+                            <p class="text-3xl font-semibold mt-2">{{ totalDepartments }}</p>
+                            <p class="text-sm text-cyan-200 mt-3">{{ averageTeamSize }} personas promedio</p>
+                        </div>
+                        <div class="rounded-2xl border border-white/20 bg-white/10 backdrop-blur p-6 text-white shadow-lg">
+                            <p class="text-xs uppercase tracking-[0.3em] text-cyan-200">Salario medio</p>
+                            <p class="text-3xl font-semibold mt-2">€{{ averageSalary.toFixed(2) }}</p>
+                            <p class="text-sm text-cyan-200 mt-3">Brecha interdepartamental {{ salaryVariance }}%</p>
+                        </div>
+                        <div class="rounded-2xl border border-white/20 bg-white/10 backdrop-blur p-6 text-white shadow-lg">
+                            <p class="text-xs uppercase tracking-[0.3em] text-cyan-200">Activos</p>
+                            <p class="text-3xl font-semibold mt-2">{{ totalEmployeesActive }}</p>
+                            <p class="text-sm text-cyan-200 mt-3">{{ inactiveEmployees }} en pausa</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Sección de Gráficos de Departamentos -->
-            <h2 class="text-xl font-semibold text-gray-700 mb-4">Gráficos de Departamentos</h2>
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="bg-white p-4 rounded-lg shadow">
-                    <h3 class="text-lg font-semibold text-gray-700">Distribución de Departamentos por Empleados</h3>
-                    <PieChart :data="departmentEmployeeData" />
+            <div class="max-w-7xl mx-auto px-6 -mt-16 pb-16 space-y-10">
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+                    <div class="bg-white rounded-3xl shadow-xl p-6">
+                        <h2 class="text-xl font-semibold text-slate-800">Empleados por departamento</h2>
+                        <p class="text-sm text-slate-500">Balancea cargas de trabajo y dimensiona cada área.</p>
+                        <div class="mt-6">
+                            <PieChart :data="employeeDepartmentData" />
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-3xl shadow-xl p-6">
+                        <h2 class="text-xl font-semibold text-slate-800">Contrataciones por año</h2>
+                        <p class="text-sm text-slate-500">Evalúa el ritmo de incorporación de talento.</p>
+                        <div class="mt-6">
+                            <BarChart :data="employeeHiringYearData" />
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-3xl shadow-xl p-6">
+                        <h2 class="text-xl font-semibold text-slate-800">Salario medio por departamento</h2>
+                        <p class="text-sm text-slate-500">Identifica áreas con mayor inversión salarial.</p>
+                        <div class="mt-6">
+                            <BarChart :data="departmentSalaryComparisonData" />
+                        </div>
+                    </div>
                 </div>
-                <div class="bg-white p-4 rounded-lg shadow">
-                    <h3 class="text-lg font-semibold text-gray-700">Departamentos por Ubicación</h3>
-                    <BarChart :data="departmentLocationData" />
-                </div>
-                <div class="bg-white p-4 rounded-lg shadow">
-                    <h3 class="text-lg font-semibold text-gray-700">Comparación de Departamentos por Proyectos</h3>
-                    <BarChart :data="departmentProjectComparisonData" />
+
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+                    <div class="bg-white rounded-3xl shadow-xl p-6">
+                        <h2 class="text-xl font-semibold text-slate-800">Distribución de talento</h2>
+                        <p class="text-sm text-slate-500">Relación de headcount por áreas funcionales.</p>
+                        <div class="mt-6">
+                            <PieChart :data="departmentEmployeeData" />
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-3xl shadow-xl p-6">
+                        <h2 class="text-xl font-semibold text-slate-800">Departamentos por ubicación</h2>
+                        <p class="text-sm text-slate-500">Comprende la huella geográfica del equipo.</p>
+                        <div class="mt-6">
+                            <BarChart :data="departmentLocationData" />
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-3xl shadow-xl p-6">
+                        <h2 class="text-xl font-semibold text-slate-800">Proyectos activos por departamento</h2>
+                        <p class="text-sm text-slate-500">Detecta áreas con mayor carga operativa.</p>
+                        <div class="mt-6">
+                            <BarChart :data="departmentProjectComparisonData" />
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -69,16 +97,54 @@ const props = defineProps({
     departments: Array,
 });
 
-// Cálculos globales
 const totalEmployees = computed(() => props.employees.length);
 const totalDepartments = computed(() => props.departments.length);
 const totalEmployeesActive = computed(() => props.employees.filter(employee => employee.status === 'active').length);
+const inactiveEmployees = computed(() => props.employees.filter(employee => employee.status !== 'active').length);
 const averageSalary = computed(() => {
-    const totalSalary = props.employees.reduce((acc, employee) => acc + employee.salary, 0);
+    if (!props.employees.length) {
+        return 0;
+    }
+    const totalSalary = props.employees.reduce((acc, employee) => acc + (employee.salary ?? 0), 0);
     return totalSalary / props.employees.length;
 });
 
-// Datos de Empleados por Departamento
+const headcountGrowth = computed(() => {
+    const currentYear = new Date().getFullYear();
+    const previousYearCount = props.employees.filter(employee => new Date(employee.hire_date).getFullYear() === currentYear - 1).length;
+    if (!previousYearCount) {
+        return 100;
+    }
+    const currentYearCount = props.employees.filter(employee => new Date(employee.hire_date).getFullYear() === currentYear).length;
+    return Math.round(((currentYearCount - previousYearCount) / previousYearCount) * 100);
+});
+
+const averageTeamSize = computed(() => {
+    if (!props.departments.length) {
+        return 0;
+    }
+    return Math.round(totalEmployees.value / props.departments.length);
+});
+
+const salaryVariance = computed(() => {
+    if (!props.departments.length) {
+        return 0;
+    }
+    const salaries = props.departments.map(department => {
+        const departmentEmployees = props.employees.filter(employee => employee.department_id === department.id);
+        if (!departmentEmployees.length) return 0;
+        const total = departmentEmployees.reduce((acc, employee) => acc + (employee.salary ?? 0), 0);
+        return total / departmentEmployees.length;
+    }).filter(Boolean);
+
+    if (!salaries.length) {
+        return 0;
+    }
+    const maxSalary = Math.max(...salaries);
+    const minSalary = Math.min(...salaries);
+    return Math.round(((maxSalary - minSalary) / maxSalary) * 100);
+});
+
 const employeeDepartmentData = computed(() => {
     const departmentTotals = props.employees.reduce((acc, employee) => {
         if (!acc[employee.department_id]) acc[employee.department_id] = 0;
@@ -93,17 +159,17 @@ const employeeDepartmentData = computed(() => {
         }),
         datasets: [
             {
-                label: 'Empleados por Departamento',
-                backgroundColor: ['#3B82F6', '#60A5FA', '#93C5FD'],
+                label: 'Empleados por departamento',
+                backgroundColor: ['#06B6D4', '#2563EB', '#7C3AED', '#14B8A6', '#EC4899'],
                 data: Object.values(departmentTotals),
             },
         ],
     };
 });
 
-// Datos de Empleados por Año de Contratación
 const employeeHiringYearData = computed(() => {
     const hiringYearTotals = props.employees.reduce((acc, employee) => {
+        if (!employee.hire_date) return acc;
         const year = new Date(employee.hire_date).getFullYear();
         if (!acc[year]) acc[year] = 0;
         acc[year] += 1;
@@ -114,9 +180,9 @@ const employeeHiringYearData = computed(() => {
         labels: Object.keys(hiringYearTotals),
         datasets: [
             {
-                label: 'Empleados por Año de Contratación',
-                backgroundColor: 'rgba(59, 130, 246, 0.5)',
-                borderColor: 'rgba(59, 130, 246, 1)',
+                label: 'Altas',
+                backgroundColor: 'rgba(14, 165, 233, 0.5)',
+                borderColor: 'rgba(14, 165, 233, 1)',
                 borderWidth: 1,
                 data: Object.values(hiringYearTotals),
             },
@@ -124,11 +190,10 @@ const employeeHiringYearData = computed(() => {
     };
 });
 
-// Comparación de Salarios por Departamento
 const departmentSalaryComparisonData = computed(() => {
     const departmentSalaryTotals = props.departments.reduce((acc, department) => {
         const departmentEmployees = props.employees.filter(employee => employee.department_id === department.id);
-        const totalSalary = departmentEmployees.reduce((acc, employee) => acc + employee.salary, 0);
+        const totalSalary = departmentEmployees.reduce((total, employee) => total + (employee.salary ?? 0), 0);
         const avgSalary = departmentEmployees.length > 0 ? totalSalary / departmentEmployees.length : 0;
         acc[department.name] = avgSalary;
         return acc;
@@ -138,9 +203,9 @@ const departmentSalaryComparisonData = computed(() => {
         labels: Object.keys(departmentSalaryTotals),
         datasets: [
             {
-                label: 'Salarios Promedio por Departamento',
-                backgroundColor: 'rgba(59, 130, 246, 0.5)',
-                borderColor: 'rgba(59, 130, 246, 1)',
+                label: 'Salario medio',
+                backgroundColor: 'rgba(37, 99, 235, 0.45)',
+                borderColor: 'rgba(37, 99, 235, 1)',
                 borderWidth: 1,
                 data: Object.values(departmentSalaryTotals),
             },
@@ -148,7 +213,6 @@ const departmentSalaryComparisonData = computed(() => {
     };
 });
 
-// Datos de Departamentos por Empleados
 const departmentEmployeeData = computed(() => {
     const departmentEmployeeTotals = props.departments.reduce((acc, department) => {
         const departmentEmployees = props.employees.filter(employee => employee.department_id === department.id);
@@ -160,15 +224,14 @@ const departmentEmployeeData = computed(() => {
         labels: Object.keys(departmentEmployeeTotals),
         datasets: [
             {
-                label: 'Empleados por Departamento',
-                backgroundColor: ['#3B82F6', '#60A5FA', '#93C5FD'],
+                label: 'Empleados',
+                backgroundColor: ['#06B6D4', '#2563EB', '#7C3AED', '#14B8A6', '#EC4899'],
                 data: Object.values(departmentEmployeeTotals),
             },
         ],
     };
 });
 
-// Datos de Departamentos por Ubicación
 const departmentLocationData = computed(() => {
     const locationTotals = props.departments.reduce((acc, department) => {
         const location = department.location || 'Desconocida';
@@ -181,7 +244,7 @@ const departmentLocationData = computed(() => {
         labels: Object.keys(locationTotals),
         datasets: [
             {
-                label: 'Departamentos por Ubicación',
+                label: 'Departamentos',
                 backgroundColor: 'rgba(59, 130, 246, 0.5)',
                 borderColor: 'rgba(59, 130, 246, 1)',
                 borderWidth: 1,
@@ -191,7 +254,6 @@ const departmentLocationData = computed(() => {
     };
 });
 
-// Datos de Comparación de Departamentos por Proyectos
 const departmentProjectComparisonData = computed(() => {
     const projectTotals = props.departments.reduce((acc, department) => {
         const projectCount = department.projects ? department.projects.length : 0;
@@ -203,9 +265,9 @@ const departmentProjectComparisonData = computed(() => {
         labels: Object.keys(projectTotals),
         datasets: [
             {
-                label: 'Proyectos por Departamento',
-                backgroundColor: 'rgba(59, 130, 246, 0.5)',
-                borderColor: 'rgba(59, 130, 246, 1)',
+                label: 'Proyectos activos',
+                backgroundColor: 'rgba(129, 140, 248, 0.45)',
+                borderColor: 'rgba(99, 102, 241, 1)',
                 borderWidth: 1,
                 data: Object.values(projectTotals),
             },
@@ -213,7 +275,3 @@ const departmentProjectComparisonData = computed(() => {
     };
 });
 </script>
-
-<style scoped>
-/* Estilos personalizados si es necesario */
-</style>
