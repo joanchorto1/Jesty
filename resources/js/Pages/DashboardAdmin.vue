@@ -19,6 +19,7 @@
                         </div>
                     </div>
 
+
                     <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 mt-10">
                         <div class="rounded-2xl border border-white/20 bg-white/10 backdrop-blur p-6 text-white shadow-lg">
                             <p class="text-xs uppercase tracking-[0.3em] text-blue-200">Usuarios</p>
@@ -40,8 +41,15 @@
                             <p class="text-3xl font-semibold mt-2">{{ emailConfig ? 'Configurado' : 'Pendiente' }}</p>
                             <p class="text-sm text-blue-200 mt-3">{{ emailConfig ? emailConfig.from_email : 'Sin configuración SMTP' }}</p>
                         </div>
+
                     </div>
                 </div>
+            </div>
+            <div v-else class="bg-white p-6 rounded-lg shadow-md mb-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg text-blue-500 font-semibold">Configuración de Correo</h2>
+                </div>
+                <p class="text-gray-700">No se ha configurado ningún servidor de correo todavía.</p>
             </div>
 
             <div class="max-w-7xl mx-auto px-6 -mt-16 pb-16 space-y-10">
@@ -194,6 +202,7 @@ const usersByRoleChart = computed(() => {
         acc[role.name] = props.users.filter(user => user.role_id === role.id).length;
         return acc;
     }, {});
+
 
     if (props.users.length && Object.keys(roleCounts).length === 0) {
         roleCounts['Sin rol asignado'] = props.users.length;
