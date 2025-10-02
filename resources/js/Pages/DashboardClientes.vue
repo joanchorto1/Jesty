@@ -15,119 +15,100 @@
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 mt-10">
-                        <div class="rounded-2xl border border-white/20 bg-white/10 backdrop-blur p-6 text-white shadow-lg">
-                            <p class="text-xs uppercase tracking-[0.3em] text-emerald-200">Clientes totales</p>
-                            <p class="text-3xl font-semibold mt-2">{{ filteredClients.length }}</p>
-                            <p class="text-sm text-emerald-200 mt-3">{{ activeClients }} activos</p>
-                        </div>
-                        <div class="rounded-2xl border border-white/20 bg-white/10 backdrop-blur p-6 text-white shadow-lg">
-                            <p class="text-xs uppercase tracking-[0.3em] text-emerald-200">Clientes inactivos</p>
-                            <p class="text-3xl font-semibold mt-2">{{ inactiveClients }}</p>
-                            <p class="text-sm text-emerald-200 mt-3">{{ churnRate }}% tasa de baja</p>
-                        </div>
-                        <div class="rounded-2xl border border-white/20 bg-white/10 backdrop-blur p-6 text-white shadow-lg">
-                            <p class="text-xs uppercase tracking-[0.3em] text-emerald-200">Ingresos acumulados</p>
-                            <p class="text-3xl font-semibold mt-2">€{{ totalBilled }}</p>
-                            <p class="text-sm text-emerald-200 mt-3">Ticket medio €{{ averageInvoice }}</p>
-                        </div>
-                        <div class="rounded-2xl border border-white/20 bg-white/10 backdrop-blur p-6 text-white shadow-lg">
-                            <p class="text-xs uppercase tracking-[0.3em] text-emerald-200">Facturas cobradas</p>
-                            <p class="text-3xl font-semibold mt-2">{{ paidInvoicesPercentage }}%</p>
-                            <p class="text-sm text-emerald-200 mt-3">{{ paidInvoices }} de {{ props.invoices.length }}</p>
-                        </div>
+                        <SummaryCard
+                            v-for="card in summaryCards"
+                            :key="card.eyebrow"
+                            :eyebrow="card.eyebrow"
+                            :value="card.value"
+                            :description="card.description"
+                        />
                     </div>
                 </div>
             </div>
 
             <div class="max-w-7xl mx-auto px-6 -mt-16 pb-16 space-y-10">
-                <div class="bg-white rounded-3xl shadow-xl p-6">
-                    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 border-b border-slate-100 pb-5">
-                        <div>
-                            <h2 class="text-xl font-semibold text-slate-800">Filtrado inteligente</h2>
-                            <p class="text-sm text-slate-500 mt-1">Encuentra el cliente ideal combinando filtros avanzados.</p>
-                        </div>
+                <Panel title="Filtrado inteligente" description="Encuentra el cliente ideal combinando filtros avanzados.">
+                    <template #actions>
                         <button @click="clearFilters" class="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition">
                             Limpiar filtros
                         </button>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6">
-                        <div>
-                            <label for="nameFilter" class="block text-xs font-semibold uppercase tracking-widest text-slate-400">Nombre</label>
-                            <input id="nameFilter" v-model="nameFilter" type="text" class="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-200" placeholder="Buscar por nombre" />
-                        </div>
-                        <div>
-                            <label for="phoneFilter" class="block text-xs font-semibold uppercase tracking-widest text-slate-400">Teléfono</label>
-                            <input id="phoneFilter" v-model="phoneFilter" type="text" class="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-200" placeholder="Buscar por teléfono" />
-                        </div>
-                        <div>
-                            <label for="nifFilter" class="block text-xs font-semibold uppercase tracking-widest text-slate-400">NIF</label>
-                            <input id="nifFilter" v-model="nifFilter" type="text" class="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-200" placeholder="Buscar por NIF" />
+                    </template>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div v-for="field in filterFields" :key="field.id">
+                            <label :for="field.id" class="block text-xs font-semibold uppercase tracking-widest text-slate-400">{{ field.label }}</label>
+                            <input
+                                :id="field.id"
+                                v-model="field.model.value"
+                                :type="field.type"
+                                :placeholder="field.placeholder"
+                                class="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-200"
+                            />
                         </div>
                     </div>
-                </div>
+                </Panel>
 
                 <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
-                    <div class="xl:col-span-2 bg-white rounded-3xl shadow-xl p-6">
-                        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 border-b border-slate-100 pb-5">
-                            <div>
-                                <h2 class="text-xl font-semibold text-slate-800">Clientes</h2>
-                                <p class="text-sm text-slate-500 mt-1">Listado actualizado con accesos rápidos a cada ficha.</p>
-                            </div>
-                        </div>
-                        <div class="overflow-x-auto pt-6">
-                            <table class="w-full text-left">
-                                <thead>
-                                    <tr class="text-xs uppercase tracking-widest text-slate-400">
-                                        <th class="pb-3">ID</th>
-                                        <th class="pb-3">Nombre</th>
-                                        <th class="pb-3">Correo</th>
-                                        <th class="pb-3">Teléfono</th>
-                                        <th class="pb-3 text-right">Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-slate-100 text-sm text-slate-600">
-                                    <tr v-for="client in filteredClients" :key="client.id" class="hover:bg-slate-50/80 transition">
-                                        <td class="py-4 font-semibold text-slate-700">#{{ client.id }}</td>
-                                        <td class="py-4">
-                                            <p class="font-medium text-slate-700">{{ client.name }}</p>
-                                            <p class="text-xs text-slate-400 mt-1">{{ statusCopy(client.status) }}</p>
-                                        </td>
-                                        <td class="py-4">{{ client.email }}</td>
-                                        <td class="py-4">{{ client.phone }}</td>
-                                        <td class="py-4">
-                                            <div class="flex items-center justify-end gap-3 text-slate-500">
-                                                <NavLink :href="route('clients.show', client.id)" class="hover:text-blue-500 transition"><InfoIcon class="w-5 h-5" /></NavLink>
-                                                <NavLink :href="route('clients.edit', client.id)" class="hover:text-amber-500 transition"><EditIcon class="w-5 h-5" /></NavLink>
-                                                <button @click="deleteClient(client.id)" class="hover:text-rose-500 transition">
-                                                    <DeleteIcon class="w-5 h-5" />
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr v-if="filteredClients.length === 0">
-                                        <td colspan="5" class="py-6 text-center text-slate-400">No se han encontrado clientes con los filtros actuales.</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                    <Panel
+                        class="xl:col-span-2"
+                        title="Clientes"
+                        description="Listado actualizado con accesos rápidos a cada ficha."
+                    >
+                        <DataTable
+                            :columns="clientTableColumns"
+                            :items="filteredClients"
+                            empty-message="No se han encontrado clientes con los filtros actuales."
+                            caption="Listado de clientes"
+                        >
+                            <template #row="{ item: client }">
+                                <td class="py-4 font-semibold text-slate-700">#{{ client.id }}</td>
+                                <td class="py-4">
+                                    <p class="font-medium text-slate-700">{{ client.name }}</p>
+                                    <p class="text-xs text-slate-400 mt-1">{{ statusCopy(client.status) }}</p>
+                                </td>
+                                <td class="py-4">{{ client.email }}</td>
+                                <td class="py-4">{{ client.phone }}</td>
+                                <td class="py-4">
+                                    <div class="flex items-center justify-end gap-3 text-slate-500">
+                                        <NavLink
+                                            :href="route('clients.show', client.id)"
+                                            class="hover:text-blue-500 transition"
+                                            aria-label="Ver detalles del cliente"
+                                        >
+                                            <InfoIcon class="w-5 h-5" />
+                                        </NavLink>
+                                        <NavLink
+                                            :href="route('clients.edit', client.id)"
+                                            class="hover:text-amber-500 transition"
+                                            aria-label="Editar cliente"
+                                        >
+                                            <EditIcon class="w-5 h-5" />
+                                        </NavLink>
+                                        <button
+                                            type="button"
+                                            @click="deleteClient(client.id)"
+                                            class="hover:text-rose-500 transition"
+                                            aria-label="Eliminar cliente"
+                                        >
+                                            <DeleteIcon class="w-5 h-5" />
+                                        </button>
+                                    </div>
+                                </td>
+                            </template>
+                        </DataTable>
+                    </Panel>
 
                     <div class="space-y-8">
-                        <div class="bg-white rounded-3xl shadow-xl p-6">
-                            <h2 class="text-xl font-semibold text-slate-800">Estado de la cartera</h2>
-                            <p class="text-sm text-slate-500">Visualiza la salud actual de tus relaciones comerciales.</p>
+                        <Panel title="Estado de la cartera" description="Visualiza la salud actual de tus relaciones comerciales." :header-border="false">
                             <div class="mt-5">
                                 <DoughnutChart :data="clientStatusChart" />
                             </div>
-                        </div>
+                        </Panel>
 
-                        <div class="bg-white rounded-3xl shadow-xl p-6">
-                            <h2 class="text-xl font-semibold text-slate-800">Ingresos por cliente</h2>
-                            <p class="text-sm text-slate-500">Identifica los clientes con mayor contribución económica.</p>
+                        <Panel title="Ingresos por cliente" description="Identifica los clientes con mayor contribución económica." :header-border="false">
                             <div class="mt-5">
                                 <BarChart :data="revenueByClientChart" />
                             </div>
-                        </div>
+                        </Panel>
                     </div>
                 </div>
             </div>
@@ -146,6 +127,9 @@ import DeleteIcon from "@/Components/Icons/DeleteIcon.vue";
 import AddIcon from "@/Components/Icons/AddIcon.vue";
 import DoughnutChart from '@/Components/DoughnutChart.vue';
 import BarChart from '@/Components/BarChart.vue';
+import SummaryCard from '@/Components/UI/SummaryCard.vue';
+import Panel from '@/Components/UI/Panel.vue';
+import DataTable from '@/Components/UI/DataTable.vue';
 
 const props = defineProps({
     clients: {
@@ -170,6 +154,61 @@ const filteredClients = computed(() => {
         return nameMatch && phoneMatch && nifMatch;
     });
 });
+
+const summaryCards = computed(() => [
+    {
+        eyebrow: 'Clientes totales',
+        value: filteredClients.value.length,
+        description: `${activeClients.value} activos`,
+    },
+    {
+        eyebrow: 'Clientes inactivos',
+        value: inactiveClients.value,
+        description: `${churnRate.value}% tasa de baja`,
+    },
+    {
+        eyebrow: 'Ingresos acumulados',
+        value: `€${totalBilled.value}`,
+        description: `Ticket medio €${averageInvoice.value}`,
+    },
+    {
+        eyebrow: 'Facturas cobradas',
+        value: `${paidInvoicesPercentage.value}%`,
+        description: `${paidInvoices.value} de ${props.invoices.length}`,
+    },
+]);
+
+const filterFields = [
+    {
+        id: 'nameFilter',
+        label: 'Nombre',
+        placeholder: 'Buscar por nombre',
+        type: 'text',
+        model: nameFilter,
+    },
+    {
+        id: 'phoneFilter',
+        label: 'Teléfono',
+        placeholder: 'Buscar por teléfono',
+        type: 'text',
+        model: phoneFilter,
+    },
+    {
+        id: 'nifFilter',
+        label: 'NIF',
+        placeholder: 'Buscar por NIF',
+        type: 'text',
+        model: nifFilter,
+    },
+];
+
+const clientTableColumns = [
+    { key: 'id', label: 'ID' },
+    { key: 'name', label: 'Nombre' },
+    { key: 'email', label: 'Correo' },
+    { key: 'phone', label: 'Teléfono' },
+    { key: 'actions', label: 'Acciones', align: 'right' },
+];
 
 const activeClients = computed(() => props.clients.filter(client => client.status === 'active').length);
 const inactiveClients = computed(() => props.clients.filter(client => client.status === 'inactive').length);

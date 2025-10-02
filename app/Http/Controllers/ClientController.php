@@ -14,7 +14,7 @@ class ClientController extends Controller
 {
     public function index()
     {
-        $clients = Client::where('company_id',Auth::user()->company_id);
+        $clients = Client::where('company_id', Auth::user()->company_id)->get();
         return Inertia::render('Clients/Index', [
             'clients' => $clients
         ]);
