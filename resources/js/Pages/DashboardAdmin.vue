@@ -45,7 +45,7 @@
                     </div>
                 </div>
             </div>
-            <div v-else class="bg-white p-6 rounded-lg shadow-md mb-6">
+            <div v-if="!emailConfig" class="bg-white p-6 rounded-lg shadow-md mb-6">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-lg text-blue-500 font-semibold">Configuración de Correo</h2>
                 </div>
