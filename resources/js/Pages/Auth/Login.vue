@@ -34,57 +34,73 @@ const submit = () => {
 
     <AuthenticationCard>
         <template #logo>
-            <AuthenticationCardLogo />
+            <div class="flex flex-col items-center gap-4 text-slate-200">
+                <AuthenticationCardLogo />
+                <p class="text-xs font-semibold uppercase tracking-[0.4em] text-sky-200/80">JCT Agency · Accés Intern</p>
+            </div>
         </template>
 
-        <div v-if="status" class="mb-4 font-medium text-sm text-green-600">
-            {{ status }}
-        </div>
-
-        <form @submit.prevent="submit">
-            <div>
-                <InputLabel for="email" value="Email" />
-                <TextInput
-                    id="email"
-                    v-model="form.email"
-                    type="email"
-                    class="mt-1 block w-full"
-                    required
-                    autofocus
-                    autocomplete="username"
-                />
-                <InputError class="mt-2" :message="form.errors.email" />
+        <div class="space-y-6 text-slate-200">
+            <div class="space-y-2 text-center">
+                <h1 class="text-2xl font-semibold tracking-tight">Inicia sessió a la suite corporativa</h1>
+                <p class="text-sm leading-relaxed text-slate-300">
+                    Accedeix a les eines internes de JCT Agency per coordinar projectes, equips i clients amb seguretat reforçada.
+                </p>
             </div>
 
-            <div class="mt-4">
-                <InputLabel for="password" value="Password" />
-                <TextInput
-                    id="password"
-                    v-model="form.password"
-                    type="password"
-                    class="mt-1 block w-full"
-                    required
-                    autocomplete="current-password"
-                />
-                <InputError class="mt-2" :message="form.errors.password" />
+            <div v-if="status" class="rounded-xl border border-emerald-400/40 bg-emerald-500/10 px-4 py-3 text-sm font-medium text-emerald-200">
+                {{ status }}
             </div>
 
-            <div class="block mt-4">
-                <label class="flex items-center">
-                    <Checkbox v-model:checked="form.remember" name="remember" />
-                    <span class="ms-2 text-sm text-gray-600">Remember me</span>
-                </label>
-            </div>
+            <form class="space-y-6" @submit.prevent="submit">
+                <div>
+                    <InputLabel for="email" value="Correu electrònic" class="text-slate-200" />
+                    <TextInput
+                        id="email"
+                        v-model="form.email"
+                        type="email"
+                        class="mt-2 block w-full rounded-2xl border-slate-600/70 bg-slate-900/40 px-4 py-3 text-slate-100 placeholder-slate-500 focus:border-sky-400 focus:ring-sky-400"
+                        required
+                        autofocus
+                        autocomplete="username"
+                        placeholder="nom@jctagency.com"
+                    />
+                    <InputError class="mt-2" :message="form.errors.email" />
+                </div>
 
-            <div class="flex items-center justify-end mt-4">
-                <Link v-if="canResetPassword" :href="route('password.request')" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                    Forgot your password?
-                </Link>
+                <div>
+                    <InputLabel for="password" value="Contrasenya" class="text-slate-200" />
+                    <TextInput
+                        id="password"
+                        v-model="form.password"
+                        type="password"
+                        class="mt-2 block w-full rounded-2xl border-slate-600/70 bg-slate-900/40 px-4 py-3 text-slate-100 placeholder-slate-500 focus:border-sky-400 focus:ring-sky-400"
+                        required
+                        autocomplete="current-password"
+                        placeholder="••••••••"
+                    />
+                    <InputError class="mt-2" :message="form.errors.password" />
+                </div>
 
-                <PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Log in
+                <div class="flex items-center justify-between">
+                    <label class="flex items-center gap-2 text-sm text-slate-300">
+                        <Checkbox v-model:checked="form.remember" name="remember" class="rounded border-slate-500 bg-slate-900/60 text-sky-400 focus:ring-sky-400" />
+                        Recorda'm
+                    </label>
+
+                    <Link
+                        v-if="canResetPassword"
+                        :href="route('password.request')"
+                        class="text-sm font-medium text-sky-200 transition hover:text-sky-100"
+                    >
+                        Has oblidat la contrasenya?
+                    </Link>
+                </div>
+
+                <PrimaryButton class="w-full justify-center" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                    Entrar
                 </PrimaryButton>
-            </div>
-        </form>
+            </form>
+        </div>
     </AuthenticationCard>
 </template>

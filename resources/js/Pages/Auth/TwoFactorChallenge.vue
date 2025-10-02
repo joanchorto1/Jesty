@@ -42,63 +42,75 @@ const submit = () => {
 
     <AuthenticationCard>
         <template #logo>
-            <AuthenticationCardLogo />
+            <div class="flex flex-col items-center gap-4 text-slate-200">
+                <AuthenticationCardLogo />
+                <p class="text-xs font-semibold uppercase tracking-[0.4em] text-sky-200/80">Autenticació robusta</p>
+            </div>
         </template>
 
-        <div class="mb-4 text-sm text-gray-600">
-            <template v-if="! recovery">
-                Please confirm access to your account by entering the authentication code provided by your authenticator application.
-            </template>
+        <div class="space-y-6 text-slate-200">
+            <div class="space-y-3 text-center">
+                <h1 class="text-2xl font-semibold">Valida el teu segon factor</h1>
+                <p class="text-sm leading-relaxed text-slate-300">
+                    Introduïu el codi del vostre autenticador corporatiu per accedir als recursos de JCT Agency.
+                </p>
+            </div>
 
-            <template v-else>
-                Please confirm access to your account by entering one of your emergency recovery codes.
-            </template>
+            <div v-if="recovery" class="rounded-xl border border-sky-400/40 bg-sky-500/10 px-4 py-3 text-sm leading-relaxed text-slate-200">
+                Utilitza un codi de recuperació d'emergència si no tens el dispositiu d'autenticació.
+            </div>
+
+            <form class="space-y-6" @submit.prevent="submit">
+                <div v-if="!recovery">
+                    <InputLabel for="code" value="Codi d'autenticació" class="text-slate-200" />
+                    <TextInput
+                        id="code"
+                        ref="codeInput"
+                        v-model="form.code"
+                        type="text"
+                        inputmode="numeric"
+                        class="mt-2 block w-full rounded-2xl border-slate-600/70 bg-slate-900/40 px-4 py-3 text-slate-100 placeholder-slate-500 focus:border-sky-400 focus:ring-sky-400"
+                        autofocus
+                        autocomplete="one-time-code"
+                        placeholder="000000"
+                    />
+                    <InputError class="mt-2" :message="form.errors.code" />
+                </div>
+
+                <div v-else>
+                    <InputLabel for="recovery_code" value="Codi de recuperació" class="text-slate-200" />
+                    <TextInput
+                        id="recovery_code"
+                        ref="recoveryCodeInput"
+                        v-model="form.recovery_code"
+                        type="text"
+                        class="mt-2 block w-full rounded-2xl border-slate-600/70 bg-slate-900/40 px-4 py-3 text-slate-100 placeholder-slate-500 focus:border-sky-400 focus:ring-sky-400"
+                        autocomplete="one-time-code"
+                        placeholder="xxxx-xxxx"
+                    />
+                    <InputError class="mt-2" :message="form.errors.recovery_code" />
+                </div>
+
+                <div class="flex flex-wrap items-center justify-between gap-4">
+                    <button
+                        type="button"
+                        class="text-sm font-medium text-sky-200 transition hover:text-sky-100"
+                        @click.prevent="toggleRecovery"
+                    >
+                        <template v-if="recovery">
+                            Use an authentication code
+                        </template>
+
+                        <template v-else>
+                            Use a recovery code
+                        </template>
+                    </button>
+
+                    <PrimaryButton class="px-8" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                        Validar accés
+                    </PrimaryButton>
+                </div>
+            </form>
         </div>
-
-        <form @submit.prevent="submit">
-            <div v-if="! recovery">
-                <InputLabel for="code" value="Code" />
-                <TextInput
-                    id="code"
-                    ref="codeInput"
-                    v-model="form.code"
-                    type="text"
-                    inputmode="numeric"
-                    class="mt-1 block w-full"
-                    autofocus
-                    autocomplete="one-time-code"
-                />
-                <InputError class="mt-2" :message="form.errors.code" />
-            </div>
-
-            <div v-else>
-                <InputLabel for="recovery_code" value="Recovery Code" />
-                <TextInput
-                    id="recovery_code"
-                    ref="recoveryCodeInput"
-                    v-model="form.recovery_code"
-                    type="text"
-                    class="mt-1 block w-full"
-                    autocomplete="one-time-code"
-                />
-                <InputError class="mt-2" :message="form.errors.recovery_code" />
-            </div>
-
-            <div class="flex items-center justify-end mt-4">
-                <button type="button" class="text-sm text-gray-600 hover:text-gray-900 underline cursor-pointer" @click.prevent="toggleRecovery">
-                    <template v-if="! recovery">
-                        Use a recovery code
-                    </template>
-
-                    <template v-else>
-                        Use an authentication code
-                    </template>
-                </button>
-
-                <PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Log in
-                </PrimaryButton>
-            </div>
-        </form>
     </AuthenticationCard>
 </template>

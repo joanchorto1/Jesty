@@ -25,37 +25,44 @@ const submit = () => {
 
     <AuthenticationCard>
         <template #logo>
-            <AuthenticationCardLogo />
+            <div class="flex flex-col items-center gap-4 text-slate-200">
+                <AuthenticationCardLogo />
+                <p class="text-xs font-semibold uppercase tracking-[0.4em] text-sky-200/80">Recuperació d'accés</p>
+            </div>
         </template>
 
-        <div class="mb-4 text-sm text-gray-600">
-            Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.
-        </div>
-
-        <div v-if="status" class="mb-4 font-medium text-sm text-green-600">
-            {{ status }}
-        </div>
-
-        <form @submit.prevent="submit">
-            <div>
-                <InputLabel for="email" value="Email" />
-                <TextInput
-                    id="email"
-                    v-model="form.email"
-                    type="email"
-                    class="mt-1 block w-full"
-                    required
-                    autofocus
-                    autocomplete="username"
-                />
-                <InputError class="mt-2" :message="form.errors.email" />
+        <div class="space-y-6 text-slate-200">
+            <div class="space-y-3 text-center">
+                <h1 class="text-2xl font-semibold">Restableix la teva contrasenya</h1>
+                <p class="text-sm leading-relaxed text-slate-300">
+                    Introdueix el teu correu corporatiu i t'enviarem un enllaç segur per crear una nova contrasenya per a la suite JCT Agency.
+                </p>
             </div>
 
-            <div class="flex items-center justify-end mt-4">
-                <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Email Password Reset Link
+            <div v-if="status" class="rounded-xl border border-sky-400/40 bg-sky-500/10 px-4 py-3 text-sm font-medium text-sky-200">
+                {{ status }}
+            </div>
+
+            <form class="space-y-6" @submit.prevent="submit">
+                <div>
+                    <InputLabel for="email" value="Correu electrònic" class="text-slate-200" />
+                    <TextInput
+                        id="email"
+                        v-model="form.email"
+                        type="email"
+                        class="mt-2 block w-full rounded-2xl border-slate-600/70 bg-slate-900/40 px-4 py-3 text-slate-100 placeholder-slate-500 focus:border-sky-400 focus:ring-sky-400"
+                        required
+                        autofocus
+                        autocomplete="username"
+                        placeholder="nom@jctagency.com"
+                    />
+                    <InputError class="mt-2" :message="form.errors.email" />
+                </div>
+
+                <PrimaryButton class="w-full justify-center" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                    Enviar enllaç de restabliment
                 </PrimaryButton>
-            </div>
-        </form>
+            </form>
+        </div>
     </AuthenticationCard>
 </template>
