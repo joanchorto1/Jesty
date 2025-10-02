@@ -1,52 +1,55 @@
 <template>
     <AppLayout>
-        <div class="container bg-gray-50 w-full min-h-screen mx-auto p-6">
-            <h1 class="text-2xl font-bold mb-6">Crear Nuevo Cliente</h1>
-            <form @submit.prevent="createClient">
+        <div class="min-h-screen bg-slate-950">
+            <div class="bg-gradient-to-r from-emerald-600 via-blue-700 to-slate-900 pb-24">
+                <div class="max-w-5xl mx-auto px-6 pt-10">
+                    <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+                        <div>
+                            <p class="text-emerald-200 text-sm uppercase tracking-widest">Nuevo cliente</p>
+                            <h1 class="text-3xl sm:text-4xl font-semibold text-white">Crear cliente</h1>
+                            <p class="text-sm text-emerald-200 mt-2">Completa los datos para sumar un nuevo cliente a tu cartera.</p>
+                        </div>
+                        <NavLink :href="route('clients.index')" class="inline-flex items-center gap-2 rounded-xl bg-white/10 px-4 py-2 text-sm font-semibold text-white shadow ring-1 ring-white/20 hover:bg-white/20 transition">
+                            Volver al listado
+                        </NavLink>
+                    </div>
+                </div>
+            </div>
 
-                <div class="mb-4">
-                    <label for="name" class="block text-gray-700">Nombre del Cliente</label>
-                    <input v-model="form.name" id="name" type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
-                </div>
-                <div class="mb-4">
-                    <label for="nif" class="block text-gray-700">NIF</label>
-                    <input v-model="form.nif" id="nif" type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
-                </div>
-                <div class="mb-4">
-                    <label for="bank" class="block text-gray-700">Banco</label>
-                    <input v-model="form.bank" id="bank" type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
-                </div>
-                <div class="mb-4">
-                    <label for="phone" class="block text-gray-700">Teléfono</label>
-                    <input v-model="form.phone" id="phone" type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
-                </div>
-                <div class="mb-4">
-                    <label for="email" class="block text-gray-700">Email</label>
-                    <input v-model="form.email" id="email" type="email" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
-                </div>
-                <div class="mb-4">
-                    <label for="address" class="block text-gray-700">Dirección</label>
-                    <input v-model="form.address" id="address" type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
-                </div>
-                <button type="submit" class="bg-blue-900  hover:bg-blue-500 text-white font-bold py-2 px-4 rounded">
-                    <SaveIcon class="w-5 h-5 stroke-gray-300 "/>
-                </button>
-            </form>
+            <div class="max-w-5xl mx-auto px-6 -mt-16 pb-16">
+                <Panel title="Datos del cliente" description="Los campos marcados como obligatorios garantizan una facturación sin incidencias.">
+                    <ClientForm
+                        :form="form"
+                        :processing="form.processing"
+                        submit-label="Crear cliente"
+                        :company-name="props.company?.name ?? 'Empresa asignada'"
+                        @submit="submit"
+                        @cancel="goBack"
+                        :cancel-href="route('clients.index')"
+                    />
+                </Panel>
+            </div>
         </div>
     </AppLayout>
 </template>
 
 <script setup>
-import { reactive } from 'vue';
-import { Inertia } from '@inertiajs/inertia';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import SaveIcon from "@/Components/Icons/SaveIcon.vue";
+import Panel from '@/Components/UI/Panel.vue';
+import ClientForm from '@/Components/Clients/ClientForm.vue';
+import NavLink from '@/Components/NavLink.vue';
+import { useForm } from '@inertiajs/vue3';
+import { Inertia } from '@inertiajs/inertia';
 
 const props = defineProps({
-    company: Object,
+    company: {
+        type: Object,
+        default: () => ({}),
+    },
 });
-const form = reactive({
-    company_id:props.company.id,
+
+const form = useForm({
+    company_id: props.company.id || '',
     name: '',
     nif: '',
     bank: '',
@@ -55,16 +58,18 @@ const form = reactive({
     address: '',
 });
 
-const createClient = async () => {
-    try {
-        await Inertia.post(route('clients.store'), form);
-        Inertia.visit(route('clients')); // Redirige a la lista de clientes después de crear
-    } catch (error) {
-        console.error('Error al crear el cliente:', error);
-    }
-};
-</script>
+function submit() {
+    form.post(route('clients.store'), {
+        preserveScroll: true,
+        onSuccess: () => form.reset('name', 'nif', 'bank', 'phone', 'email', 'address'),
+    });
+}
 
-<style scoped>
-/* Estilos adicionales si es necesario */
-</style>
+function goBack(href) {
+    if (href) {
+        Inertia.visit(href);
+        return;
+    }
+    window.history.back();
+}
+</script>
