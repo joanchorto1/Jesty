@@ -30,34 +30,41 @@ const submit = () => {
 
     <AuthenticationCard>
         <template #logo>
-            <AuthenticationCardLogo />
+            <div class="flex flex-col items-center gap-4 text-slate-200">
+                <AuthenticationCardLogo />
+                <p class="text-xs font-semibold uppercase tracking-[0.4em] text-sky-200/80">Validació necessària</p>
+            </div>
         </template>
 
-        <div class="mb-4 text-sm text-gray-600">
-            This is a secure area of the application. Please confirm your password before continuing.
-        </div>
-
-        <form @submit.prevent="submit">
-            <div>
-                <InputLabel for="password" value="Password" />
-                <TextInput
-                    id="password"
-                    ref="passwordInput"
-                    v-model="form.password"
-                    type="password"
-                    class="mt-1 block w-full"
-                    required
-                    autocomplete="current-password"
-                    autofocus
-                />
-                <InputError class="mt-2" :message="form.errors.password" />
+        <div class="space-y-6 text-slate-200">
+            <div class="space-y-3 text-center">
+                <h1 class="text-2xl font-semibold">Confirma la teva identitat</h1>
+                <p class="text-sm leading-relaxed text-slate-300">
+                    Per protegir els espais sensibles de JCT Agency, torna a introduir la contrasenya abans de continuar.
+                </p>
             </div>
 
-            <div class="flex justify-end mt-4">
-                <PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Confirm
+            <form class="space-y-6" @submit.prevent="submit">
+                <div>
+                    <InputLabel for="password" value="Contrasenya" class="text-slate-200" />
+                    <TextInput
+                        id="password"
+                        ref="passwordInput"
+                        v-model="form.password"
+                        type="password"
+                        class="mt-2 block w-full rounded-2xl border-slate-600/70 bg-slate-900/40 px-4 py-3 text-slate-100 placeholder-slate-500 focus:border-sky-400 focus:ring-sky-400"
+                        required
+                        autocomplete="current-password"
+                        autofocus
+                        placeholder="••••••••"
+                    />
+                    <InputError class="mt-2" :message="form.errors.password" />
+                </div>
+
+                <PrimaryButton class="w-full justify-center" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                    Confirmar accés
                 </PrimaryButton>
-            </div>
-        </form>
+            </form>
+        </div>
     </AuthenticationCard>
 </template>

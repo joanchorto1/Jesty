@@ -31,55 +31,67 @@ const submit = () => {
 
     <AuthenticationCard>
         <template #logo>
-            <AuthenticationCardLogo />
+            <div class="flex flex-col items-center gap-4 text-slate-200">
+                <AuthenticationCardLogo />
+                <p class="text-xs font-semibold uppercase tracking-[0.4em] text-sky-200/80">Seguretat reforçada</p>
+            </div>
         </template>
 
-        <form @submit.prevent="submit">
-            <div>
-                <InputLabel for="email" value="Email" />
-                <TextInput
-                    id="email"
-                    v-model="form.email"
-                    type="email"
-                    class="mt-1 block w-full"
-                    required
-                    autofocus
-                    autocomplete="username"
-                />
-                <InputError class="mt-2" :message="form.errors.email" />
+        <div class="space-y-6 text-slate-200">
+            <div class="space-y-3 text-center">
+                <h1 class="text-2xl font-semibold">Crea una nova contrasenya</h1>
+                <p class="text-sm leading-relaxed text-slate-300">
+                    Defineix una nova credencial robusta per assegurar l'accés als entorns interns de JCT Agency.
+                </p>
             </div>
 
-            <div class="mt-4">
-                <InputLabel for="password" value="Password" />
-                <TextInput
-                    id="password"
-                    v-model="form.password"
-                    type="password"
-                    class="mt-1 block w-full"
-                    required
-                    autocomplete="new-password"
-                />
-                <InputError class="mt-2" :message="form.errors.password" />
-            </div>
+            <form class="space-y-6" @submit.prevent="submit">
+                <div>
+                    <InputLabel for="email" value="Correu electrònic" class="text-slate-200" />
+                    <TextInput
+                        id="email"
+                        v-model="form.email"
+                        type="email"
+                        class="mt-2 block w-full rounded-2xl border-slate-600/70 bg-slate-900/40 px-4 py-3 text-slate-100 placeholder-slate-500 focus:border-sky-400 focus:ring-sky-400"
+                        required
+                        autofocus
+                        autocomplete="username"
+                    />
+                    <InputError class="mt-2" :message="form.errors.email" />
+                </div>
 
-            <div class="mt-4">
-                <InputLabel for="password_confirmation" value="Confirm Password" />
-                <TextInput
-                    id="password_confirmation"
-                    v-model="form.password_confirmation"
-                    type="password"
-                    class="mt-1 block w-full"
-                    required
-                    autocomplete="new-password"
-                />
-                <InputError class="mt-2" :message="form.errors.password_confirmation" />
-            </div>
+                <div>
+                    <InputLabel for="password" value="Nova contrasenya" class="text-slate-200" />
+                    <TextInput
+                        id="password"
+                        v-model="form.password"
+                        type="password"
+                        class="mt-2 block w-full rounded-2xl border-slate-600/70 bg-slate-900/40 px-4 py-3 text-slate-100 placeholder-slate-500 focus:border-sky-400 focus:ring-sky-400"
+                        required
+                        autocomplete="new-password"
+                        placeholder="••••••••"
+                    />
+                    <InputError class="mt-2" :message="form.errors.password" />
+                </div>
 
-            <div class="flex items-center justify-end mt-4">
-                <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Reset Password
+                <div>
+                    <InputLabel for="password_confirmation" value="Confirma la contrasenya" class="text-slate-200" />
+                    <TextInput
+                        id="password_confirmation"
+                        v-model="form.password_confirmation"
+                        type="password"
+                        class="mt-2 block w-full rounded-2xl border-slate-600/70 bg-slate-900/40 px-4 py-3 text-slate-100 placeholder-slate-500 focus:border-sky-400 focus:ring-sky-400"
+                        required
+                        autocomplete="new-password"
+                        placeholder="Repeteix la contrasenya"
+                    />
+                    <InputError class="mt-2" :message="form.errors.password_confirmation" />
+                </div>
+
+                <PrimaryButton class="w-full justify-center" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                    Guardar nova contrasenya
                 </PrimaryButton>
-            </div>
-        </form>
+            </form>
+        </div>
     </AuthenticationCard>
 </template>

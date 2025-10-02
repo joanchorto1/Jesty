@@ -23,40 +23,47 @@ const verificationLinkSent = computed(() => props.status === 'verification-link-
 
     <AuthenticationCard>
         <template #logo>
-            <AuthenticationCardLogo />
+            <div class="flex flex-col items-center gap-4 text-slate-200">
+                <AuthenticationCardLogo />
+                <p class="text-xs font-semibold uppercase tracking-[0.4em] text-sky-200/80">Verificació corporativa</p>
+            </div>
         </template>
 
-        <div class="mb-4 text-sm text-gray-600">
-            Before continuing, could you verify your email address by clicking on the link we just emailed to you? If you didn't receive the email, we will gladly send you another.
-        </div>
+        <div class="space-y-6 text-slate-200">
+            <div class="space-y-3 text-center">
+                <h1 class="text-2xl font-semibold">Confirma el teu correu JCT</h1>
+                <p class="text-sm leading-relaxed text-slate-300">
+                    Hem enviat un enllaç de verificació al teu correu corporatiu. Revisa la safata d'entrada i segueix les instruccions per validar l'accés.
+                </p>
+            </div>
 
-        <div v-if="verificationLinkSent" class="mb-4 font-medium text-sm text-green-600">
-            A new verification link has been sent to the email address you provided in your profile settings.
-        </div>
+            <div v-if="verificationLinkSent" class="rounded-xl border border-sky-400/40 bg-sky-500/10 px-4 py-3 text-sm font-medium text-sky-200">
+                Hem reenviat l'enllaç de verificació a l'adreça registrada.
+            </div>
 
-        <form @submit.prevent="submit">
-            <div class="mt-4 flex items-center justify-between">
-                <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Resend Verification Email
+            <form @submit.prevent="submit" class="space-y-4">
+                <PrimaryButton class="w-full justify-center" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                    Reenviar correu de verificació
                 </PrimaryButton>
 
-                <div>
+                <div class="flex flex-wrap justify-center gap-4 text-sm font-medium">
                     <Link
                         :href="route('profile.show')"
-                        class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        class="text-slate-200 underline-offset-4 transition hover:text-sky-200 hover:underline"
                     >
-                        Edit Profile</Link>
+                        Actualitzar dades de perfil
+                    </Link>
 
                     <Link
                         :href="route('logout')"
                         method="post"
                         as="button"
-                        class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ms-2"
+                        class="text-slate-200 underline-offset-4 transition hover:text-sky-200 hover:underline"
                     >
-                        Log Out
+                        Tancar sessió
                     </Link>
                 </div>
-            </div>
-        </form>
+            </form>
+        </div>
     </AuthenticationCard>
 </template>

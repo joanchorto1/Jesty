@@ -41,14 +41,10 @@ use Inertia\Inertia;
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
     ]);
 });
-
-//ruta para el registro de usuario
-Route::get('/register', [\App\Http\Controllers\AuthController::class, 'create'])->name('register');
 
 
 
@@ -77,10 +73,6 @@ Route::middleware([
 });
 
 
-
-//Register route:
-
-Route::post('/register/company/user', [\App\Http\Controllers\AuthController::class, 'store'])->name('auth.register');
 
 //Rutas basicas de qualquier usuario
 use App\Http\Controllers\UserTaskController;
