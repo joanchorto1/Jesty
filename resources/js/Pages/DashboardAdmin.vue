@@ -45,13 +45,6 @@
                     </div>
                 </div>
             </div>
-            <div v-if="!emailConfig" class="bg-white p-6 rounded-lg shadow-md mb-6">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-lg text-blue-500 font-semibold">Configuración de Correo</h2>
-                </div>
-                <p class="text-gray-700">No se ha configurado ningún servidor de correo todavía.</p>
-            </div>
-
             <div class="max-w-7xl mx-auto px-6 -mt-16 pb-16 space-y-10">
                 <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
                     <div class="space-y-8 xl:col-span-2">
