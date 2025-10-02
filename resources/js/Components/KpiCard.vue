@@ -21,7 +21,7 @@
 <script setup>
 import { computed } from 'vue';
 
-const props = withDefaults(defineProps({
+const props = defineProps({
     subtitle: {
         type: String,
         required: true,
@@ -46,8 +46,6 @@ const props = withDefaults(defineProps({
         type: String,
         default: 'p-6',
     },
-}), {
-    description: '',
 });
 
 const subtitleClass = computed(() => props.gradient ? 'text-fuchsia-200' : 'text-slate-500');
