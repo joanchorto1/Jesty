@@ -170,7 +170,7 @@ import DeleteIcon from '@/Components/Icons/DeleteIcon.vue';
 import EditIcon from '@/Components/Icons/EditIcon.vue';
 import PrintIcon from '@/Components/Icons/PrintIcon.vue';
 
-const props = withDefaults(defineProps({
+const props = defineProps({
     tickets: {
         type: Array,
         default: () => [],
@@ -187,11 +187,6 @@ const props = withDefaults(defineProps({
         type: Array,
         default: () => [],
     },
-}), {
-    tickets: () => [],
-    ticketItems: () => [],
-    products: () => [],
-    categories: () => [],
 });
 
 const startDate = ref('');
