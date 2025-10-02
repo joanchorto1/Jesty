@@ -1,88 +1,96 @@
 <template>
     <AppLayout>
-    <div class="p-8 bg-gray-50 min-h-screen">
-        <h1 class="text-2xl font-bold text-gray-800 mb-6">Cambiar de Plan</h1>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div
-                v-for="plan in plansWithFeatures"
-                :key="plan.id"
-                class="bg-white shadow-md rounded-lg p-6 relative"
-                :class="{ 'border-4 border-blue-500': plan.id === planActual.id }"
-            >
-                <h2 class="text-xl font-semibold mb-4">{{ plan.name }}</h2>
-                <p class="text-gray-600 mb-2">Precio: {{ plan.price }} €/ mes</p>
-                <p class="text-gray-500 text-sm mb-4">{{ plan.description }}</p>
-                <h3 class="text-lg font-semibold mb-2">Características</h3>
-                <ul class="mb-6">
-                    <li>
-                        <p class="text-gray-700 flex items-center gap-2 mb-2">Limite de Usuarios:   {{plan.user_limit}}</p>
+        <AdminPage>
+            <template #header>
+                <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+                    <div class="space-y-2">
+                        <p class="text-blue-200 text-sm uppercase tracking-widest">Planes</p>
+                        <h1 class="text-3xl sm:text-4xl font-semibold text-white">Cambiar plan</h1>
+                        <p class="text-sm text-blue-200 max-w-2xl">Selecciona la suscripción que mejor se ajuste a las necesidades de tu compañía.</p>
+                    </div>
+                    <div class="grid grid-cols-1 gap-3">
+                        <AdminStatCard label="Plan actual" :value="plan.name" :description="`${plan.price} €/mes`">
+                            <template #badge>
+                                <span class="inline-flex items-center rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-emerald-200 ring-1 ring-emerald-400/30">Activo</span>
+                            </template>
+                        </AdminStatCard>
+                    </div>
+                </div>
+            </template>
 
-                    </li>
-                    <li
-                        v-for="feature in plan.features"
-                        :key="feature.id"
-                        class="text-gray-700 flex items-center gap-2"
+            <AdminPanel title="Planes disponibles" description="Compara las características y selecciona el plan que quieras activar.">
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                    <article
+                        v-for="option in plansWithFeatures"
+                        :key="option.id"
+                        :class="planCardClasses(option.id === currentPlanId)"
                     >
-                        <p>✔</p> {{ feature.name }}
-                    </li>
-                </ul>
-                    <button
-                        v-if="plan.id !== planActual.id"
-                        @click="selectPlan(plan.id)"
-                        class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
-                    >
-                        Seleccionar
-                    </button>
-                    <span
-                        v-else
-                        class="absolute top-2 right-2 bg-green-100 text-green-600 px-2 py-1 rounded text-sm"
-                    >
-                     Plan actual
-                                </span>
-
-
-
-            </div>
-        </div>
-    </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div>
+                                <h2 class="text-lg font-semibold text-slate-800">{{ option.name }}</h2>
+                                <p class="text-sm text-slate-500">{{ option.description }}</p>
+                            </div>
+                            <span v-if="option.id === currentPlanId" class="inline-flex items-center rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-emerald-600">Plan actual</span>
+                        </div>
+                        <p class="mt-4 text-3xl font-semibold text-slate-900">{{ option.price }}<span class="text-base font-medium text-slate-500"> €/mes</span></p>
+                        <p class="mt-2 text-sm text-slate-500">Capacidad de usuarios: <span class="font-semibold text-slate-700">{{ option.user_limit }}</span></p>
+                        <ul class="mt-4 space-y-2 text-sm text-slate-600">
+                            <li v-for="feature in option.features" :key="feature.id" class="flex items-center gap-2">
+                                <span class="h-2 w-2 rounded-full bg-blue-500"></span>
+                                <span>{{ feature.name }}</span>
+                            </li>
+                            <li v-if="!option.features.length" class="text-xs text-slate-400">Sin características asociadas.</li>
+                        </ul>
+                        <button
+                            v-if="option.id !== currentPlanId"
+                            @click="selectPlan(option.id)"
+                            class="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-slate-700 transition"
+                        >
+                            Seleccionar plan
+                        </button>
+                    </article>
+                </div>
+            </AdminPanel>
+        </AdminPage>
     </AppLayout>
 </template>
 
 <script setup>
 import { computed } from 'vue';
-import { defineProps } from 'vue';
-import AppLayout from '@/Layouts/AppLayout.vue';
-import {Inertia} from "@inertiajs/inertia";
+import { Inertia } from '@inertiajs/inertia';
+import AppLayout from "@/Layouts/AppLayout.vue";
+import AdminPage from "@/Components/Dashboard/AdminPage.vue";
+import AdminPanel from "@/Components/Dashboard/AdminPanel.vue";
+import AdminStatCard from "@/Components/Dashboard/AdminStatCard.vue";
+
 const props = defineProps({
-    company: Object, // Datos de la compañía
-    plan: Object, // Plan actual de la compañía
-    plans: Array, // Lista de planes disponibles
-    features: Array, // Todas las características posibles
-    planFeatures: Array, // Relación entre características y planes
+    company: Object,
+    plan: Object,
+    plans: Array,
+    features: Array,
+    planFeatures: Array,
 });
 
-// Computed para obtener el plan actual de la compañía
-const planActual = computed(() => props.plan);
+const currentPlanId = computed(() => props.plan?.id ?? null);
 
-// Computed para vincular características a cada plan
 const plansWithFeatures = computed(() => {
-    return props.plans.map((plan) => {
+    return props.plans.map((planOption) => {
         const relatedFeatures = props.planFeatures
-            .filter((pf) => pf.plan_id === plan.id)
-            .map((pf) => props.features.find((feature) => feature.id === pf.feature_id));
-        return { ...plan, features: relatedFeatures };
+            .filter((pf) => pf.plan_id === planOption.id)
+            .map((pf) => props.features.find((feature) => feature.id === pf.feature_id))
+            .filter(Boolean);
+        return { ...planOption, features: relatedFeatures };
     });
 });
 
-// Método para seleccionar un nuevo plan
+const planCardClasses = (isActive) => [
+    'flex flex-col rounded-3xl border px-6 py-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg',
+    isActive ? 'border-blue-400 bg-blue-50/60 ring-2 ring-blue-300/60' : 'border-slate-200 bg-white',
+];
+
 const selectPlan = (planId) => {
-    //Confirmación de elección
     if (confirm('¿Estás seguro de querer cambiar de plan?')) {
-        // Redirección a la ruta de cambio de plan
         Inertia.post(route('company.updatePlan', props.company.id), { plan_id: planId });
     }
 };
 </script>
-
-<style scoped>
-</style>

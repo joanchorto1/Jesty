@@ -1,8 +1,64 @@
+<template>
+    <AppLayout>
+        <AdminPage>
+            <template #header>
+                <div class="space-y-3">
+                    <p class="text-blue-200 text-sm uppercase tracking-widest">Compañías</p>
+                    <h1 class="text-3xl sm:text-4xl font-semibold text-white">Gestión de claves API</h1>
+                    <p class="text-sm text-blue-200 max-w-2xl">Administra las credenciales públicas y privadas utilizadas para integrar la plataforma con otros sistemas.</p>
+                </div>
+            </template>
+
+            <AdminPanel title="Claves de autenticación" description="Guarda los cambios para activar las credenciales o genera un nuevo par de claves.">
+                <form @submit.prevent="saveKeys" class="space-y-6">
+                    <div class="space-y-2">
+                        <label for="public_key" class="block text-sm font-medium text-slate-600">Clave pública</label>
+                        <textarea
+                            id="public_key"
+                            v-model="form.public_key"
+                            rows="5"
+                            :class="textareaClasses"
+                            placeholder="Introduce aquí la clave pública"
+                        ></textarea>
+                    </div>
+                    <div class="space-y-2">
+                        <label for="private_key" class="block text-sm font-medium text-slate-600">Clave privada</label>
+                        <textarea
+                            id="private_key"
+                            v-model="form.private_key"
+                            rows="5"
+                            :class="textareaClasses"
+                            placeholder="Introduce aquí la clave privada"
+                        ></textarea>
+                    </div>
+                    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <button
+                            type="button"
+                            @click="generateKeys"
+                            class="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 transition hover:text-blue-600"
+                        >
+                            Generar nuevas claves
+                        </button>
+                        <div class="flex gap-3">
+                            <NavLink :href="route('companies.show', company.id)" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-50">Cancelar</NavLink>
+                            <button type="submit" class="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-slate-700 transition">
+                                Guardar claves
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </AdminPanel>
+        </AdminPage>
+    </AppLayout>
+</template>
+
 <script setup>
+import { reactive } from 'vue';
+import { Inertia } from '@inertiajs/inertia';
 import AppLayout from "@/Layouts/AppLayout.vue";
-import { defineProps, reactive, watchEffect } from 'vue';
-import { Inertia } from "@inertiajs/inertia";
-import SaveIcon from "@/Components/Icons/SaveIcon.vue";
+import NavLink from "@/Components/NavLink.vue";
+import AdminPage from "@/Components/Dashboard/AdminPage.vue";
+import AdminPanel from "@/Components/Dashboard/AdminPanel.vue";
 
 const props = defineProps({
     company: Object,
@@ -10,79 +66,18 @@ const props = defineProps({
     private_key: String,
 });
 
-// Reactive form object
+const textareaClasses = 'w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/40 focus:outline-none transition';
+
 const form = reactive({
     public_key: props.public_key,
     private_key: props.private_key,
 });
 
-
-
 const saveKeys = () => {
-    console.log(form);
-    return Inertia.put(route('companies.updateKeys', props.company.id), form);
+    Inertia.put(route('companies.updateKeys', props.company.id), form);
 };
 
 const generateKeys = () => {
-    console.log('Generating new keys');
-    return Inertia.get(route('companies.generateKeys', props.company.id));
+    Inertia.get(route('companies.generateKeys', props.company.id));
 };
 </script>
-
-<template>
-    <AppLayout>
-        <div class="p-6 bg-white shadow rounded-lg">
-            <h2 class="text-xl font-bold mb-4">Manage Company Keys</h2>
-
-            <form @submit.prevent="saveKeys">
-                <!-- Public Key Field -->
-                <div class="mb-4">
-                    <label for="public_key" class="block text-gray-700 font-medium mb-2">Public Key</label>
-                    <textarea
-                        id="public_key"
-                        v-model="form.public_key"
-                        class="w-full p-3 border rounded-lg focus:ring focus:ring-blue-300"
-                        rows="6"
-                        placeholder="Enter public key here"
-                    ></textarea>
-                </div>
-
-                <!-- Private Key Field -->
-                <div class="mb-4">
-                    <label for="private_key" class="block text-gray-700 font-medium mb-2">Private Key</label>
-                    <textarea
-                        id="private_key"
-                        v-model="form.private_key"
-                        class="w-full p-3 border rounded-lg focus:ring focus:ring-blue-300"
-                        rows="6"
-                        placeholder="Enter private key here"
-                    ></textarea>
-                </div>
-
-                <!-- Submit Button -->
-                <div class="text-right">
-                    <button
-                        type="submit"
-                        class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring"
-                    >
-                        <SaveIcon class="w-6 h-6 fill-white stroke-gray-400" />
-                    </button>
-                </div>
-
-                <!-- Generate Keys Button -->
-                <div>
-                    <button
-                        type="button"
-                        @click="generateKeys"
-                        class="px-6 py-2 text-gray-500 hover:border-b hover:pb-2 hover:text-blue-500 focus:outline-none focus:ring"
-                    >
-                        No tengo claves, generar nuevas
-                    </button>
-                </div>
-            </form>
-        </div>
-    </AppLayout>
-</template>
-
-<style scoped>
-</style>
