@@ -2,17 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\NotificationMail;
-use App\Models\EmailConfiguration;
 use App\Models\Feature;
-use App\Models\Role;
 use App\Models\User;
 use App\Models\UserNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 
 
 
@@ -84,34 +79,15 @@ class UserNotificationController extends Controller
                 'type' => $type
             ]);
 
-            $companyEmailConfig = EmailConfiguration::where('company_id', $company->id)->first();
-
-            // Cambiar la configuración de correo de manera dinámica
-            Config::set('mail.mailers.smtp.host', $companyEmailConfig->smtp_host);
-            Config::set('mail.mailers.smtp.port', $companyEmailConfig->smtp_port);
-            Config::set('mail.mailers.smtp.username', $companyEmailConfig->smtp_username);
-            Config::set('mail.mailers.smtp.password', $companyEmailConfig->smtp_password);
-            Config::set('mail.mailers.smtp.encryption', $companyEmailConfig->smtp_encryption);
-            //enviar la notificación
-           $this->sendNotification($notification);
+            Log::info('Notificación creada para usuario: '.$user->id);
         }
     }
 
 
-    //funcion para enviar notificaciones
-
+    // La función se mantiene para compatibilidad pero ya no envía correos.
     public function sendNotification(UserNotification $notification)
     {
-        $user = User::find($notification->user_id);
-        Log::info('Enviant notificació a: '.$user->email);
-
-        try {
-
-            Mail::to($user->email)->send(new NotificationMail($notification));
-        } catch (\Exception $e) {
-            Log::error('Error al enviar el email: '.$e->getMessage());
-        }
-
+        Log::info('Notificación lista para el dashboard: '.$notification->id);
     }
 
 
