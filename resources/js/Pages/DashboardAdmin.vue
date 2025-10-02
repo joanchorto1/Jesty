@@ -44,7 +44,7 @@
                     </div>
                 </div>
             </div>
-            <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+            <div v-if="emailConfig" class="bg-white p-6 rounded-lg shadow-md mb-6">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-lg text-blue-500 font-semibold">Configuración de Correo</h2>
                     <NavLink :href="route('email-configurations.edit', emailConfig.id)" class="text-white font-bold py-2 px-4">
@@ -63,6 +63,12 @@
                         <p class="text-gray-700"><span class="font-semibold">Usuario SMTP:</span> {{ emailConfig.smtp_username }}</p>
                     </div>
                 </div>
+            </div>
+            <div v-else class="bg-white p-6 rounded-lg shadow-md mb-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg text-blue-500 font-semibold">Configuración de Correo</h2>
+                </div>
+                <p class="text-gray-700">No se ha configurado ningún servidor de correo todavía.</p>
             </div>
 
 <!--            Informacion de las keys-->
@@ -143,8 +149,6 @@ const props = defineProps({
     roles: Array,
     emailConfig: Object
 });
-
-console.log(props.emailConfig);
 
 
 const deleteCompany =() => {
