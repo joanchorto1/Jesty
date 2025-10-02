@@ -1,167 +1,322 @@
 <template>
-    <AppLayout>
-        <div class="p-6 w-full bg-gray-50 min-h-screen shadow-md">
-            <h1 class="text-3xl font-bold mb-8">Crear Presupuesto</h1>
-            <form @submit.prevent="submitForm">
-                <!-- Información del Presupuesto -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <AppLayout title="Nuevo presupuesto">
+        <div class="min-h-screen bg-slate-100/80 py-12">
+            <div class="mx-auto flex max-w-6xl flex-col gap-10 px-6">
+                <CrudPageHeader
+                    title="Nuevo presupuesto"
+                    description="Define el alcance económico de la propuesta, selecciona los productos implicados y calcula los impuestos automáticamente."
+                    :icon="MenuBudgetIcon"
+                />
 
-                    <div class="mb-4">
-                        <label for="date" class="block text-gray-700">Fecha</label>
-                        <input v-model="budget.date" id="date" type="date"
-                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                    </div>
-
-                    <div class="mb-4">
-                        <label for="name" class="block text-gray-700">Nombre del Presupuesto</label>
-                        <input v-model="budget.name" id="name" type="text" placeholder="Nombre del Presupuesto"
-                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                    </div>
-
-                    <div class="mb-4">
-                        <label for="state" class="block text-gray-700">Estado</label>
-                        <select v-model="budget.state" id="state"
-                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                            <option value="in_process">En Proceso</option>
-                            <option value="accepted">Aceptado</option>
-                            <option value="rejected">Rechazado</option>
-                        </select>
-                    </div>
-
-                    <div class="mb-4">
-                        <label for="client_id" class="block text-gray-700">Cliente</label>
-                        <input v-model="clientSearchTerm" type="text" placeholder="Buscar cliente"
-                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm mb-2">
-                        <select v-model="budget.client_id" id="client_id"
-                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                            <option v-for="client in filteredClients" :key="client.id" :value="client.id">{{
-                                    client.name
-                                }}</option>
-                        </select>
-                    </div>
-
-
-                    <div class="mb-4">
-                        <label for="total" class="block text-gray-700">Total</label>
-                        <input v-model="budget.total" id="total" type="number" step="0.01"
-                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" disabled>
-                    </div>
-
-                    <!-- Base Imponible y Monto de IVA -->
-                    <div class="mb-4">
-                        <label for="base_imponible" class="block text-gray-700">Base Imponible</label>
-                        <input v-model="baseImponible" id="base_imponible" type="number" step="0.01"
-                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" disabled>
-                    </div>
-
-                    <div class="mb-4">
-                        <label for="iva" class="block text-gray-700">IVA (%)</label>
-                        <input v-model="ivaPercentage" id="iva" type="number" step="0.01"
-                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" @input="calculateTotals">
-                    </div>
-
-                    <div class="mb-4">
-                        <label for="monto_iva" class="block text-gray-700">Monto de IVA</label>
-                        <input v-model="montoIva" id="monto_iva" type="number" step="0.01"
-                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" disabled>
-                    </div>
+                <div class="grid gap-6 md:grid-cols-3">
+                    <CrudStatCard
+                        label="Clientes disponibles"
+                        :value="totalClients"
+                        :icon="MenuClientsIcon"
+                        icon-background="bg-sky-500/10 text-sky-600"
+                    >
+                        <template #description>
+                            <p class="text-xs text-slate-500">Filtra el directorio para asignar el presupuesto a la cuenta correcta.</p>
+                        </template>
+                    </CrudStatCard>
+                    <CrudStatCard
+                        label="Productos activos"
+                        :value="totalProducts"
+                        :icon="MenuProductIcon"
+                        icon-background="bg-indigo-500/10 text-indigo-600"
+                    >
+                        <template #description>
+                            <p class="text-xs text-slate-500">Incluye servicios o artículos actualizados con sus tarifas vigentes.</p>
+                        </template>
+                    </CrudStatCard>
+                    <CrudStatCard
+                        label="Categorías sincronizadas"
+                        :value="totalCategories"
+                        :icon="MenuCategoryIcon"
+                        icon-background="bg-emerald-500/10 text-emerald-600"
+                    >
+                        <template #description>
+                            <p class="text-xs text-slate-500">Utiliza filtros para inspirarte con soluciones complementarias.</p>
+                        </template>
+                    </CrudStatCard>
                 </div>
 
-                <!-- Ítems del Presupuesto -->
-                <template v-if="budgetItems.length > 0">
-                    <h2 class="text-xl font-bold mb-4">Ítems del Presupuesto</h2>
-                    <div class="grid grid-cols-6 gap-4 mb-2 font-semibold text-gray-600">
-                        <div>Producto</div>
-                        <div>Cantidad</div>
-                        <div>Precio Unitario</div>
-                        <div>Descuento (%)</div>
-                        <div>Total</div>
-                    </div>
+                <form @submit.prevent="submitForm" class="space-y-10">
+                    <section class="space-y-6 rounded-3xl border border-slate-200/80 bg-white/70 p-6 shadow-sm">
+                        <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                            <div>
+                                <h2 class="text-lg font-semibold text-slate-800">Datos del presupuesto</h2>
+                                <p class="text-sm text-slate-500">Define la información comercial, el estado del seguimiento y la fiscalidad prevista.</p>
+                            </div>
+                            <div class="inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm">
+                                <span>Total estimado</span>
+                                <span>{{ formatCurrency(budget.total) }}</span>
+                            </div>
+                        </div>
 
-                    <div v-for="(item, index) in budgetItems" :key="index"
-                         class="mb-4 grid grid-cols-6 gap-3 items-center">
-                        <select v-model="item.product_id" @change="validateStock(index)"
-                                class="border-gray-300 rounded-md shadow-sm">
-                            <option value="" disabled>Seleccione un producto</option>
-                            <option v-for="product in products" :key="product.id" :value="product.id">{{
-                                    product.name
-                                }}
-                            </option>
-                        </select>
-                        <input v-model="item.quantity" @input="validateStock(index)"
-                               class="border-gray-300 rounded-md shadow-sm" type="number" step="1"
-                               placeholder="Cantidad">
-                        <input v-model="item.unit_price" @input="validateStock(index)"
-                               class="border-gray-300 rounded-md shadow-sm" type="number" step="0.01"
-                               placeholder="Precio Unitario">
+                        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                            <div class="space-y-2">
+                                <InputLabel for="budget-date" value="Fecha de emisión" />
+                                <TextInput id="budget-date" v-model="budget.date" type="date" class="mt-2 block w-full" />
+                            </div>
+                            <div class="space-y-2">
+                                <InputLabel for="budget-name" value="Nombre interno" />
+                                <TextInput
+                                    id="budget-name"
+                                    v-model="budget.name"
+                                    type="text"
+                                    class="mt-2 block w-full"
+                                    placeholder="Propuesta comercial"
+                                    autocomplete="off"
+                                />
+                            </div>
+                            <div class="space-y-2">
+                                <InputLabel for="client-search" value="Buscar cliente" />
+                                <TextInput
+                                    id="client-search"
+                                    v-model="clientSearchTerm"
+                                    type="text"
+                                    class="mt-2 block w-full"
+                                    placeholder="Escribe para filtrar"
+                                />
+                            </div>
+                            <div class="space-y-2">
+                                <InputLabel for="budget-client" value="Cliente" />
+                                <SelectInput id="budget-client" v-model="budget.client_id" class="mt-2 block w-full">
+                                    <option value="">Selecciona un cliente</option>
+                                    <option v-for="client in filteredClients" :key="client.id" :value="client.id">{{ client.name }}</option>
+                                </SelectInput>
+                            </div>
+                            <div class="space-y-2">
+                                <InputLabel for="budget-state" value="Estado" />
+                                <SelectInput id="budget-state" v-model="budget.state" class="mt-2 block w-full">
+                                    <option value="in_process">En proceso</option>
+                                    <option value="accepted">Aceptado</option>
+                                    <option value="rejected">Rechazado</option>
+                                </SelectInput>
+                            </div>
+                            <div class="space-y-2">
+                                <InputLabel for="budget-iva" value="IVA (%)" />
+                                <TextInput
+                                    id="budget-iva"
+                                    v-model="ivaPercentage"
+                                    type="number"
+                                    min="0"
+                                    step="0.01"
+                                    class="mt-2 block w-full"
+                                    @input="calculateTotals"
+                                />
+                            </div>
+                        </div>
 
-                        <input v-model="item.discount" @input="updateItemTotal(index)" class="border-gray-300 rounded-md shadow-sm" type="number" step="0.01" placeholder="Descuento (%)">
-                        <input v-model="item.total" class="border-gray-300 rounded-md shadow-sm" type="number"
-                               step="0.01" placeholder="Total" disabled>
-                        <button @click.prevent="removeItem(index)"
-                                class="w-2/12 items-center flex-col justify-center  p-2 rounded-full">
-                            <DeleteIcon class="w-5 h-5 "/>
-                        </button>
-                    </div>
-                </template>
+                        <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+                            <div class="space-y-2">
+                                <InputLabel value="Base imponible" />
+                                <TextInput :value="formatCurrency(baseImponible)" disabled class="mt-2 block w-full text-slate-600" />
+                            </div>
+                            <div class="space-y-2">
+                                <InputLabel value="IVA calculado" />
+                                <TextInput :value="formatCurrency(montoIva)" disabled class="mt-2 block w-full text-slate-600" />
+                            </div>
+                            <div class="space-y-2">
+                                <InputLabel value="Total del presupuesto" />
+                                <TextInput :value="formatCurrency(budget.total)" disabled class="mt-2 block w-full text-slate-600" />
+                            </div>
+                        </div>
+                    </section>
 
-                <!-- Botón para agregar nuevo producto -->
-                <button @click.prevent="showProductModal = true" title="Nuevo producto"
-                        class="bg-blue-500 p-2 rounded-full">
-                    <AddProductIcon class="h-6 w-6 fill-gray-200 stroke-gray-50"/>
-                </button>
-
-                <div class="mt-8 flex justify-between items-center">
-                    <div>
-                        <button type="submit" class="bg-blue-900 p-2 rounded-full" title="Guardar Presupuesto">
-                            <SaveIcon class="w-6 h-6 stroke-gray-50 "/>
-                        </button>
-                    </div>
-                </div>
-            </form>
-
-            <!-- Modal de productos -->
-            <div v-if="showProductModal"
-                 class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center">
-                <div class="bg-white w-1/2 p-6 rounded-lg shadow-lg">
-                    <div class="flex justify-between mb-4">
-                        <h2 class="text-xl font-bold">Seleccionar Producto</h2>
-                        <button @click="showProductModal = false" class="text-gray-600">&times;</button>
-                    </div>
-
-                    <!-- Cuadro de búsqueda y filtros -->
-                    <input v-model="searchTerm" type="text" placeholder="Buscar producto"
-                           class="border-gray-300 rounded-md shadow-sm w-full mb-4">
-                    <select v-model="selectedCategory" class="border-gray-300 rounded-md shadow-sm w-full mb-4">
-                        <option value="">Todas las categorías</option>
-                        <option v-for="category in categories" :key="category.id" :value="category.name">
-                            {{ category.name }}
-                        </option>
-                    </select>
-
-                    <!-- Lista de productos filtrados -->
-                    <ul class="max-h-64 overflow-y-auto">
-                        <li v-for="product in filteredProducts" :key="product.id"
-                            class="flex justify-between py-2 border-b">
-                            <span>{{ product.name }}</span>
-                            <button @click="selectProduct(product)" class="bg-blue-900 p-1 rounded-full">
-                                <AddProductIcon class="w-4 h-4 stroke-gray-50"/>
+                    <section class="space-y-6 rounded-3xl border border-slate-200/80 bg-white/70 p-6 shadow-sm">
+                        <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                            <div>
+                                <h2 class="text-lg font-semibold text-slate-800">Conceptos presupuestados</h2>
+                                <p class="text-sm text-slate-500">Añade productos, ajusta cantidades y aplica descuentos antes de enviar la propuesta.</p>
+                            </div>
+                            <button
+                                type="button"
+                                @click="showProductModal = true"
+                                class="inline-flex items-center gap-2 rounded-2xl bg-sky-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700"
+                            >
+                                <AddProductIcon class="h-5 w-5" />
+                                Añadir producto
                             </button>
-                        </li>
-                    </ul>
+                        </div>
+
+                        <div v-if="budgetItems.length === 0" class="rounded-3xl border border-dashed border-slate-300 bg-slate-50/60 p-10 text-center">
+                            <p class="text-sm font-medium text-slate-600">Todavía no has añadido elementos al presupuesto.</p>
+                            <p class="mt-2 text-sm text-slate-500">Utiliza el buscador para incorporar líneas del catálogo y calcular el total.</p>
+                        </div>
+
+                        <div v-else class="space-y-4">
+                            <div class="hidden grid-cols-12 gap-3 rounded-2xl border border-slate-200 bg-slate-100/60 px-4 py-3 text-sm font-semibold text-slate-500 md:grid">
+                                <span class="md:col-span-4">Producto</span>
+                                <span class="md:col-span-2">Cantidad</span>
+                                <span class="md:col-span-2">Precio unitario</span>
+                                <span class="md:col-span-2">Descuento (%)</span>
+                                <span class="md:col-span-2">Importe</span>
+                            </div>
+
+                            <div
+                                v-for="(item, index) in budgetItems"
+                                :key="index"
+                                class="grid grid-cols-1 gap-4 rounded-3xl border border-slate-200/80 bg-white/80 p-4 shadow-sm md:grid-cols-12 md:items-end"
+                            >
+                                <div class="space-y-2 md:col-span-4">
+                                    <InputLabel :for="`product-${index}`" value="Producto" />
+                                    <SelectInput
+                                        :id="`product-${index}`"
+                                        v-model="item.product_id"
+                                        class="mt-2 block w-full"
+                                        @change="onProductSelected(index)"
+                                    >
+                                        <option value="">Selecciona un producto</option>
+                                        <option v-for="product in props.products" :key="product.id" :value="product.id">
+                                            {{ product.name }}
+                                        </option>
+                                    </SelectInput>
+                                </div>
+                                <div class="space-y-2 md:col-span-2">
+                                    <InputLabel :for="`quantity-${index}`" value="Cantidad" />
+                                    <TextInput
+                                        :id="`quantity-${index}`"
+                                        v-model="item.quantity"
+                                        type="number"
+                                        min="1"
+                                        step="1"
+                                        class="mt-2 block w-full"
+                                        @input="ensureStock(index)"
+                                    />
+                                </div>
+                                <div class="space-y-2 md:col-span-2">
+                                    <InputLabel :for="`unit-price-${index}`" value="Precio unitario" />
+                                    <TextInput
+                                        :id="`unit-price-${index}`"
+                                        v-model="item.unit_price"
+                                        type="number"
+                                        min="0"
+                                        step="0.01"
+                                        class="mt-2 block w-full"
+                                        @input="updateItemTotal(index)"
+                                    />
+                                </div>
+                                <div class="space-y-2 md:col-span-2">
+                                    <InputLabel :for="`discount-${index}`" value="Descuento (%)" />
+                                    <TextInput
+                                        :id="`discount-${index}`"
+                                        v-model="item.discount"
+                                        type="number"
+                                        min="0"
+                                        step="0.01"
+                                        class="mt-2 block w-full"
+                                        @input="updateItemTotal(index)"
+                                    />
+                                </div>
+                                <div class="space-y-2 md:col-span-2">
+                                    <InputLabel :for="`total-${index}`" value="Importe" />
+                                    <TextInput :id="`total-${index}`" :value="formatCurrency(item.total)" disabled class="mt-2 block w-full text-slate-600" />
+                                </div>
+                                <div class="flex items-center justify-end md:col-span-12">
+                                    <button
+                                        type="button"
+                                        @click="removeItem(index)"
+                                        class="inline-flex items-center gap-2 rounded-xl border border-rose-100 bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-600 transition hover:bg-rose-100"
+                                    >
+                                        <DeleteIcon class="h-4 w-4" />
+                                        Eliminar línea
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <div class="flex items-center justify-end">
+                        <PrimaryButton type="submit" class="inline-flex items-center gap-2">
+                            <SaveIcon class="h-4 w-4" />
+                            Guardar presupuesto
+                        </PrimaryButton>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div v-if="showProductModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/70 px-4">
+            <div class="w-full max-w-2xl rounded-3xl bg-white p-6 shadow-xl">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <h3 class="text-lg font-semibold text-slate-800">Seleccionar producto</h3>
+                        <p class="mt-1 text-sm text-slate-500">Filtra por categoría o nombre para construir tu propuesta económica.</p>
+                    </div>
+                    <button type="button" class="text-slate-400 transition hover:text-slate-600" @click="showProductModal = false">&times;</button>
                 </div>
+
+                <div class="mt-5 grid gap-4 md:grid-cols-2">
+                    <div class="space-y-2">
+                        <InputLabel for="product-search" value="Buscar" />
+                        <TextInput
+                            id="product-search"
+                            v-model="searchTerm"
+                            type="text"
+                            class="mt-2 block w-full"
+                            placeholder="Nombre del producto"
+                        />
+                    </div>
+                    <div class="space-y-2">
+                        <InputLabel for="product-category" value="Categoría" />
+                        <SelectInput id="product-category" v-model="selectedCategory" class="mt-2 block w-full">
+                            <option value="">Todas las categorías</option>
+                            <option v-for="category in props.categories" :key="category.id" :value="category.name">{{ category.name }}</option>
+                        </SelectInput>
+                    </div>
+                </div>
+
+                <ul class="mt-6 max-h-72 space-y-2 overflow-y-auto pr-1">
+                    <li
+                        v-for="product in filteredProducts"
+                        :key="product.id"
+                        class="flex items-center justify-between rounded-2xl border border-slate-200/70 bg-white px-4 py-3 shadow-sm"
+                    >
+                        <div>
+                            <p class="text-sm font-semibold text-slate-700">{{ product.name }}</p>
+                            <p class="text-xs text-slate-500">
+                                {{ formatCurrency(product.price) }} ·
+                                <span v-if="product.is_stackable">Stock: {{ product.stock }}</span>
+                                <span v-else>Servicio sin control de stock</span>
+                            </p>
+                        </div>
+                        <button
+                            type="button"
+                            class="inline-flex items-center gap-2 rounded-xl bg-sky-600 px-3 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-sky-700"
+                            @click="selectProduct(product)"
+                        >
+                            <AddProductIcon class="h-4 w-4" />
+                            Añadir
+                        </button>
+                    </li>
+                    <li v-if="filteredProducts.length === 0" class="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center text-sm text-slate-500">
+                        No hay productos que coincidan con la búsqueda.
+                    </li>
+                </ul>
             </div>
         </div>
     </AppLayout>
 </template>
 
 <script setup>
-import {computed, ref} from 'vue';
-import {Inertia} from '@inertiajs/inertia';
+import { computed, ref } from 'vue';
+import { Inertia } from '@inertiajs/inertia';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import SaveIcon from "@/Components/Icons/SaveIcon.vue";
-import AddProductIcon from "@/Components/Icons/AddProductIcon.vue";
-import DeleteIcon from "@/Components/Icons/DeleteIcon.vue";
+import CrudPageHeader from '@/Components/Crud/CrudPageHeader.vue';
+import CrudStatCard from '@/Components/Crud/CrudStatCard.vue';
+import InputLabel from '@/Components/InputLabel.vue';
+import TextInput from '@/Components/TextInput.vue';
+import SelectInput from '@/Components/SelectInput.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
+import SaveIcon from '@/Components/Icons/SaveIcon.vue';
+import AddProductIcon from '@/Components/Icons/AddProductIcon.vue';
+import DeleteIcon from '@/Components/Icons/DeleteIcon.vue';
+import MenuBudgetIcon from '@/Components/Icons/MenuBudgetIcon.vue';
+import MenuClientsIcon from '@/Components/Icons/MenuClientsIcon.vue';
+import MenuProductIcon from '@/Components/Icons/MenuProductIcon.vue';
+import MenuCategoryIcon from '@/Components/Icons/MenuCategoryIcon.vue';
 
 const props = defineProps({
     clients: Array,
@@ -169,32 +324,134 @@ const props = defineProps({
     categories: Array,
 });
 
-// Inicializar el presupuesto
 const budget = ref({
-    date: new Date().toISOString().split('T')[0], // Fecha actual
+    date: new Date().toISOString().split('T')[0],
     name: '',
     state: 'in_process',
     client_id: '',
     total: 0,
 });
 
-// Inicializar items del presupuesto
 const budgetItems = ref([]);
 const showProductModal = ref(false);
 const searchTerm = ref('');
 const selectedCategory = ref('');
-const ivaPercentage = ref(21);  // IVA inicializado en 21
+const ivaPercentage = ref(21);
 const baseImponible = ref(0);
 const montoIva = ref(0);
+const clientSearchTerm = ref('');
 
-const addItem = () => {
+const totalClients = computed(() => props.clients.length);
+const totalProducts = computed(() => props.products.length);
+const totalCategories = computed(() => props.categories.length);
+
+const filteredClients = computed(() =>
+    props.clients.filter((client) =>
+        client.name.toLowerCase().includes(clientSearchTerm.value.toLowerCase())
+    )
+);
+
+const filteredProducts = computed(() => {
+    const term = searchTerm.value.toLowerCase();
+    return props.products.filter((product) => {
+        const matchesName = product.name.toLowerCase().includes(term);
+        const matchesCategory = selectedCategory.value
+            ? product.category?.name === selectedCategory.value
+            : true;
+        return matchesName && matchesCategory;
+    });
+});
+
+const formatCurrency = (value) =>
+    new Intl.NumberFormat('es-ES', {
+        style: 'currency',
+        currency: 'EUR',
+    }).format(Number(value) || 0);
+
+const sanitizeNumber = (value) => Number(value) || 0;
+
+const calculateTotals = () => {
+    baseImponible.value = budgetItems.value.reduce((sum, item) => sum + sanitizeNumber(item.total), 0);
+    const iva = sanitizeNumber(ivaPercentage.value);
+    montoIva.value = baseImponible.value * (iva / 100);
+    budget.value.total = baseImponible.value + montoIva.value;
+};
+
+const updateItemTotal = (index) => {
+    const item = budgetItems.value[index];
+    const quantity = sanitizeNumber(item.quantity);
+    const unitPrice = sanitizeNumber(item.unit_price);
+    const discount = sanitizeNumber(item.discount);
+
+    item.total = quantity * unitPrice;
+    if (discount > 0) {
+        item.total -= (item.total * discount) / 100;
+    }
+    calculateTotals();
+};
+
+const ensureStock = (index) => {
+    const item = budgetItems.value[index];
+    const product = props.products.find((p) => p.id === item.product_id);
+    if (!product) {
+        updateItemTotal(index);
+        return;
+    }
+
+    if (product.is_stackable) {
+        const quantity = sanitizeNumber(item.quantity);
+        if (quantity > product.stock) {
+            item.quantity = product.stock || 0;
+            alert(`Stock insuficiente para el producto ${product.name}`);
+        } else if (quantity < 1) {
+            item.quantity = 1;
+        }
+    } else if (!item.quantity || sanitizeNumber(item.quantity) < 1) {
+        item.quantity = 1;
+    }
+
+    updateItemTotal(index);
+};
+
+const onProductSelected = (index) => {
+    const item = budgetItems.value[index];
+    const product = props.products.find((p) => p.id === item.product_id);
+
+    if (!product) {
+        updateItemTotal(index);
+        return;
+    }
+
+    if (product.is_stackable && (!product.stock || product.stock <= 0)) {
+        alert(`El producto ${product.name} no tiene stock disponible.`);
+        item.product_id = '';
+        return;
+    }
+
+    item.unit_price = product.price;
+    if (!item.quantity || sanitizeNumber(item.quantity) < 1) {
+        item.quantity = 1;
+    }
+
+    updateItemTotal(index);
+};
+
+const selectProduct = (product) => {
+    if (product.is_stackable && (!product.stock || product.stock <= 0)) {
+        alert('Producto sin stock disponible');
+        return;
+    }
+
     budgetItems.value.push({
-        product_id: '',
+        product_id: product.id,
         quantity: 1,
         discount: 0,
-        unit_price: 0,
-        total: 0,
+        unit_price: product.price,
+        total: product.price,
     });
+
+    calculateTotals();
+    showProductModal.value = false;
 };
 
 const removeItem = (index) => {
@@ -202,91 +459,13 @@ const removeItem = (index) => {
     calculateTotals();
 };
 
-const updateItemTotal = (index) => {
-    const item = budgetItems.value[index];
-    item.total = item.quantity * item.unit_price;
-    item.total = item.total - (item.total * item.discount) / 100;
-    calculateTotals();
-};
-
-const calculateTotals = () => {
-
-    baseImponible.value= budgetItems.value.reduce((sum, item) => sum + item.total, 0);
-    montoIva.value = (baseImponible.value * ivaPercentage.value) / 100;
-    budget.value.total = baseImponible.value + montoIva.value;
-};
-
-// Filtrar productos
-const filteredProducts = computed(() => {
-    return props.products.filter(product => {
-        const matchesCategory = selectedCategory.value ? product.category === selectedCategory.value : true;
-        const matchesSearch = product.name.toLowerCase().includes(searchTerm.value.toLowerCase());
-        return matchesCategory && matchesSearch;
-    });
-});
-
-// Seleccionar un producto
-const selectProduct = (product) => {
-    if ( product.stock > 0 && product.is_stackable) {
-        addItem();
-        const lastIndex = budgetItems.value.length - 1;
-        budgetItems.value[lastIndex].product_id = product.id;
-        budgetItems.value[lastIndex].unit_price = product.price; // Asignar el precio unitario del producto
-        updateItemTotal(lastIndex); // Actualizar total del item
-        showProductModal.value = false; // Cerrar modal
-    }if (!product.is_stackable) {
-        addItem();
-        const lastIndex = budgetItems.value.length - 1;
-        budgetItems.value[lastIndex].product_id = product.id;
-        budgetItems.value[lastIndex].unit_price = product.price; // Asignar el precio unitario del producto
-        updateItemTotal(lastIndex); // Actualizar total del item
-        showProductModal.value = false; // Cerrar modal
-
-    }else{
-        alert('Stock insuficiente');
-        showProductModal.value = false; // Cerrar modal
-    }
-
-};
-const clientSearchTerm = ref('');
-
-const filteredClients = computed(() => {
-    return props.clients.filter(client => {
-        return client.name.toLowerCase().includes(clientSearchTerm.value.toLowerCase());
-    });
-});
-
-
-// Submit del formulario
 const submitForm = () => {
-    // Lógica para enviar el formulario
     Inertia.post(route('budgets.storeWithItems'), {
         ...budget.value,
         budgetItems: budgetItems.value,
-        iva: ivaPercentage.value,
+        iva: sanitizeNumber(ivaPercentage.value),
         monto_iva: montoIva.value,
         base_imponible: baseImponible.value,
     });
-
 };
-
-const validateStock = (index) => {
-    const item = invoiceItems.value[index];
-    const selectedProduct = props.products.find(product => product.id === item.product_id);
-    if (!selectedProduct.is_stackable) {
-        updateItemTotal(index) ;
-    }else {
-        if (item.quantity > selectedProduct.stock) {
-            alert(`Stock insuficiente para el producto ${selectedProduct.name}`);
-            item.quantity = selectedProduct.stock; // Ajusta al máximo disponible
-        }
-    }
-
-    updateItemTotal(index);
-};
-
 </script>
-
-<style scoped>
-/* Estilos personalizados si son necesarios */
-</style>
