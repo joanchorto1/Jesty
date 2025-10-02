@@ -1,6 +1,9 @@
 <?php
 
 use App\Http\Controllers\ClientController;
+use App\Models\Client;
+use App\Models\Invoice;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -9,7 +12,12 @@ Route::middleware(['route.features.access:6'])->group(function(){
 
 
 Route::get('/dashboard/clients', function () {
-    return Inertia::render('DashboardClientes', ['clients' => \App\Models\Client::where('company_id', \Illuminate\Support\Facades\Auth::user()->company_id)->get()]);
+    $companyId = Auth::user()->company_id;
+
+    return Inertia::render('DashboardClientes', [
+        'clients' => Client::where('company_id', $companyId)->get(),
+        'invoices' => Invoice::where('company_id', $companyId)->get(),
+    ]);
 })->name('dashboard.clients');
 
 

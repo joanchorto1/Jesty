@@ -148,8 +148,14 @@ import DoughnutChart from '@/Components/DoughnutChart.vue';
 import BarChart from '@/Components/BarChart.vue';
 
 const props = defineProps({
-    clients: Array,
-    invoices: Array,
+    clients: {
+        type: Array,
+        default: () => [],
+    },
+    invoices: {
+        type: Array,
+        default: () => [],
+    },
 });
 
 const nameFilter = ref('');
