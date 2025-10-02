@@ -1,12 +1,12 @@
 export const inventoryPalette = {
     background: 'bg-slate-950',
-    gradient: 'from-amber-600 via-rose-600 to-purple-700',
+    gradient: 'from-sky-900 via-indigo-900 to-slate-950',
     surface: 'bg-white',
     surfaceMuted: 'bg-white/80 backdrop-blur',
     border: 'border-white/20',
-    shadow: 'shadow-xl shadow-amber-900/10',
+    shadow: 'shadow-xl shadow-blue-900/20',
     text: {
-        overGradient: 'text-amber-200',
+        overGradient: 'text-sky-200',
         hero: 'text-white',
         heading: 'text-slate-800',
         body: 'text-slate-500',
@@ -23,12 +23,12 @@ export const inventoryPalette = {
 };
 
 export const inventoryTypography = {
-    heroKicker: 'text-sm uppercase tracking-[0.3em] text-amber-200',
+    heroKicker: 'text-sm uppercase tracking-[0.3em] text-sky-200',
     heroTitle: 'text-3xl sm:text-4xl font-semibold text-white',
-    heroSubtitle: 'text-sm text-amber-200',
+    heroSubtitle: 'text-sm text-sky-100/80',
     sectionTitle: 'text-xl font-semibold text-slate-800',
     sectionSubtitle: 'text-sm text-slate-500',
-    overline: 'text-xs uppercase tracking-[0.3em] text-amber-200',
+    overline: 'text-xs uppercase tracking-[0.3em] text-sky-200',
     statValue: 'text-3xl font-semibold text-white',
 };
 

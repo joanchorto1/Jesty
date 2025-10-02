@@ -8,7 +8,7 @@
                     <slot name="description">{{ description }}</slot>
                 </p>
             </div>
-            <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-100 to-rose-100 text-amber-600">
+            <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-100 to-indigo-100 text-sky-600">
                 <slot name="icon" />
             </div>
         </div>
