@@ -1,125 +1,320 @@
 <template>
-    <AppLayout>
-        <div class="p-6 w-full mx-auto bg-gray-50 min-h-screen shadow-md">
-            <h1 class="text-3xl font-bold mb-8">Editar Factura</h1>
-            <form @submit.prevent="submitForm">
-                <!-- Información de la Factura -->
-                <div class="mb-4">
-                    <label for="date" class="block text-gray-700">Fecha</label>
-                    <input v-model="form.date" id="date" type="date" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                </div>
-                <div class="mb-4">
-                    <label for="client_id" class="block text-gray-700">Cliente</label>
-                    <select v-model="form.client_id" id="client_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                        <option v-for="client in clients" :key="client.id" :value="client.id">{{ client.name }}</option>
-                    </select>
-                </div>
-                <div class="mb-4">
-                    <label for="name" class="block text-gray-700">Nombre de la Factura</label>
-                    <input v-model="form.name" id="name" type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" placeholder="Nombre de la Factura">
-                </div>
-                <div class="mb-4">
-                    <label for="state" class="block text-gray-700">Estado</label>
-                    <select v-model="form.state" id="state" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                        <option value="pending">Pendiente</option>
-                        <option value="paid">Pagada</option>
-                        <option value="cancelled">Cancelada</option>
-                    </select>
+    <AppLayout title="Editar factura">
+        <div class="min-h-screen bg-slate-100/80 py-12">
+            <div class="mx-auto flex max-w-6xl flex-col gap-10 px-6">
+                <CrudPageHeader
+                    title="Editar factura"
+                    description="Actualiza los datos comerciales, revisa el estado de cobro y ajusta los conceptos facturados antes de reenviar la documentación."
+                    :icon="MenuInvoiceIcon"
+                />
+
+                <div class="grid gap-6 md:grid-cols-3">
+                    <CrudStatCard
+                        label="Clientes disponibles"
+                        :value="totalClients"
+                        :icon="MenuClientsIcon"
+                        icon-background="bg-sky-500/10 text-sky-600"
+                    >
+                        <template #description>
+                            <p class="text-xs text-slate-500">Selecciona rápidamente el destinatario adecuado.</p>
+                        </template>
+                    </CrudStatCard>
+                    <CrudStatCard
+                        label="Productos activos"
+                        :value="totalProducts"
+                        :icon="MenuProductIcon"
+                        icon-background="bg-indigo-500/10 text-indigo-600"
+                    >
+                        <template #description>
+                            <p class="text-xs text-slate-500">Consulta precios actualizados antes de confirmar cambios.</p>
+                        </template>
+                    </CrudStatCard>
+                    <CrudStatCard
+                        label="Categorías sincronizadas"
+                        :value="totalCategories"
+                        :icon="MenuCategoryIcon"
+                        icon-background="bg-emerald-500/10 text-emerald-600"
+                    >
+                        <template #description>
+                            <p class="text-xs text-slate-500">Utiliza los filtros para localizar servicios complementarios.</p>
+                        </template>
+                    </CrudStatCard>
                 </div>
 
-                <!-- Nuevos Inputs: base imponible, IVA, monto IVA -->
-                <div class="mb-4">
-                    <label for="base_imponible" class="block text-gray-700">Base Imponible</label>
-                    <input v-model="form.base_imponible" id="base_imponible" type="number" step="0.01" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                </div>
-                <div class="mb-4">
-                    <label for="iva" class="block text-gray-700">IVA (%)</label>
-                    <input v-model="form.iva" id="iva" type="number" step="0.01" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                </div>
-                <div class="mb-4">
-                    <label for="monto_iva" class="block text-gray-700">Monto IVA</label>
-                    <input v-model="form.monto_iva" id="monto_iva" type="number" step="0.01" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" disabled>
-                </div>
-                <div class="mb-4">
-                    <label for="total" class="block text-gray-700">Total</label>
-                    <input v-model="form.total" id="total" type="number" step="0.01" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" disabled>
-                </div>
+                <form @submit.prevent="submitForm" class="space-y-10">
+                    <section class="space-y-6 rounded-3xl border border-slate-200/80 bg-white/70 p-6 shadow-sm">
+                        <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                            <div>
+                                <h2 class="text-lg font-semibold text-slate-800">Datos generales</h2>
+                                <p class="text-sm text-slate-500">Gestiona la fecha de emisión, el estado de la factura y la asignación al cliente.</p>
+                            </div>
+                            <div class="inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm">
+                                <span>Total actual</span>
+                                <span>{{ formatCurrency(form.total) }}</span>
+                            </div>
+                        </div>
 
-                <!-- Ítems de la Factura -->
-                <template v-if="form.items.length > 0">
-                    <h2 class="text-xl font-bold mb-4">Ítems de la Factura</h2>
-                    <div class="grid grid-cols-6 gap-4 mb-2 font-semibold text-gray-600">
-                        <div>Producto</div>
-                        <div>Cantidad</div>
-                        <div>Precio Unitario</div>
-                        <div>Descuento(%)</div>
-                        <div>Total</div>
-                    </div>
+                        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                            <div class="space-y-2">
+                                <InputLabel for="invoice-date" value="Fecha de emisión" />
+                                <TextInput id="invoice-date" v-model="form.date" type="date" class="mt-2 block w-full" />
+                            </div>
+                            <div class="space-y-2">
+                                <InputLabel for="invoice-name" value="Nombre interno" />
+                                <TextInput
+                                    id="invoice-name"
+                                    v-model="form.name"
+                                    type="text"
+                                    class="mt-2 block w-full"
+                                    placeholder="Factura trimestral"
+                                />
+                            </div>
+                            <div class="space-y-2">
+                                <InputLabel for="client-search" value="Buscar cliente" />
+                                <TextInput
+                                    id="client-search"
+                                    v-model="clientSearchTerm"
+                                    type="text"
+                                    class="mt-2 block w-full"
+                                    placeholder="Filtra por nombre"
+                                />
+                            </div>
+                            <div class="space-y-2">
+                                <InputLabel for="client" value="Cliente" />
+                                <SelectInput id="client" v-model="form.client_id" class="mt-2 block w-full">
+                                    <option v-for="client in filteredClients" :key="client.id" :value="client.id">{{ client.name }}</option>
+                                </SelectInput>
+                            </div>
+                            <div class="space-y-2">
+                                <InputLabel for="invoice-state" value="Estado" />
+                                <SelectInput id="invoice-state" v-model="form.state" class="mt-2 block w-full">
+                                    <option value="pending">Pendiente</option>
+                                    <option value="paid">Pagada</option>
+                                    <option value="cancelled">Cancelada</option>
+                                </SelectInput>
+                            </div>
+                            <div class="space-y-2">
+                                <InputLabel for="invoice-iva" value="IVA (%)" />
+                                <TextInput
+                                    id="invoice-iva"
+                                    v-model="form.iva"
+                                    type="number"
+                                    min="0"
+                                    step="0.01"
+                                    class="mt-2 block w-full"
+                                    @input="updateInvoiceTotal"
+                                />
+                            </div>
+                        </div>
 
-                    <div v-for="(item, index) in form.items" :key="index" class="mb-4 grid grid-cols-6 gap-3 items-center">
-                        <select v-model="item.product_id" @change="updateProductDetails(index)" class="border-gray-300 rounded-md shadow-sm">
-                            <option value="" disabled>Seleccione un producto</option>
-                            <option v-for="product in products" :key="product.id" :value="product.id">{{ product.name }}</option>
-                        </select>
-                        <input v-model="item.quantity" @input="updateItemTotal(index)" class="border-gray-300 rounded-md shadow-sm" type="number" step="1" placeholder="Cantidad">
-                        <input v-model="item.unit_price" @input="updateItemTotal(index)" class="border-gray-300 rounded-md shadow-sm" type="number" step="0.01" placeholder="Precio Unitario">
-                        <input v-model="item.discount" @input="updateItemTotal(index)" class="border-gray-300 rounded-md shadow-sm" type="number" step="0.01" placeholder="Descuento">
-                        <input v-model="item.total" class="border-gray-300 rounded-md shadow-sm" type="number" step="0.01" placeholder="Total" disabled>
-                        <button @click.prevent="removeItem(index)" class="w-2/12 items-center flex-col justify-center bg-gray-300 p-2 rounded-full">
-                            <DeleteIcon class="w-5 h-5 stroke-gray-900 fill-gray-300"/>
-                        </button>
-                    </div>
-                </template>
+                        <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+                            <div class="space-y-2">
+                                <InputLabel value="Base imponible" />
+                                <TextInput :value="formatCurrency(form.base_imponible)" disabled class="mt-2 block w-full text-slate-600" />
+                            </div>
+                            <div class="space-y-2">
+                                <InputLabel value="IVA calculado" />
+                                <TextInput :value="formatCurrency(form.monto_iva)" disabled class="mt-2 block w-full text-slate-600" />
+                            </div>
+                            <div class="space-y-2">
+                                <InputLabel value="Total" />
+                                <TextInput :value="formatCurrency(form.total)" disabled class="mt-2 block w-full text-slate-600" />
+                            </div>
+                        </div>
+                    </section>
 
-                <!-- Botón para abrir modal de productos -->
-                <button @click.prevent="showProductModal = true" title="Agregar producto" class="bg-blue-400 p-2 rounded-full">
-                    <AddProductIcon class="h-6 w-6 stroke-gray-50"/>
-                </button>
-
-                <div class="mt-8">
-                    <button type="submit" class="bg-blue-900 p-2 rounded-full" title="Actualizar Factura">
-                        <SaveIcon class="w-6 h-6 fill-blue-50 stroke-gray-300"/>
-                    </button>
-                </div>
-            </form>
-
-            <!-- Modal de productos -->
-            <div v-if="showProductModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center">
-                <div class="bg-white w-1/2 p-6 rounded-lg shadow-lg">
-                    <div class="flex justify-between mb-4">
-                        <h2 class="text-xl font-bold">Seleccionar Producto</h2>
-                        <button @click="showProductModal = false" class="text-gray-600">&times;</button>
-                    </div>
-
-                    <!-- Cuadro de búsqueda y filtros -->
-                    <input v-model="searchTerm" type="text" placeholder="Buscar producto" class="border-gray-300 rounded-md shadow-sm w-full mb-4">
-                    <select v-model="selectedCategory" class="border-gray-300 rounded-md shadow-sm w-full mb-4">
-                        <option value="">Todas las categorías</option>
-                        <option v-for="category in categories" :key="category.id" :value="category.name">{{ category.name }}</option>
-                    </select>
-
-                    <!-- Lista de productos filtrados -->
-                    <ul class="max-h-64 overflow-y-auto">
-                        <li v-for="product in filteredProducts" :key="product.id" class="flex justify-between py-2 border-b">
-                            <span>{{ product.name }}</span>
-                            <button @click="selectProduct(product)" class="bg-blue-900 p-2 rounded-full">
-                                <AddProductIcon class="w-4 h-4 stroke-gray-50 "/>
+                    <section class="space-y-6 rounded-3xl border border-slate-200/80 bg-white/70 p-6 shadow-sm">
+                        <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                            <div>
+                                <h2 class="text-lg font-semibold text-slate-800">Conceptos facturados</h2>
+                                <p class="text-sm text-slate-500">Revisa cada línea, ajusta descuentos y controla el stock disponible.</p>
+                            </div>
+                            <button
+                                type="button"
+                                @click="showProductModal = true"
+                                class="inline-flex items-center gap-2 rounded-2xl bg-sky-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700"
+                            >
+                                <AddProductIcon class="h-5 w-5" />
+                                Añadir producto
                             </button>
-                        </li>
-                    </ul>
+                        </div>
+
+                        <div v-if="form.items.length === 0" class="rounded-3xl border border-dashed border-slate-300 bg-slate-50/60 p-10 text-center">
+                            <p class="text-sm font-medium text-slate-600">No hay conceptos asociados a esta factura.</p>
+                            <p class="mt-2 text-sm text-slate-500">Agrega productos desde el catálogo para reconstruir el detalle de la operación.</p>
+                        </div>
+
+                        <div v-else class="space-y-4">
+                            <div class="hidden grid-cols-12 gap-3 rounded-2xl border border-slate-200 bg-slate-100/60 px-4 py-3 text-sm font-semibold text-slate-500 md:grid">
+                                <span class="md:col-span-4">Producto</span>
+                                <span class="md:col-span-2">Cantidad</span>
+                                <span class="md:col-span-2">Precio unitario</span>
+                                <span class="md:col-span-2">Descuento (%)</span>
+                                <span class="md:col-span-2">Importe</span>
+                            </div>
+
+                            <div
+                                v-for="(item, index) in form.items"
+                                :key="index"
+                                class="grid grid-cols-1 gap-4 rounded-3xl border border-slate-200/80 bg-white/80 p-4 shadow-sm md:grid-cols-12 md:items-end"
+                            >
+                                <div class="space-y-2 md:col-span-4">
+                                    <InputLabel :for="`product-${index}`" value="Producto" />
+                                    <SelectInput
+                                        :id="`product-${index}`"
+                                        v-model="item.product_id"
+                                        class="mt-2 block w-full"
+                                        @change="onProductSelected(index)"
+                                    >
+                                        <option value="">Selecciona un producto</option>
+                                        <option v-for="product in props.products" :key="product.id" :value="product.id">
+                                            {{ product.name }}
+                                        </option>
+                                    </SelectInput>
+                                </div>
+                                <div class="space-y-2 md:col-span-2">
+                                    <InputLabel :for="`quantity-${index}`" value="Cantidad" />
+                                    <TextInput
+                                        :id="`quantity-${index}`"
+                                        v-model="item.quantity"
+                                        type="number"
+                                        min="1"
+                                        step="1"
+                                        class="mt-2 block w-full"
+                                        @input="ensureStock(index)"
+                                    />
+                                </div>
+                                <div class="space-y-2 md:col-span-2">
+                                    <InputLabel :for="`unit-price-${index}`" value="Precio unitario" />
+                                    <TextInput
+                                        :id="`unit-price-${index}`"
+                                        v-model="item.unit_price"
+                                        type="number"
+                                        min="0"
+                                        step="0.01"
+                                        class="mt-2 block w-full"
+                                        @input="updateItemTotal(index)"
+                                    />
+                                </div>
+                                <div class="space-y-2 md:col-span-2">
+                                    <InputLabel :for="`discount-${index}`" value="Descuento (%)" />
+                                    <TextInput
+                                        :id="`discount-${index}`"
+                                        v-model="item.discount"
+                                        type="number"
+                                        min="0"
+                                        step="0.01"
+                                        class="mt-2 block w-full"
+                                        @input="updateItemTotal(index)"
+                                    />
+                                </div>
+                                <div class="space-y-2 md:col-span-2">
+                                    <InputLabel :for="`total-${index}`" value="Importe" />
+                                    <TextInput :id="`total-${index}`" :value="formatCurrency(item.total)" disabled class="mt-2 block w-full text-slate-600" />
+                                </div>
+                                <div class="flex items-center justify-end md:col-span-12">
+                                    <button
+                                        type="button"
+                                        @click="removeItem(index)"
+                                        class="inline-flex items-center gap-2 rounded-xl border border-rose-100 bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-600 transition hover:bg-rose-100"
+                                    >
+                                        <DeleteIcon class="h-4 w-4" />
+                                        Eliminar línea
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <div class="flex items-center justify-end">
+                        <PrimaryButton type="submit" class="inline-flex items-center gap-2">
+                            <SaveIcon class="h-4 w-4" />
+                            Actualizar factura
+                        </PrimaryButton>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div v-if="showProductModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/70 px-4">
+            <div class="w-full max-w-2xl rounded-3xl bg-white p-6 shadow-xl">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <h3 class="text-lg font-semibold text-slate-800">Añadir producto</h3>
+                        <p class="mt-1 text-sm text-slate-500">Filtra por categoría o nombre para incorporar una nueva línea.</p>
+                    </div>
+                    <button type="button" class="text-slate-400 transition hover:text-slate-600" @click="showProductModal = false">&times;</button>
                 </div>
+
+                <div class="mt-5 grid gap-4 md:grid-cols-2">
+                    <div class="space-y-2">
+                        <InputLabel for="product-search" value="Buscar" />
+                        <TextInput
+                            id="product-search"
+                            v-model="searchTerm"
+                            type="text"
+                            class="mt-2 block w-full"
+                            placeholder="Nombre del producto"
+                        />
+                    </div>
+                    <div class="space-y-2">
+                        <InputLabel for="product-category" value="Categoría" />
+                        <SelectInput id="product-category" v-model="selectedCategory" class="mt-2 block w-full">
+                            <option value="">Todas las categorías</option>
+                            <option v-for="category in props.categories" :key="category.id" :value="category.name">{{ category.name }}</option>
+                        </SelectInput>
+                    </div>
+                </div>
+
+                <ul class="mt-6 max-h-72 space-y-2 overflow-y-auto pr-1">
+                    <li
+                        v-for="product in filteredProducts"
+                        :key="product.id"
+                        class="flex items-center justify-between rounded-2xl border border-slate-200/70 bg-white px-4 py-3 shadow-sm"
+                    >
+                        <div>
+                            <p class="text-sm font-semibold text-slate-700">{{ product.name }}</p>
+                            <p class="text-xs text-slate-500">
+                                {{ formatCurrency(product.price) }} ·
+                                <span v-if="product.is_stackable">Stock: {{ product.stock }}</span>
+                                <span v-else>Servicio sin control de stock</span>
+                            </p>
+                        </div>
+                        <button
+                            type="button"
+                            class="inline-flex items-center gap-2 rounded-xl bg-sky-600 px-3 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-sky-700"
+                            @click="selectProduct(product)"
+                        >
+                            <AddProductIcon class="h-4 w-4" />
+                            Añadir
+                        </button>
+                    </li>
+                    <li v-if="filteredProducts.length === 0" class="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center text-sm text-slate-500">
+                        No hay productos que coincidan con la búsqueda.
+                    </li>
+                </ul>
             </div>
         </div>
     </AppLayout>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { computed, ref } from 'vue';
 import { Inertia } from '@inertiajs/inertia';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import SaveIcon from "@/Components/Icons/SaveIcon.vue";
-import AddProductIcon from "@/Components/Icons/AddProductIcon.vue";
-import DeleteIcon from "@/Components/Icons/DeleteIcon.vue";
+import CrudPageHeader from '@/Components/Crud/CrudPageHeader.vue';
+import CrudStatCard from '@/Components/Crud/CrudStatCard.vue';
+import InputLabel from '@/Components/InputLabel.vue';
+import TextInput from '@/Components/TextInput.vue';
+import SelectInput from '@/Components/SelectInput.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
+import SaveIcon from '@/Components/Icons/SaveIcon.vue';
+import AddProductIcon from '@/Components/Icons/AddProductIcon.vue';
+import DeleteIcon from '@/Components/Icons/DeleteIcon.vue';
+import MenuInvoiceIcon from '@/Components/Icons/MenuInvoiceIcon.vue';
+import MenuClientsIcon from '@/Components/Icons/MenuClientsIcon.vue';
+import MenuProductIcon from '@/Components/Icons/MenuProductIcon.vue';
+import MenuCategoryIcon from '@/Components/Icons/MenuCategoryIcon.vue';
 
 const props = defineProps({
     invoice: Object,
@@ -138,82 +333,146 @@ const form = ref({
     iva: props.invoice.iva || 0,
     monto_iva: props.invoice.monto_iva || 0,
     total: props.invoice.total || 0,
-    items: props.invoiceItems.map(item => ({
+    items: props.invoiceItems.map((item) => ({
         product_id: item.product_id,
         quantity: item.quantity,
         discount: item.discount,
         unit_price: item.unit_price,
-        total: item.total
-    }))
+        total: item.total,
+    })),
 });
 
 const showProductModal = ref(false);
 const searchTerm = ref('');
 const selectedCategory = ref('');
+const clientSearchTerm = ref('');
 
+const totalClients = computed(() => props.clients.length);
+const totalProducts = computed(() => props.products.length);
+const totalCategories = computed(() => props.categories.length);
 
-// Actualiza detalles del producto seleccionado
-const updateProductDetails = (index) => {
-    const selectedProduct = props.products.find(product => product.id === form.value.items[index].product_id);
-    if (selectedProduct) {
-        form.value.items[index].unit_price = selectedProduct.price;
-        form.value.items[index].total = selectedProduct.price * form.value.items[index].quantity;
-        updateInvoiceTotal(); // Recalcular el total de la factura
+const filteredClients = computed(() => {
+    const term = clientSearchTerm.value.toLowerCase();
+    if (!term) {
+        return props.clients;
     }
-};
+    return props.clients.filter((client) => client.name.toLowerCase().includes(term));
+});
 
-// Actualiza el total de un ítem cuando cambian cantidad o precio
-const updateItemTotal = (index) => {
-    const item = form.value.items[index];
-    item.total = item.quantity * item.unit_price;
-    if (item.discount!==0) {
-        item.total -= (item.total * item.discount) / 100;
-    }
-    updateInvoiceTotal();
-};
+const filteredProducts = computed(() => {
+    const term = searchTerm.value.toLowerCase();
+    return props.products.filter((product) => {
+        const matchesName = product.name.toLowerCase().includes(term);
+        const matchesCategory = selectedCategory.value
+            ? product.category?.name === selectedCategory.value
+            : true;
+        return matchesName && matchesCategory;
+    });
+});
 
-// Calcula el total de la factura
+const formatCurrency = (value) =>
+    new Intl.NumberFormat('es-ES', {
+        style: 'currency',
+        currency: 'EUR',
+    }).format(Number(value) || 0);
+
+const sanitizeNumber = (value) => Number(value) || 0;
+
 const updateInvoiceTotal = () => {
-    const baseImponible = form.value.items.reduce((acc, item) => acc + item.total, 0);
-    const iva = form.value.iva;
+    const baseImponible = form.value.items.reduce((acc, item) => acc + sanitizeNumber(item.total), 0);
     form.value.base_imponible = baseImponible;
+    const iva = sanitizeNumber(form.value.iva);
     form.value.monto_iva = (baseImponible * iva) / 100;
     form.value.total = baseImponible + form.value.monto_iva;
 };
 
-// Filtra productos basados en búsqueda y categoría
-const filteredProducts = computed(() => {
-    let filtered = props.products;
-    if (searchTerm.value) {
-        filtered = filtered.filter(product => product.name.toLowerCase().includes(searchTerm.value.toLowerCase()));
-    }
-    if (selectedCategory.value) {
-        filtered = filtered.filter(product => product.category.name === selectedCategory.value);
-    }
-    return filtered;
-});
+const updateItemTotal = (index) => {
+    const item = form.value.items[index];
+    const quantity = sanitizeNumber(item.quantity);
+    const unitPrice = sanitizeNumber(item.unit_price);
+    const discount = sanitizeNumber(item.discount);
 
-// Selecciona un producto del modal
+    item.total = quantity * unitPrice;
+    if (discount > 0) {
+        item.total -= (item.total * discount) / 100;
+    }
+
+    updateInvoiceTotal();
+};
+
+const ensureStock = (index) => {
+    const item = form.value.items[index];
+    const product = props.products.find((p) => p.id === item.product_id);
+
+    if (!product) {
+        updateItemTotal(index);
+        return;
+    }
+
+    if (product.is_stackable) {
+        const quantity = sanitizeNumber(item.quantity);
+        if (quantity > product.stock) {
+            item.quantity = product.stock || 0;
+            alert(`Stock insuficiente para el producto ${product.name}`);
+        } else if (quantity < 1) {
+            item.quantity = 1;
+        }
+    } else if (!item.quantity || sanitizeNumber(item.quantity) < 1) {
+        item.quantity = 1;
+    }
+
+    updateItemTotal(index);
+};
+
+const onProductSelected = (index) => {
+    const item = form.value.items[index];
+    const product = props.products.find((p) => p.id === item.product_id);
+
+    if (!product) {
+        updateItemTotal(index);
+        return;
+    }
+
+    if (product.is_stackable && (!product.stock || product.stock <= 0)) {
+        alert(`El producto ${product.name} no tiene stock disponible.`);
+        item.product_id = '';
+        return;
+    }
+
+    item.unit_price = product.price;
+    if (!item.quantity || sanitizeNumber(item.quantity) < 1) {
+        item.quantity = 1;
+    }
+
+    updateItemTotal(index);
+};
+
 const selectProduct = (product) => {
+    if (product.is_stackable && (!product.stock || product.stock <= 0)) {
+        alert('Producto sin stock disponible');
+        return;
+    }
+
     form.value.items.push({
         product_id: product.id,
         quantity: 1,
+        discount: 0,
         unit_price: product.price,
-        total: product.price
+        total: product.price,
     });
+
     updateInvoiceTotal();
-    showProductModal.value = false; // Cierra el modal
+    showProductModal.value = false;
 };
 
-// Elimina un ítem de la factura
 const removeItem = (index) => {
     form.value.items.splice(index, 1);
     updateInvoiceTotal();
 };
 
-// Enviar el formulario para actualizar la factura
 const submitForm = () => {
-    Inertia.put(route('invoices.update',props.invoice.id), form.value);
+    Inertia.put(route('invoices.update', props.invoice.id), form.value);
 };
-</script>
 
+updateInvoiceTotal();
+</script>
