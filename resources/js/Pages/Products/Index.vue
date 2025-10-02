@@ -3,10 +3,6 @@ import { computed, reactive } from 'vue';
 import { Inertia } from '@inertiajs/inertia';
 import { Link } from '@inertiajs/inertia-vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import CrudPageHeader from '@/Components/Crud/CrudPageHeader.vue';
-import CrudStatCard from '@/Components/Crud/CrudStatCard.vue';
-import CrudFilterBar from '@/Components/Crud/CrudFilterBar.vue';
-import CrudTable from '@/Components/Crud/CrudTable.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import SelectInput from '@/Components/SelectInput.vue';
@@ -16,6 +12,11 @@ import AddProductIcon from '@/Components/Icons/AddProductIcon.vue';
 import EditIcon from '@/Components/Icons/EditIcon.vue';
 import DeleteIcon from '@/Components/Icons/DeleteIcon.vue';
 import MenuExpenseIcon from '@/Components/Icons/MenuExpenseIcon.vue';
+import InventoryFilterBar from '@/Components/Inventory/InventoryFilterBar.vue';
+import InventoryResponsiveTable from '@/Components/Inventory/InventoryResponsiveTable.vue';
+import InventoryStatusBadge from '@/Components/Inventory/InventoryStatusBadge.vue';
+import InventorySummaryCard from '@/Components/Inventory/InventorySummaryCard.vue';
+import { inventoryPalette, inventoryTypography } from '@/Components/Inventory/inventoryTheme';
 
 const props = defineProps({
     products: {
@@ -75,50 +76,67 @@ const downloadLabel = (labelPath) => {
 
 const categoryName = (categoryId) =>
     props.categories.find((category) => Number(category.id) === Number(categoryId))?.name ?? '—';
+
+const palette = inventoryPalette;
+const typography = inventoryTypography;
+
+const stockStatus = (product) => (Number(product.stock) > 0 ? 'in_stock' : 'out_of_stock');
 </script>
 
 <template>
     <AppLayout title="Catàleg de productes">
-        <div class="min-h-screen bg-slate-100/80 py-12">
-            <div class="mx-auto flex max-w-7xl flex-col gap-10 px-6">
-                <CrudPageHeader
-                    title="Catàleg de productes"
-                    description="Consulta, filtra i gestiona els productes disponibles per a la venda i el control d'estoc."
-                    :icon="MenuProductIcon"
-                >
-                    <template #actions>
-                        <Link
-                            :href="route('products.create')"
-                            class="inline-flex items-center gap-2 rounded-full bg-sky-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-sky-200 transition hover:bg-sky-500"
-                        >
-                            <AddProductIcon class="h-5 w-5" />
-                            Nou producte
-                        </Link>
-                    </template>
-                </CrudPageHeader>
+        <div :class="['min-h-screen pb-16', palette.background]">
+            <div :class="['bg-gradient-to-r', palette.gradient, 'pb-24']">
+                <div class="mx-auto flex max-w-7xl flex-col gap-10 px-6 pt-10">
+                    <div class="flex flex-col gap-6 text-white md:flex-row md:items-center md:justify-between">
+                        <div class="flex items-center gap-4">
+                            <div class="flex h-16 w-16 items-center justify-center rounded-3xl bg-white/10">
+                                <MenuProductIcon class="h-8 w-8 text-white" />
+                            </div>
+                            <div class="space-y-2">
+                                <p :class="typography.heroKicker">Catàleg de productes</p>
+                                <h1 :class="typography.heroTitle">Control integral del portfoli</h1>
+                                <p :class="typography.heroSubtitle">
+                                    Consulta, filtra i gestiona els productes disponibles per a la venda i el control d'estoc.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex justify-end">
+                            <Link
+                                :href="route('products.create')"
+                                class="inline-flex items-center gap-2 rounded-full bg-white/10 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-amber-900/10 transition hover:bg-white/20"
+                            >
+                                <AddProductIcon class="h-5 w-5" />
+                                Nou producte
+                            </Link>
+                        </div>
+                    </div>
 
-                <div class="grid gap-6 md:grid-cols-3">
-                    <CrudStatCard
-                        label="Total de productes"
-                        :value="totalProducts"
-                        :icon="MenuProductIcon"
-                        icon-background="bg-indigo-500/10 text-indigo-600"
-                    />
-                    <CrudStatCard
-                        label="En estoc"
-                        :value="inStock"
-                        :icon="AddProductIcon"
-                        icon-background="bg-emerald-500/10 text-emerald-600"
-                    />
-                    <CrudStatCard
-                        label="Sense estoc"
-                        :value="outOfStock"
-                        :icon="MenuProductIcon"
-                        icon-background="bg-rose-500/10 text-rose-600"
-                    />
+                    <div class="grid gap-6 md:grid-cols-3">
+                        <InventorySummaryCard label="Total de productes" :value="totalProducts">
+                            <template #icon>
+                                <MenuProductIcon class="h-6 w-6" />
+                            </template>
+                        </InventorySummaryCard>
+                        <InventorySummaryCard label="En estoc" :value="inStock">
+                            <template #icon>
+                                <AddProductIcon class="h-6 w-6" />
+                            </template>
+                            <template #description>
+                                Disponibles immediatament
+                            </template>
+                        </InventorySummaryCard>
+                        <InventorySummaryCard label="Sense estoc" :value="outOfStock" description="Revisa les reposicions pendents">
+                            <template #icon>
+                                <MenuExpenseIcon class="h-6 w-6" />
+                            </template>
+                        </InventorySummaryCard>
+                    </div>
                 </div>
+            </div>
 
-                <CrudFilterBar>
+            <div class="mx-auto flex max-w-7xl flex-col gap-8 px-6 -mt-16">
+                <InventoryFilterBar>
                     <div class="flex flex-1 flex-col gap-2">
                         <InputLabel for="search" value="Cerca" />
                         <TextInput
@@ -154,16 +172,16 @@ const categoryName = (categoryId) =>
                             Netejar filtres
                         </SecondaryButton>
                     </template>
-                </CrudFilterBar>
+                </InventoryFilterBar>
 
-                <CrudTable>
+                <InventoryResponsiveTable :is-empty="!filteredProducts.length">
                     <template #head>
                         <tr>
-                            <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Nom</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Categoria</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Preu (€)</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Estoc</th>
-                            <th class="px-6 py-4 text-right text-xs font-semibold uppercase tracking-wide text-slate-500">Accions</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Nom</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Categoria</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Preu (€)</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Estoc</th>
+                            <th class="px-6 py-4 text-right text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Accions</th>
                         </tr>
                     </template>
 
@@ -171,8 +189,10 @@ const categoryName = (categoryId) =>
                         <td class="px-6 py-4 text-sm font-medium text-slate-700">{{ product.name }}</td>
                         <td class="px-6 py-4 text-sm text-slate-500">{{ categoryName(product.category_id) }}</td>
                         <td class="px-6 py-4 text-sm text-slate-500">{{ Number(product.price).toFixed(2) }}</td>
-                        <td class="px-6 py-4 text-sm font-semibold" :class="Number(product.stock) > 0 ? 'text-emerald-600' : 'text-rose-500'">
-                            {{ product.stock ?? 0 }}
+                        <td class="px-6 py-4 text-sm font-semibold">
+                            <InventoryStatusBadge :status="stockStatus(product)">
+                                {{ Number(product.stock ?? 0) }}
+                            </InventoryStatusBadge>
                         </td>
                         <td class="px-6 py-4">
                             <div class="flex items-center justify-end gap-2">
@@ -201,14 +221,10 @@ const categoryName = (categoryId) =>
                         </td>
                     </tr>
 
-                    <template v-if="!filteredProducts.length">
-                        <tr>
-                            <td colspan="5" class="px-6 py-10 text-center text-sm text-slate-500">
-                                Cap resultat coincideix amb els filtres actuals.
-                            </td>
-                        </tr>
+                    <template #empty>
+                        Cap resultat coincideix amb els filtres actuals.
                     </template>
-                </CrudTable>
+                </InventoryResponsiveTable>
             </div>
         </div>
     </AppLayout>
