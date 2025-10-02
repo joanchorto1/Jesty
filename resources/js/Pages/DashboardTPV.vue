@@ -9,36 +9,41 @@
                         <p class="text-sm text-fuchsia-200">Monitoriza ventas, tickets y categorías para optimizar tu estrategia comercial.</p>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-5 mt-10">
-                        <div class="rounded-2xl border border-white/20 bg-white/10 backdrop-blur p-6 text-white shadow-lg">
-                            <p class="text-xs uppercase tracking-[0.3em] text-fuchsia-200">Tickets</p>
-                            <p class="text-3xl font-semibold mt-2">{{ totalTickets }}</p>
-                            <p class="text-sm text-fuchsia-200 mt-3">Ticket medio €{{ averageTicket }}</p>
-                        </div>
-                        <div class="rounded-2xl border border-white/20 bg-white/10 backdrop-blur p-6 text-white shadow-lg">
-                            <p class="text-xs uppercase tracking-[0.3em] text-fuchsia-200">Productos vendidos</p>
-                            <p class="text-3xl font-semibold mt-2">{{ totalTicketItems }}</p>
-                            <p class="text-sm text-fuchsia-200 mt-3">{{ uniqueProducts }} referencias únicas</p>
-                        </div>
-                        <div class="rounded-2xl border border-white/20 bg-white/10 backdrop-blur p-6 text-white shadow-lg">
-                            <p class="text-xs uppercase tracking-[0.3em] text-fuchsia-200">Productos activos</p>
-                            <p class="text-3xl font-semibold mt-2">{{ totalProducts }}</p>
-                            <p class="text-sm text-fuchsia-200 mt-3">{{ lowStockProducts }} con stock crítico</p>
-                        </div>
-                        <div class="rounded-2xl border border-white/20 bg-white/10 backdrop-blur p-6 text-white shadow-lg">
-                            <p class="text-xs uppercase tracking-[0.3em] text-fuchsia-200">Categorías</p>
-                            <p class="text-3xl font-semibold mt-2">{{ totalCategories }}</p>
-                            <p class="text-sm text-fuchsia-200 mt-3">{{ categoriesWithSales }} con ventas registradas</p>
-                        </div>
-                        <div class="rounded-2xl border border-white/20 bg-white/10 backdrop-blur p-6 text-white shadow-lg">
-                            <p class="text-xs uppercase tracking-[0.3em] text-fuchsia-200">Ingresos</p>
-                            <p class="text-3xl font-semibold mt-2">€{{ totalRevenue }}</p>
-                            <p class="text-sm text-fuchsia-200 mt-3">{{ monthlyRevenueTrend.length }} meses con ventas</p>
-                        </div>
+                        <KpiCard
+                            v-for="card in kpiCards"
+                            :key="card.key"
+                            gradient
+                            bordered
+                            :subtitle="card.subtitle"
+                            :value="card.value"
+                            :description="card.description"
+                        />
                     </div>
                 </div>
             </div>
 
             <div class="max-w-7xl mx-auto px-6 -mt-16 pb-16 space-y-10">
+                <section class="sr-only" aria-label="Documentación visual del panel TPV">
+                    <h2 class="text-base font-semibold">Resumen de elementos visuales</h2>
+                    <p>{{ visualDocumentation.summary }}</p>
+                    <div>
+                        <h3 class="mt-4 font-semibold">Targetes KPI</h3>
+                        <ul class="list-disc pl-5 space-y-2">
+                            <li v-for="card in visualDocumentation.kpis" :key="card.key">
+                                <strong>{{ card.subtitle }}:</strong> {{ card.description }}
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="mt-4">
+                        <h3 class="font-semibold">Gràfiques i components analítics</h3>
+                        <ul class="list-disc pl-5 space-y-2">
+                            <li v-for="chart in visualDocumentation.charts" :key="chart.key">
+                                <strong>{{ chart.title }}:</strong> {{ chart.description }}
+                            </li>
+                        </ul>
+                    </div>
+                </section>
+
                 <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
                     <div class="bg-white rounded-3xl shadow-xl p-6 xl:col-span-2">
                         <h2 class="text-xl font-semibold text-slate-800">Ventas mensuales</h2>
@@ -92,6 +97,7 @@ import BarChart from '@/Components/BarChart.vue';
 import PieChart from '@/Components/PieChart.vue';
 import LineChart from '@/Components/LineChart.vue';
 import AreaChart from '@/Components/AreaChart.vue';
+import KpiCard from '@/Components/KpiCard.vue';
 
 const props = defineProps({
     tickets: Array,
@@ -121,6 +127,71 @@ const categoriesWithSales = computed(() => new Set(props.ticketItems.map(item =>
 })).size);
 
 const totalRevenue = computed(() => props.tickets.reduce((acc, ticket) => acc + (ticket.total ?? 0), 0).toFixed(2));
+
+const kpiCards = computed(() => [
+    {
+        key: 'tickets',
+        subtitle: 'Tickets',
+        value: totalTickets.value,
+        description: `Ticket medio €${averageTicket.value}`,
+    },
+    {
+        key: 'products-sold',
+        subtitle: 'Productos vendidos',
+        value: totalTicketItems.value,
+        description: `${uniqueProducts.value} referencias únicas`,
+    },
+    {
+        key: 'active-products',
+        subtitle: 'Productos activos',
+        value: totalProducts.value,
+        description: `${lowStockProducts.value} con stock crítico`,
+    },
+    {
+        key: 'categories',
+        subtitle: 'Categorías',
+        value: totalCategories.value,
+        description: `${categoriesWithSales.value} con ventas registradas`,
+    },
+    {
+        key: 'revenue',
+        subtitle: 'Ingresos',
+        value: `€${totalRevenue.value}`,
+        description: `${monthlyRevenueTrend.value.length} meses con ventas`,
+    },
+]);
+
+const visualDocumentation = computed(() => ({
+    summary: 'El panell mostra d\'un cop d\'ull la salut del TPV amb targetes de resum i gràfiques contextualitzades.',
+    kpis: kpiCards.value,
+    charts: [
+        {
+            key: 'monthly-sales',
+            title: 'Ventas mensuales',
+            description: 'Línia temporal comparada entre volum de tickets i ingressos per a identificar patrons estacionals.',
+        },
+        {
+            key: 'product-distribution',
+            title: 'Distribución por productos',
+            description: 'Diagrama de sectors amb el pes de cada referència venuda en el període analitzat.',
+        },
+        {
+            key: 'category-sales',
+            title: 'Ventas por categoría',
+            description: 'Comparativa entre famílies per detectar oportunitats de creixement o sobreexposició.',
+        },
+        {
+            key: 'top-products',
+            title: 'Top productos vendidos',
+            description: 'Classificació en barres que ressalta els articles de major rotació.',
+        },
+        {
+            key: 'revenue-trend',
+            title: 'Tendencia de ingresos acumulados',
+            description: 'Àrea acumulada que evidencia el progrés d\'ingressos i la seva velocitat de creixement.',
+        },
+    ],
+}));
 
 const ticketMonthlyData = computed(() => {
     const monthlyTotals = props.tickets.reduce((acc, ticket) => {
