@@ -48,6 +48,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/incomes/{income}/edit', [IncomeController::class, 'edit'])->name('incomes.edit');
     Route::put('/incomes/{income}', [IncomeController::class, 'update'])->name('incomes.update');
 
+    // Mostrar ingreso
+    Route::get('/incomes/{income}', [IncomeController::class, 'show'])->name('incomes.show');
+
     // Eliminar ingreso
     Route::delete('/incomes/{income}', [IncomeController::class, 'destroy'])->name('incomes.destroy');
 });
