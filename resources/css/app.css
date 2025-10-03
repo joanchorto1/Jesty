@@ -5,3 +5,23 @@
 [x-cloak] {
     display: none;
 }
+
+.icon-accent {
+    color: inherit;
+}
+
+.icon-accent,
+.icon-accent svg {
+    width: 100%;
+    height: 100%;
+}
+
+.icon-accent path,
+.icon-accent circle,
+.icon-accent rect,
+.icon-accent line,
+.icon-accent polyline,
+.icon-accent polygon {
+    fill: currentColor !important;
+    stroke: currentColor !important;
+}
