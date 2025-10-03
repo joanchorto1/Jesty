@@ -3,7 +3,7 @@
 </script>
 
 <template>
-    <svg fill="#000000" height="45px" width="45px" version="1.2" baseProfile="tiny" id="inventory"
+    <svg fill="#000000" version="1.2" baseProfile="tiny" id="inventory"
          xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"  viewBox="0 0 256 230"
          xml:space="preserve">
 <path d="M61.2,106h37.4v31.2H61.2V106z M61.2,178.7h37.4v-31.2H61.2V178.7z M61.2,220.1h37.4v-31.2H61.2V220.1z M109.7,178.7H147
