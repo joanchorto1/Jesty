@@ -44,6 +44,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/incomes/create', [IncomeController::class, 'create'])->name('incomes.create');
     Route::post('/incomes', [IncomeController::class, 'store'])->name('incomes.store');
 
+    // Ver ingreso
+    Route::get('/incomes/{income}', [IncomeController::class, 'show'])->name('incomes.show');
+
     // Editar ingreso
     Route::get('/incomes/{income}/edit', [IncomeController::class, 'edit'])->name('incomes.edit');
     Route::put('/incomes/{income}', [IncomeController::class, 'update'])->name('incomes.update');

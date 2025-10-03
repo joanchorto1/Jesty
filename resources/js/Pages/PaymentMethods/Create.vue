@@ -1,45 +1,78 @@
 <template>
-    <AppLayout>
-        <div class="p-6 w-full bg-gray-50 min-h-screen shadow-md">
-            <h1 class="text-3xl font-bold mb-8">Crear Método de Pago</h1>
-            <form @submit.prevent="submitForm">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="mb-4">
-                        <label for="name" class="block text-gray-700">Nombre del Método</label>
-                        <input v-model="method.name" id="name" type="text" placeholder="Nombre del Método"
-                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                    </div>
+    <AppLayout title="Crear método de pago">
+        <div class="min-h-screen bg-slate-950">
+            <FinancePageHeader
+                eyebrow="Pagos"
+                title="Nuevo método de pago"
+                description="Define cómo se registran los cobros para mantener alineados los informes financieros."
+                :metrics-columns="3"
+            >
+                <template #metrics>
+                    <FinanceSummaryCard label="Nombre" :value="form.name || 'Sin definir'" :helper="`${form.name.length} caracteres`" />
+                    <FinanceSummaryCard label="Descripción" :value="`${descriptionLength} car.`" :helper="descriptionLength ? 'Texto preparado' : 'Añade más contexto'" />
+                    <FinanceSummaryCard label="Estado" value="Activo" helper="Disponible tras guardar" />
+                </template>
+            </FinancePageHeader>
 
-                    <div class="mb-4">
-                        <label for="description" class="block text-gray-700">Descripción</label>
-                        <textarea v-model="method.description" id="description" rows="4"
-                                  class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
-                                  placeholder="Descripción del método de pago"></textarea>
-                    </div>
-                </div>
+            <main class="max-w-4xl mx-auto px-6 -mt-16 pb-16 space-y-10">
+                <section class="rounded-3xl border border-white/10 bg-white/95 p-8 shadow-xl">
+                    <header class="mb-8 border-b border-slate-200 pb-4">
+                        <h2 class="text-xl font-semibold text-slate-800">Datos del método</h2>
+                        <p class="mt-1 text-sm text-slate-500">Especifica cómo se denomina este método y, opcionalmente, describe cuándo debe utilizarse.</p>
+                    </header>
 
-                <div class="mt-8 flex justify-between items-center">
-                    <button type="submit" class="bg-blue-900 p-2 rounded-full" title="Guardar Método">
-                        <SaveIcon class="w-6 h-6 stroke-gray-50"/>
-                    </button>
-                </div>
-            </form>
+                    <form @submit.prevent="submitForm" class="grid grid-cols-1 gap-6">
+                        <div>
+                            <InputLabel for="name" value="Nombre" />
+                            <TextInput id="name" v-model="form.name" type="text" class="mt-2 block w-full" />
+                            <InputError :message="form.errors.name" class="mt-2" />
+                        </div>
+
+                        <div>
+                            <InputLabel for="description" value="Descripción" />
+                            <TextareaInput id="description" v-model="form.description" rows="4" class="mt-2 block w-full" />
+                            <InputError :message="form.errors.description" class="mt-2" />
+                        </div>
+
+                        <div class="flex items-center gap-3 pt-2">
+                            <PrimaryButton type="submit" :disabled="form.processing">
+                                Guardar método
+                            </PrimaryButton>
+                            <NavLink
+                                :href="route('paymentMethods.index')"
+                                class="text-sm font-semibold text-slate-500 transition hover:text-slate-700"
+                            >
+                                Cancelar y volver
+                            </NavLink>
+                        </div>
+                    </form>
+                </section>
+            </main>
         </div>
     </AppLayout>
 </template>
 
 <script setup>
-import {ref} from 'vue';
-import {Inertia} from '@inertiajs/inertia';
+import { computed } from 'vue';
+import { useForm } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import SaveIcon from "@/Components/Icons/SaveIcon.vue";
+import FinancePageHeader from '@/Components/Finance/FinancePageHeader.vue';
+import FinanceSummaryCard from '@/Components/Finance/FinanceSummaryCard.vue';
+import InputLabel from '@/Components/InputLabel.vue';
+import TextInput from '@/Components/TextInput.vue';
+import TextareaInput from '@/Components/TextareaInput.vue';
+import InputError from '@/Components/InputError.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
+import NavLink from '@/Components/NavLink.vue';
 
-const method = ref({
+const form = useForm({
     name: '',
     description: '',
 });
 
+const descriptionLength = computed(() => form.description?.length ?? 0);
+
 const submitForm = () => {
-    Inertia.post(route('paymentMethods.store'), method.value);
+    form.post(route('paymentMethods.store'));
 };
 </script>

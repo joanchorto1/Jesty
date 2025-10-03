@@ -37,15 +37,18 @@ class PaymentMethodController extends Controller
 
     public function show(PaymentMethod $paymentMethod)
     {
+        $paymentMethod->load(['company'])->loadCount('expenses');
+
         return Inertia::render('PaymentMethods/Show', [
-            'paymentMethod' => $paymentMethod
+            'paymentMethod' => $paymentMethod,
         ]);
     }
 
     public function edit(PaymentMethod $paymentMethod)
     {
         return Inertia::render('PaymentMethods/Edit', [
-            'method' => $paymentMethod
+            'method' => $paymentMethod,
+            'expensesCount' => $paymentMethod->expenses()->count(),
         ]);
     }
 
