@@ -1,6 +1,6 @@
 export const inventoryPalette = {
     background: 'bg-slate-950',
-    gradient: 'from-yellow-500 via-amber-600 to-black',
+    gradient: 'from-yellow-400 via-yellow-600 to-black',
     surface: 'bg-white',
     surfaceMuted: 'bg-white/80 backdrop-blur',
     border: 'border-amber-500/20',
