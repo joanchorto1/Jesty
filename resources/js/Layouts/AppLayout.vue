@@ -25,10 +25,11 @@
                     </div>
                 </div>
             </nav>
-
-            <div class="flex-1 w-full pb-12 pt-8">
-                <div class="flex w-full max-w-7xl flex-col gap-8 px-4 lg:flex-row lg:items-start lg:px-0">
-                    <aside class="w-full lg:w-72">
+       <div class="flex-1 w-full pb-12 pt-8">
+           <!-- Contenidor a pantalla completa sense límit de width -->
+            <div class="flex w-full max-w-none flex-col gap-8 px-4 lg:flex-row lg:items-start lg:px-6">
+                  <!-- Sidebar amb amplada fixa i sense encongir -->
+                   <aside class="w-full lg:w-64 lg:shrink-0">
                         <div class="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl shadow-2xl shadow-blue-500/20">
                             <div class="space-y-6">
                                 <div>
@@ -352,11 +353,11 @@
                             </div>
                         </div>
                     </aside>
- <main class="flex-1">
-        <div class="h-full w-full rounded-3xl border border-white/10 bg-slate-900/60 px-4 py-6 shadow-2xl shadow-blue-500/20 backdrop-blur lg:px-8 lg:py-10">
-            <slot />
-        </div>
-    </main>
+  <main class="flex-1 min-w-0">
+                        <div class="h-full w-full rounded-3xl border border-white/10 bg-slate-900/60 px-4 py-6 shadow-2xl shadow-blue-500/20 backdrop-blur lg:px-8 lg:py-10">
+                           <slot />
+                        </div>
+                    </main>
                 </div>
             </div>
         </div>
