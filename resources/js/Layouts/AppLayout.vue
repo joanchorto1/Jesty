@@ -30,7 +30,8 @@
             <!-- Sidebar Menu -->
             <nav class="w-64 flex-shrink-0">
                 <div class="relative h-full">
-                    <div class="absolute inset-0 rounded-3xl bg-white/10 shadow-xl shadow-slate-900/20 border border-white/20 backdrop-blur">
+                    <div
+                        class="absolute inset-0 rounded-3xl bg-white/10 shadow-xl shadow-slate-900/20 border border-white/20 backdrop-blur">
                     </div>
                     <div class="relative flex h-full flex-col mt-0 rounded-3xl px-5 py-8 space-y-4 overflow-y-auto">
                         <div class="text-xs uppercase tracking-[0.35em] text-slate-400 font-semibold">Menú</div>
