@@ -204,7 +204,7 @@ const stockStatus = (product) => (Number(product.stock) > 0 ? 'in_stock' : 'out_
                                 </Link>
                                 <button
                                     type="button"
-                                    class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-sky-500/10 text-sky-600 transition hover:bg-sky-500/20"
+                                    class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-900/20 text-white transition hover:bg-slate-900/40"
                                     @click="downloadLabel(product.label_path)"
                                     :title="product.label_path ? 'Descarregar etiqueta' : 'Sense etiqueta disponible'"
                                 >

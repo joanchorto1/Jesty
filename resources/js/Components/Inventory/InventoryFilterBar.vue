@@ -1,5 +1,5 @@
 <template>
-    <section class="rounded-3xl border border-slate-200/60 bg-white/80 backdrop-blur px-6 py-5 shadow-sm">
+    <section class="rounded-3xl border border-amber-500/15 bg-white/80 backdrop-blur px-6 py-5 shadow-sm shadow-amber-900/5">
         <div class="flex flex-col gap-6 lg:flex-row lg:items-end">
             <div class="grid flex-1 gap-4" :class="gridClass">
                 <slot />
