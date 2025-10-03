@@ -1,89 +1,117 @@
 <template>
     <AppLayout>
-        <div class="p-6 w-full bg-gray-50 min-h-screen shadow-md">
-            <h1 class="text-3xl font-bold mb-8 text-blue-500">Editar Lead</h1>
-
-            <form @submit.prevent="submitForm">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="mb-4">
-                        <label for="name" class="block text-gray-700">Nombre</label>
-                        <input v-model="form.name" id="name" type="text" placeholder="Nombre del Lead"
-                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required />
-                    </div>
-
-                    <div class="mb-4">
-                        <label for="company_name" class="block text-gray-700">Compañía</label>
-                        <input v-model="form.company_name" id="company_name" type="text" placeholder="Nombre de la Compañía"
-                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required />
-                    </div>
-
-                    <div class="mb-4">
-                        <label for="email" class="block text-gray-700">Email</label>
-                        <input v-model="form.email" id="email" type="email" placeholder="Correo Electrónico"
-                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required />
-                    </div>
-
-                    <div class="mb-4">
-                        <label for="phone" class="block text-gray-700">Teléfono</label>
-                        <input v-model="form.phone" id="phone" type="text" placeholder="Teléfono"
-                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
-                    </div>
-
-                    <div class="mb-4">
-                        <label for="position" class="block text-gray-700">Posición</label>
-                        <input v-model="form.position" id="position" type="text" placeholder="Posición"
-                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
-                    </div>
-
-                    <div class="mb-4">
-                        <label for="source" class="block text-gray-700">Fuente</label>
-                        <input v-model="form.source" id="source" type="text" placeholder="Fuente"
-                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
-                    </div>
-
-                    <div class="mb-4">
-                        <label for="status" class="block text-gray-700">Estado</label>
-                        <select v-model="form.status" id="status" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                            <option value="Nuevo">Nuevo</option>
-                            <option value="En Proceso">En Proceso</option>
-                            <option value="Convertido">Convertido</option>
-                            <option value="Perdido">Perdido</option>
-                        </select>
+        <div class="min-h-screen bg-slate-950">
+            <div class="bg-gradient-to-r from-violet-700 via-blue-700 to-slate-900 pb-24">
+                <div class="max-w-5xl mx-auto px-6 pt-10">
+                    <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+                        <div>
+                            <p class="text-violet-200 text-sm uppercase tracking-[0.4em]">Actualizar lead</p>
+                            <h1 class="text-3xl sm:text-4xl font-semibold text-white">Refresca la información clave</h1>
+                            <p class="text-sm text-violet-200 mt-2">
+                                Mantén los datos al día para que el equipo comercial siempre actúe con contexto.
+                            </p>
+                        </div>
+                        <NavLink
+                            :href="route('leads.show', props.lead.id)"
+                            class="inline-flex items-center gap-2 rounded-2xl bg-white/10 px-4 py-2 text-sm font-semibold text-white shadow ring-1 ring-white/20 hover:bg-white/20 transition"
+                        >
+                            Ver ficha del lead
+                        </NavLink>
                     </div>
                 </div>
+            </div>
 
-                <div class="mt-8 flex justify-between items-center">
-                    <button type="submit" class="bg-blue-900 p-2 rounded-full" title="Guardar Cambios">
-                        <SaveIcon class="w-6 h-6 stroke-gray-50" />
-                    </button>
-                </div>
-            </form>
+            <div class="max-w-5xl mx-auto px-6 -mt-16 pb-16 space-y-10">
+                <SectionCard
+                    title="Seguimiento"
+                    description="Visualiza en qué punto del proceso se encuentra este lead."
+                >
+                    <FlowStepper :steps="leadSteps" :active-index="activeStep" />
+                </SectionCard>
+
+                <SectionCard
+                    title="Información del lead"
+                    description="Edita los campos necesarios para reflejar la situación actual."
+                >
+                    <LeadForm
+                        :form="form"
+                        :processing="form.processing"
+                        submit-label="Guardar cambios"
+                        :statuses="leadStatuses"
+                        :sources="leadSources"
+                        :cancel-href="route('leads.show', props.lead.id)"
+                        @submit="submit"
+                        @cancel="goBack"
+                    />
+                </SectionCard>
+            </div>
         </div>
     </AppLayout>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { computed } from 'vue';
 import { Inertia } from '@inertiajs/inertia';
+import { useForm } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import SaveIcon from "@/Components/Icons/SaveIcon.vue";
+import NavLink from '@/Components/NavLink.vue';
+import SectionCard from '@/Components/Crm/SectionCard.vue';
+import FlowStepper from '@/Components/Crm/FlowStepper.vue';
+import LeadForm from '@/Components/Crm/LeadForm.vue';
 
-// Obtén los datos del Lead desde el servidor (se pasa desde el controlador a la vista)
 const props = defineProps({
-    lead: Object,
+    lead: {
+        type: Object,
+        required: true,
+    },
 });
 
-const form = ref({
+const leadSteps = [
+    {
+        label: 'Información básica',
+        description: 'Datos de contacto y empresa.',
+    },
+    {
+        label: 'Calificación',
+        description: 'Estado actual y origen del lead.',
+    },
+    {
+        label: 'Confirmación',
+        description: 'Validación final antes de cerrar la ficha.',
+    },
+];
+
+const leadStatuses = ['Nuevo', 'En Proceso', 'Convertido', 'Perdido'];
+const leadSources = ['Web', 'Recomendación', 'Campaña', 'Evento', 'Otros'];
+
+const form = useForm({
     name: props.lead.name || '',
     company_name: props.lead.company_name || '',
     email: props.lead.email || '',
     phone: props.lead.phone || '',
     position: props.lead.position || '',
     source: props.lead.source || '',
-    status: props.lead.status || 'Nuevo',
+    status: props.lead.status || leadStatuses[0],
 });
 
-const submitForm = () => {
-    Inertia.put(route('leads.update', props.lead.id), form.value);
-};
+const activeStep = computed(() => {
+    if (form.recentlySuccessful) {
+        return 2;
+    }
+    return form.isDirty ? 2 : 1;
+});
+
+function submit() {
+    form.put(route('leads.update', props.lead.id), {
+        preserveScroll: true,
+    });
+}
+
+function goBack(href) {
+    if (href) {
+        Inertia.visit(href);
+        return;
+    }
+    window.history.back();
+}
 </script>
