@@ -1,86 +1,118 @@
 <template>
     <AppLayout>
-        <div class="p-6 w-full bg-gray-50 min-h-screen shadow-md">
-            <h1 class="text-3xl font-bold mb-8">Editar Oportunidad</h1>
-
-            <form @submit.prevent="submitForm">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- Título -->
-                    <div class="mb-4 md:col-span-2">
-                        <label for="description" class="block text-gray-700">Descripción</label>
-                        <textarea v-model="form.description" id="description" rows="4" placeholder="Descripción"
-                                  class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"></textarea>
-                    </div>
-
-                    <!-- Valor -->
-                    <div class="mb-4">
-                        <label for="value" class="block text-gray-700">Valor</label>
-                        <input v-model="form.value" id="value" type="number" placeholder="Valor"
-                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required />
-                    </div>
-
-                    <!-- Probabilidad -->
-                    <div class="mb-4">
-                        <label for="probability" class="block text-gray-700">Probabilidad (%)</label>
-                        <input v-model="form.probability" id="probability" type="number" min="0" max="100"
-                               placeholder="Probabilidad de éxito"
-                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required />
-                    </div>
-
-                    <!-- Estado -->
-                    <div class="mb-4">
-                        <label for="status" class="block text-gray-700">Estado</label>
-                        <select v-model="form.status" id="status"
-                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                            <option value="En proceso">En proceso</option>
-                            <option value="Ganada">Ganada</option>
-                            <option value="Perdida">Perdida</option>
-                        </select>
-                    </div>
-
-                    <!-- Lead -->
-                    <div class="mb-4 md:col-span-2">
-                        <label for="lead_id" class="block text-gray-700">Lead</label>
-                        <select v-model="form.lead_id" id="lead_id"
-                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
-                            <option v-for="lead in props.leads" :key="lead.id" :value="lead.id">{{ lead.name }}</option>
-                        </select>
+        <div class="min-h-screen bg-slate-950">
+            <div class="bg-gradient-to-r from-violet-700 via-blue-700 to-slate-900 pb-24">
+                <div class="max-w-5xl mx-auto px-6 pt-10">
+                    <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+                        <div>
+                            <p class="text-violet-200 text-sm uppercase tracking-[0.4em]">Editar oportunidad</p>
+                            <h1 class="text-3xl sm:text-4xl font-semibold text-white">Ajusta los detalles comerciales</h1>
+                            <p class="text-sm text-violet-200 mt-2">
+                                Actualiza los datos para reflejar la negociación y priorizar el cierre.
+                            </p>
+                        </div>
+                        <NavLink
+                            :href="route('opportunities.show', props.opportunity.id)"
+                            class="inline-flex items-center gap-2 rounded-2xl bg-white/10 px-4 py-2 text-sm font-semibold text-white shadow ring-1 ring-white/20 hover:bg-white/20 transition"
+                        >
+                            Ver ficha de la oportunidad
+                        </NavLink>
                     </div>
                 </div>
+            </div>
 
-                <div class="mt-8 flex justify-between items-center">
-                    <button type="submit" class="bg-blue-900 p-2 rounded-full" title="Guardar Cambios">
-                        <SaveIcon class="w-6 h-6 stroke-gray-50" />
-                    </button>
-                </div>
-            </form>
+            <div class="max-w-5xl mx-auto px-6 -mt-16 pb-16 space-y-10">
+                <SectionCard
+                    title="Seguimiento"
+                    description="Comprueba en qué etapa del pipeline se encuentra esta oportunidad."
+                >
+                    <FlowStepper :steps="opportunitySteps" :active-index="activeStep" />
+                </SectionCard>
+
+                <SectionCard
+                    title="Detalles de la oportunidad"
+                    description="Revisa y ajusta la información relevante antes de guardar."
+                >
+                    <OpportunityForm
+                        :form="form"
+                        :leads="props.leads"
+                        :processing="form.processing"
+                        submit-label="Guardar cambios"
+                        :statuses="opportunityStatuses"
+                        :cancel-href="route('opportunities.show', props.opportunity.id)"
+                        @submit="submit"
+                        @cancel="goBack"
+                    />
+                </SectionCard>
+            </div>
         </div>
     </AppLayout>
 </template>
 
 <script setup>
-import { ref, watchEffect } from 'vue';
+import { computed } from 'vue';
 import { Inertia } from '@inertiajs/inertia';
+import { useForm } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import SaveIcon from "@/Components/Icons/SaveIcon.vue";
+import NavLink from '@/Components/NavLink.vue';
+import SectionCard from '@/Components/Crm/SectionCard.vue';
+import FlowStepper from '@/Components/Crm/FlowStepper.vue';
+import OpportunityForm from '@/Components/Crm/OpportunityForm.vue';
 
-// Props recibidos
 const props = defineProps({
-    leads: Array,
-    opportunity: Object, // Oportunidad a editar
+    leads: {
+        type: Array,
+        default: () => [],
+    },
+    opportunity: {
+        type: Object,
+        required: true,
+    },
 });
 
-// Formulario inicializado con los valores de la oportunidad
-const form = ref({
+const opportunitySteps = [
+    {
+        label: 'Lead asignado',
+        description: 'Contacto responsable y seguimiento.',
+    },
+    {
+        label: 'Detalles comerciales',
+        description: 'Valor, descripción y probabilidad.',
+    },
+    {
+        label: 'Confirmación',
+        description: 'Valida cambios y comunica al equipo.',
+    },
+];
+
+const opportunityStatuses = ['En proceso', 'Ganada', 'Perdida'];
+
+const form = useForm({
     description: props.opportunity.description || '',
     value: props.opportunity.value || '',
-    probability: props.opportunity.probability || '', // Nuevo campo para la probabilidad
-    status: props.opportunity.status || 'En proceso',
-    lead_id: props.opportunity.lead_id || '',
+    probability: props.opportunity.probability ?? 50,
+    status: props.opportunity.status || opportunityStatuses[0],
+    lead_id: props.opportunity.lead_id || props.leads[0]?.id || '',
 });
 
-// Manejar el envío del formulario
-const submitForm = () => {
-    Inertia.put(route('opportunities.update', props.opportunity.id), form.value);
-};
+const activeStep = computed(() => {
+    if (form.recentlySuccessful) {
+        return 2;
+    }
+    return form.isDirty ? 2 : 1;
+});
+
+function submit() {
+    form.put(route('opportunities.update', props.opportunity.id), {
+        preserveScroll: true,
+    });
+}
+
+function goBack(href) {
+    if (href) {
+        Inertia.visit(href);
+        return;
+    }
+    window.history.back();
+}
 </script>
