@@ -169,7 +169,7 @@ const typography = inventoryTypography;
                             <div class="flex items-center justify-end gap-2">
                                 <Link
                                     :href="route('suppliers.show', supplier.id)"
-                                    class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-sky-500/10 text-sky-600 transition hover:bg-sky-500/20"
+                                    class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-900/20 text-white transition hover:bg-slate-900/40"
                                 >
                                     <InfoIcon class="h-5 w-5" />
                                 </Link>
