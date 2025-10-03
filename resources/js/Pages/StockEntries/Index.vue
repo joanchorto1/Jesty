@@ -1,7 +1,6 @@
 <script setup>
 import { computed, ref } from 'vue';
 import { Inertia } from '@inertiajs/inertia';
-import { Link } from '@inertiajs/inertia-vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
@@ -69,6 +68,15 @@ const showStockEntryDetails = (id) => {
 const supplierName = (supplierId) =>
     props.suppliers.find((supplier) => Number(supplier.id) === Number(supplierId))?.name ?? '—';
 
+const createStockEntry = () => {
+    if (!selectedSupplier.value) {
+        alert('Selecciona un proveïdor abans de crear una nova entrada.');
+        return;
+    }
+
+    Inertia.visit(route('stockEntries.create', selectedSupplier.value));
+};
+
 const palette = inventoryPalette;
 const typography = inventoryTypography;
 </script>
@@ -92,13 +100,14 @@ const typography = inventoryTypography;
                             </div>
                         </div>
                         <div class="flex justify-end gap-3">
-                            <Link
-                                :href="route('stockEntries.create')"
+                            <button
+                                type="button"
                                 class="inline-flex items-center gap-2 rounded-full bg-white/10 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-amber-900/10 transition hover:bg-white/20"
+                                @click="createStockEntry"
                             >
                                 <AddIcon class="h-5 w-5" />
                                 Nova entrada
-                            </Link>
+                            </button>
                         </div>
                     </div>
 
