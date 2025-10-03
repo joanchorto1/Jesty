@@ -3,7 +3,7 @@
 </script>
 
 <template>
-    <svg height="45px" width="45px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+    <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
          viewBox="0 0 512 512" xml:space="preserve">
 <path style="fill:#D7DEED;" d="M503.985,127.417v0.12l-376.337,0.611L7.54,128.338l-0.03-15.994
 	C7.47,94.727,21.863,80.285,39.478,80.245l432.388-0.811c17.616-0.03,32.049,14.353,32.089,31.969L503.985,127.417z"/>

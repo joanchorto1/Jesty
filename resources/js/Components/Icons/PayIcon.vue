@@ -15,7 +15,7 @@
         <line class="st0" x1="11" y1="13" x2="11" y2="14"/>
         <path class="st0" d="M12,7h-1.5C9.7,7,9,7.7,9,8.5v0C9,9.3,9.7,10,10.5,10h1c0.8,0,1.5,0.7,1.5,1.5v0c0,0.8-0.7,1.5-1.5,1.5H10"/>
         <rect x="-72" y="-432" class="st3" width="536" height="680"/>
-</svg>
+    </svg>
 </template>
 
 <style scoped>
