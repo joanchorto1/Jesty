@@ -153,9 +153,9 @@ import AddProductIcon from "@/Components/Icons/AddProductIcon.vue";
 import DeleteIcon from "@/Components/Icons/DeleteIcon.vue";
 
 const props = defineProps({
-    clients: Array,
-    products: Array,
-    categories: Array,
+    clients: { type: Array, default: () => [] },
+    products: { type: Array, default: () => [] },
+    categories: { type: Array, default: () => [] },
     projects: { type: Array, default: () => [] },
 });
 
