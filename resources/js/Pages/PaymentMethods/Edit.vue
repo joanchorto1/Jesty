@@ -1,54 +1,60 @@
 <template>
     <AppLayout>
-        <div class="p-6 w-full bg-gray-50 min-h-screen shadow-md">
-            <h1 class="text-3xl font-bold mb-8">Editar Método de Pago</h1>
-            <form @submit.prevent="submitForm">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="mb-4">
-                        <label for="name" class="block text-gray-700">Nombre del Método</label>
-                        <input v-model="method.name" id="name" type="text" placeholder="Nombre del Método"
-                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+        <div class="p-6 w-full bg-gray-50 min-h-screen">
+            <div class="mx-auto max-w-4xl">
+                <h1 class="text-3xl font-semibold mb-6 text-gray-800">Editar método de pago</h1>
+
+                <form @submit.prevent="submitForm" class="space-y-6 bg-white p-6 rounded-lg shadow">
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-gray-700">Nombre del método</label>
+                        <input
+                            v-model="form.name"
+                            id="name"
+                            type="text"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                        >
+                        <p v-if="form.errors.name" class="mt-2 text-sm text-red-600">{{ form.errors.name }}</p>
                     </div>
 
-                    <div class="mb-4">
-                        <label for="description" class="block text-gray-700">Descripción</label>
-                        <textarea v-model="method.description" id="description" rows="4"
-                                  class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
-                                  placeholder="Descripción del método de pago"></textarea>
+                    <div>
+                        <label for="description" class="block text-sm font-medium text-gray-700">Descripción</label>
+                        <textarea
+                            v-model="form.description"
+                            id="description"
+                            rows="4"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                        ></textarea>
+                        <p v-if="form.errors.description" class="mt-2 text-sm text-red-600">{{ form.errors.description }}</p>
                     </div>
-                </div>
 
-                <div class="mt-8 flex justify-between items-center">
-                    <button type="submit" class="bg-blue-900 p-2 rounded-full" title="Guardar Cambios">
-                        <SaveIcon class="w-6 h-6 stroke-gray-50"/>
-                    </button>
-                </div>
-            </form>
+                    <div class="flex items-center justify-between">
+                        <Link :href="route('paymentMethods.show', method.id)" class="text-sm font-medium text-gray-600 hover:text-gray-800">Cancelar y volver</Link>
+                        <button type="submit" class="inline-flex items-center rounded-full bg-blue-900 px-4 py-2 text-white shadow hover:bg-blue-700">
+                            <SaveIcon class="mr-2 h-5 w-5 stroke-gray-100" />
+                            Guardar cambios
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </AppLayout>
 </template>
 
 <script setup>
-import {ref, onMounted} from 'vue';
-import {Inertia} from '@inertiajs/inertia';
+import { Link, useForm } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import SaveIcon from "@/Components/Icons/SaveIcon.vue";
+import SaveIcon from '@/Components/Icons/SaveIcon.vue';
 
-// Obtener el método existente desde los props
 const props = defineProps({
     method: Object,
 });
-const method = ref({
-    name: props.method.name,
-    description: props.method.description,
-});
 
-// Cargar los datos del método al montar el componente
-onMounted(() => {
-    method.value = props.method;
+const form = useForm({
+    name: props.method?.name ?? '',
+    description: props.method?.description ?? '',
 });
 
 const submitForm = () => {
-    Inertia.put(route('paymentMethods.update', props.method.id), method.value);
+    form.put(route('paymentMethods.update', props.method.id));
 };
 </script>

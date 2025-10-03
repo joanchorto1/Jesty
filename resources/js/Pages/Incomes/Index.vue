@@ -43,6 +43,13 @@
                 </td>
                 <td class="px-4 py-2">{{ income.date }}</td>
                 <td class="px-4 py-2 text-center flex justify-center space-x-2">
+                    <Link
+                        :href="route('incomes.show', income.id)"
+                        class="text-blue-500 hover:text-blue-700"
+                        title="Ver"
+                    >
+                        <InfoIcon class="stroke-gray-600 w-5" />
+                    </Link>
                     <a
                         :href="route('incomes.edit', income.id)"
                         class="text-blue-500 hover:text-blue-700"
@@ -66,9 +73,10 @@
 </template>
 
 <script setup>
-import { router } from '@inertiajs/vue3';
+import { Link, router } from '@inertiajs/vue3';
 import EditIcon from '@/Components/Icons/EditIcon.vue';
 import DeleteIcon from '@/Components/Icons/DeleteIcon.vue';
+import InfoIcon from '@/Components/Icons/InfoIcon.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 const props = defineProps({
     incomes: Array, // Lista de ingresos enviada desde el controlador
