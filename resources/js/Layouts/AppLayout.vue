@@ -41,7 +41,7 @@
                                         <p class="text-xs uppercase tracking-[0.35em] text-blue-200/60">General</p>
                                         <NewNavLink :href="route('dashboard')" :active="route().current('dashboard')">
                                             <div class="flex items-center gap-3">
-                                                <span class="icon-accent flex h-8 w-8 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
+                                                <span class="icon-accent flex h-4 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
                                                     <MenuHomeIcon class="h-4 w-4" />
                                                 </span>
                                                 <div class="text-left">
@@ -56,7 +56,7 @@
                                         <p class="text-xs uppercase tracking-[0.35em] text-blue-200/60">Facturació</p>
                                         <NewNavLink :href="route('dashboard.billing')" :active="route().current('dashboard.billing')">
                                             <div class="flex items-center gap-3">
-                                                <span class="icon-accent flex h-8 w-8 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
+                                                <span class="icon-accent flex h-4 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
                                                     <MenuBillingIcon class="h-4 w-4" />
                                                 </span>
                                                 <div class="text-left">
@@ -86,7 +86,7 @@
                                         <p class="text-xs uppercase tracking-[0.35em] text-blue-200/60">Magatzem</p>
                                         <NewNavLink :href="route('dashboard.products')" :active="route().current('dashboard.products')">
                                             <div class="flex items-center gap-3">
-                                                <span class="icon-accent flex h-8 w-8 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
+                                                <span class="icon-accent flex h-4 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
                                                     <MenuInventoryIcon class="h-4 w-4" />
                                                 </span>
                                                 <div class="text-left">
@@ -128,7 +128,7 @@
                                         <p class="text-xs uppercase tracking-[0.35em] text-blue-200/60">Clients</p>
                                         <NewNavLink :href="route('dashboard.clients')" :active="route().current('dashboard.clients')">
                                             <div class="flex items-center gap-3">
-                                                <span class="icon-accent flex h-8 w-8 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
+                                                <span class="icon-accent flex h-4 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
                                                     <MenuClientsIcon class="h-4 w-4" />
                                                 </span>
                                                 <div class="text-left">
@@ -143,7 +143,7 @@
                                         <p class="text-xs uppercase tracking-[0.35em] text-blue-200/60">Finances</p>
                                         <NewNavLink :href="route('dashboard.accounting')" :active="route().current('dashboard.accounting')">
                                             <div class="flex items-center gap-3">
-                                                <span class="icon-accent flex h-8 w-8 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
+                                                <span class="icon-accent flex h-4 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
                                                     <MenuAccountingIcon class="h-4 w-4" />
                                                 </span>
                                                 <div class="text-left">
@@ -191,7 +191,7 @@
                                         <p class="text-xs uppercase tracking-[0.35em] text-blue-200/60">TPV</p>
                                         <NewNavLink :href="route('dashboard.tpv')" :active="route().current('dashboard.tpv')">
                                             <div class="flex items-center gap-3">
-                                                <span class="icon-accent flex h-8 w-8 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
+                                                <span class="icon-accent flex h-4 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
                                                     <PayIcon class="h-4 w-4" />
                                                 </span>
                                                 <div class="text-left">
@@ -227,7 +227,7 @@
                                         <p class="text-xs uppercase tracking-[0.35em] text-blue-200/60">Persones</p>
                                         <NewNavLink :href="route('dashboard.rrhh')" :active="route().current('dashboard.rrhh')">
                                             <div class="flex items-center gap-3">
-                                                <span class="icon-accent flex h-8 w-8 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
+                                                <span class="icon-accent flex h-4 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
                                                     <MenuRRHHIcon class="h-4 w-4" />
                                                 </span>
                                                 <div class="text-left">
@@ -287,7 +287,7 @@
                                         <p class="text-xs uppercase tracking-[0.35em] text-blue-200/60">CRM</p>
                                         <NewNavLink :href="route('dashboard.crm')" :active="route().current('dashboard.crm')">
                                             <div class="flex items-center gap-3">
-                                                <span class="icon-accent flex h-8 w-8 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
+                                                <span class="icon-accent flex h-4 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
                                                     <MenuCRMIcon class="h-4 w-4" />
                                                 </span>
                                                 <div class="text-left">
@@ -317,7 +317,7 @@
                                         <p class="text-xs uppercase tracking-[0.35em] text-blue-200/60">Administració</p>
                                         <NewNavLink :href="route('dashboard.admin')" :active="route().current('dashboard.admin')">
                                             <div class="flex items-center gap-3">
-                                                <span class="icon-accent flex h-8 w-8 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
+                                                <span class="icon-accent flex h-4 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
                                                     <MenuReportIcon class="h-4 w-4" />
                                                 </span>
                                                 <div class="text-left">
@@ -353,8 +353,8 @@
                         </div>
                     </aside>
 
-                    <main class="flex-1">
-                        <div class="min-h-full rounded-3xl border border-white/10 bg-slate-900/60 px-4 py-6 shadow-2xl shadow-blue-500/20 backdrop-blur lg:px-8 lg:py-10">
+                    <main class="flex-1 w-full">
+                        <div class="min-h-full w-full rounded-3xl border border-white/10 bg-slate-900/60 px-4 py-6 shadow-2xl shadow-blue-500/20 backdrop-blur lg:px-8 lg:py-10">
                             <slot />
                         </div>
                     </main>
