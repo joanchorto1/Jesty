@@ -16,7 +16,7 @@
                             <img src="/storage/JesTy.jpeg" alt="Logo de POPERP" class="h-9 w-9 rounded-xl object-cover">
                         </span>
                         <span class="flex flex-col">
-                            <span class="text-lg font-semibold tracking-wide">POPERP by JCTAgency</span>
+                            <span class="text-lg font-semibold tracking-wide"> JCTAgency</span>
                             <span class="text-xs uppercase tracking-[0.35em] text-blue-100/80">Business Control Suite</span>
                         </span>
                     </a>
@@ -43,7 +43,7 @@
                                         <NewNavLink :href="route('dashboard')" :active="route().current('dashboard')">
                                             <div class="flex items-center gap-3">
                                                 <span class="icon-accent flex h-3 w-3 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
-                                                    <MenuHomeIcon class="h-2 w-2" />
+                                                    <MenuHomeIcon class="h-2 w-2 p-3" />
                                                 </span>
                                                 <div class="text-left">
                                                     <p class="text-sm font-semibold">Inici</p>
