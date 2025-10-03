@@ -353,23 +353,20 @@ import MenuClientsIcon from '@/Components/Icons/MenuClientsIcon.vue';
 import MenuProductIcon from '@/Components/Icons/MenuProductIcon.vue';
 import MenuCategoryIcon from '@/Components/Icons/MenuCategoryIcon.vue';
 
-const props = withDefaults(
-    defineProps({
-        clients: {
-            type: Array,
-            default: () => [],
-        },
-        products: {
-            type: Array,
-            default: () => [],
-        },
-        categories: {
-            type: Array,
-            default: () => [],
-        },
-    }),
-    {}
-);
+const props = defineProps({
+    clients: {
+        type: Array,
+        default: () => [],
+    },
+    products: {
+        type: Array,
+        default: () => [],
+    },
+    categories: {
+        type: Array,
+        default: () => [],
+    },
+});
 
 const invoice = ref({
     date: new Date().toISOString().split('T')[0],
