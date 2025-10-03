@@ -61,11 +61,13 @@ class CategoryController extends Controller
         return Inertia::location(route('categories.index'));
     }
 
-    //show
-
-    public function show()
+    public function show(Category $category)
     {
+        $category->load(['company'])->loadCount('products');
 
+        return Inertia::render('Categories/Show', [
+            'category' => $category,
+        ]);
     }
 
     public function destroy(Category $category)

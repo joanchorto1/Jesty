@@ -1,54 +1,98 @@
 <template>
-    <AppLayout>
-        <div class="p-6 w-full bg-gray-50 min-h-screen shadow-md">
-            <h1 class="text-3xl font-bold mb-8">Editar Método de Pago</h1>
-            <form @submit.prevent="submitForm">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="mb-4">
-                        <label for="name" class="block text-gray-700">Nombre del Método</label>
-                        <input v-model="method.name" id="name" type="text" placeholder="Nombre del Método"
-                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                    </div>
+    <AppLayout title="Editar método de pago">
+        <div class="min-h-screen bg-slate-950">
+            <FinancePageHeader
+                eyebrow="Pagos"
+                :title="`Editar ${form.name || 'método'}`"
+                description="Actualiza el método para que los equipos sepan cuándo utilizarlo y cómo se reflejará en los informes."
+                :metrics-columns="3"
+            >
+                <template #metrics>
+                    <FinanceSummaryCard label="Nombre" :value="form.name || 'Sin definir'" :helper="`${form.name.length} caracteres`" />
+                    <FinanceSummaryCard label="Descripción" :value="`${descriptionLength} car.`" :helper="descriptionLength ? 'Actualizada' : 'Añade contexto'" />
+                    <FinanceSummaryCard label="Uso" :value="`${expensesCount} movimientos`" :helper="expensesCount === 1 ? 'Gasto vinculado' : 'Gastos vinculados'" />
+                </template>
+            </FinancePageHeader>
 
-                    <div class="mb-4">
-                        <label for="description" class="block text-gray-700">Descripción</label>
-                        <textarea v-model="method.description" id="description" rows="4"
-                                  class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
-                                  placeholder="Descripción del método de pago"></textarea>
-                    </div>
-                </div>
+            <main class="max-w-4xl mx-auto px-6 -mt-16 pb-16 space-y-10">
+                <section class="rounded-3xl border border-white/10 bg-white/95 p-8 shadow-xl">
+                    <header class="mb-8 border-b border-slate-200 pb-4">
+                        <h2 class="text-xl font-semibold text-slate-800">Datos del método</h2>
+                        <p class="mt-1 text-sm text-slate-500">Cualquier ajuste impactará en los formularios de gastos y en los listados contables.</p>
+                    </header>
 
-                <div class="mt-8 flex justify-between items-center">
-                    <button type="submit" class="bg-blue-900 p-2 rounded-full" title="Guardar Cambios">
-                        <SaveIcon class="w-6 h-6 stroke-gray-50"/>
-                    </button>
-                </div>
-            </form>
+                    <form @submit.prevent="submitForm" class="grid grid-cols-1 gap-6">
+                        <div>
+                            <InputLabel for="name" value="Nombre" />
+                            <TextInput id="name" v-model="form.name" type="text" class="mt-2 block w-full" />
+                            <InputError :message="form.errors.name" class="mt-2" />
+                        </div>
+
+                        <div>
+                            <InputLabel for="description" value="Descripción" />
+                            <TextareaInput id="description" v-model="form.description" rows="4" class="mt-2 block w-full" />
+                            <InputError :message="form.errors.description" class="mt-2" />
+                        </div>
+
+                        <input type="hidden" v-model="form.company_id" />
+
+                        <div class="flex items-center gap-3 pt-2">
+                            <PrimaryButton type="submit" :disabled="form.processing">
+                                Guardar cambios
+                            </PrimaryButton>
+                            <NavLink
+                                :href="route('paymentMethods.show', method.id)"
+                                class="text-sm font-semibold text-slate-500 transition hover:text-slate-700"
+                            >
+                                Cancelar y ver ficha
+                            </NavLink>
+                        </div>
+                    </form>
+                </section>
+            </main>
         </div>
     </AppLayout>
 </template>
 
 <script setup>
-import {ref, onMounted} from 'vue';
-import {Inertia} from '@inertiajs/inertia';
+import { computed } from 'vue';
+import { useForm, usePage } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import SaveIcon from "@/Components/Icons/SaveIcon.vue";
+import FinancePageHeader from '@/Components/Finance/FinancePageHeader.vue';
+import FinanceSummaryCard from '@/Components/Finance/FinanceSummaryCard.vue';
+import InputLabel from '@/Components/InputLabel.vue';
+import TextInput from '@/Components/TextInput.vue';
+import TextareaInput from '@/Components/TextareaInput.vue';
+import InputError from '@/Components/InputError.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
+import NavLink from '@/Components/NavLink.vue';
 
-// Obtener el método existente desde los props
 const props = defineProps({
-    method: Object,
-});
-const method = ref({
-    name: props.method.name,
-    description: props.method.description,
+    method: {
+        type: Object,
+        required: true,
+    },
+    expensesCount: {
+        type: Number,
+        default: 0,
+    },
 });
 
-// Cargar los datos del método al montar el componente
-onMounted(() => {
-    method.value = props.method;
+const page = usePage();
+const fallbackCompanyId = page.props?.auth?.user?.company_id ?? '';
+
+const method = computed(() => props.method ?? {});
+
+const form = useForm({
+    name: method.value.name || '',
+    description: method.value.description || '',
+    company_id: method.value.company_id ?? fallbackCompanyId,
 });
+
+const descriptionLength = computed(() => form.description?.length ?? 0);
+const expensesCount = computed(() => props.expensesCount ?? 0);
 
 const submitForm = () => {
-    Inertia.put(route('paymentMethods.update', props.method.id), method.value);
+    form.put(route('paymentMethods.update', method.value.id));
 };
 </script>
