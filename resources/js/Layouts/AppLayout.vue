@@ -30,7 +30,7 @@
             <!-- Sidebar Menu -->
             <nav class="w-64 flex-shrink-0">
                 <div class="relative h-full">
-                    <div class="absolute inset-0 rounded-3xl bg-white/70 shadow-xl shadow-slate-200/60 border border-white/80 backdrop-blur">
+                    <div class="absolute inset-0 rounded-3xl bg-white/10 shadow-xl shadow-slate-900/20 border border-white/20 backdrop-blur">
                     </div>
                     <div class="relative flex h-full flex-col mt-0 rounded-3xl px-5 py-8 space-y-4 overflow-y-auto">
                         <div class="text-xs uppercase tracking-[0.35em] text-slate-400 font-semibold">Menú</div>
@@ -380,7 +380,7 @@
             <div class="flex-1 flex">
                 <!-- Page Content -->
                 <main class="flex-1">
-                    <div class="h-full w-full rounded-3xl bg-white/70 backdrop-blur border border-white/60 shadow-xl shadow-slate-200/60 px-4 py-6 sm:px-8 sm:py-10">
+                    <div class="h-full w-full rounded-3xl bg-white/5 backdrop-blur border border-white/20 shadow-xl shadow-slate-900/10 px-4 py-6 sm:px-8 sm:py-10">
                         <slot/>
                     </div>
                 </main>
