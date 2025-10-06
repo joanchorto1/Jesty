@@ -6,6 +6,17 @@
     display: none;
 }
 
+@layer base {
+    input,
+    select,
+    textarea,
+    .form-input,
+    .form-select,
+    .form-textarea {
+        @apply text-slate-900;
+    }
+}
+
 .icon-accent {
     color: inherit;
 }
