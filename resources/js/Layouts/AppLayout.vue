@@ -69,16 +69,20 @@
                                         </NewNavLink>
                                         <div v-if="isBillingPage" class="ml-4 space-y-2 border-l border-white/10 pl-4">
                                             <NewNavLink :href="route('invoices.index')" :active="route().current('invoices.index')" variant="sub">
-                                                <span class="flex items-center gap-2 text-sm">
-                                                    <MenuInvoiceIcon class="icon-accent h-4 w-4 text-blue-100" />
-                                                    <span>Factures</span>
-                                                </span>
+                                                <div class="flex items-center gap-3">
+                                                    <span class="flex h-7 w-7 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
+                                                        <MenuInvoiceIcon class="icon-accent h-4 w-4 text-blue-100" />
+                                                    </span>
+                                                    <span class="text-sm">Factures</span>
+                                                </div>
                                             </NewNavLink>
                                             <NewNavLink :href="route('budgets.index')" :active="route().current('budgets.index')" variant="sub">
-                                                <span class="flex items-center gap-2 text-sm">
-                                                    <MenuBudgetIcon class="icon-accent h-4 w-4 text-blue-100" />
-                                                    <span>Pressupostos</span>
-                                                </span>
+                                                <div class="flex items-center gap-3">
+                                                    <span class="flex h-7 w-7 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
+                                                        <MenuBudgetIcon class="icon-accent h-4 w-4 text-blue-100" />
+                                                    </span>
+                                                    <span class="text-sm">Pressupostos</span>
+                                                </div>
                                             </NewNavLink>
                                         </div>
                                     </div>
@@ -99,28 +103,36 @@
                                         </NewNavLink>
                                         <div v-if="isProductsPage" class="ml-4 space-y-2 border-l border-white/10 pl-4">
                                             <NewNavLink :href="route('products.index')" :active="route().current('products.index')" variant="sub">
-                                                <span class="flex items-center gap-2 text-sm">
-                                                    <MenuProductIcon class="icon-accent h-4 w-4 text-blue-100" />
-                                                    <span>Productes</span>
-                                                </span>
+                                                <div class="flex items-center gap-3">
+                                                    <span class="flex h-7 w-7 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
+                                                        <MenuProductIcon class="icon-accent h-4 w-4 text-blue-100" />
+                                                    </span>
+                                                    <span class="text-sm">Productes</span>
+                                                </div>
                                             </NewNavLink>
                                             <NewNavLink :href="route('suppliers.index')" :active="route().current('suppliers.index')" variant="sub">
-                                                <span class="flex items-center gap-2 text-sm">
-                                                    <MenuClientsIcon class="icon-accent h-4 w-4 text-blue-100" />
-                                                    <span>Proveïdors</span>
-                                                </span>
+                                                <div class="flex items-center gap-3">
+                                                    <span class="flex h-7 w-7 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
+                                                        <MenuClientsIcon class="icon-accent h-4 w-4 text-blue-100" />
+                                                    </span>
+                                                    <span class="text-sm">Proveïdors</span>
+                                                </div>
                                             </NewNavLink>
                                             <NewNavLink :href="route('stockEntries.index')" :active="route().current('stockEntries.index')" variant="sub">
-                                                <span class="flex items-center gap-2 text-sm">
-                                                    <AddProductIcon class="icon-accent h-4 w-4 text-blue-100" />
-                                                    <span>Entrades de stock</span>
-                                                </span>
+                                                <div class="flex items-center gap-3">
+                                                    <span class="flex h-7 w-7 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
+                                                        <AddProductIcon class="icon-accent h-4 w-4 text-blue-100" />
+                                                    </span>
+                                                    <span class="text-sm">Entrades de stock</span>
+                                                </div>
                                             </NewNavLink>
                                             <NewNavLink :href="route('categories.index')" :active="route().current('categories.index')" variant="sub">
-                                                <span class="flex items-center gap-2 text-sm">
-                                                    <MenuCategoryIcon class="icon-accent h-4 w-4 text-blue-100" />
-                                                    <span>Categories</span>
-                                                </span>
+                                                <div class="flex items-center gap-3">
+                                                    <span class="flex h-7 w-7 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
+                                                        <MenuCategoryIcon class="icon-accent h-4 w-4 text-blue-100" />
+                                                    </span>
+                                                    <span class="text-sm">Categories</span>
+                                                </div>
                                             </NewNavLink>
                                         </div>
                                     </div>
@@ -156,34 +168,44 @@
                                         </NewNavLink>
                                         <div v-if="isAccountingPage" class="ml-4 space-y-2 border-l border-white/10 pl-4">
                                             <NewNavLink :href="route('expenses.report')" :active="route().current('expenses.report')" variant="sub">
-                                                <span class="flex items-center gap-2 text-sm">
-                                                    <MenuReportIcon class="icon-accent h-4 w-4 text-blue-100" />
-                                                    <span>Informes</span>
-                                                </span>
+                                                <div class="flex items-center gap-3">
+                                                    <span class="flex h-7 w-7 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
+                                                        <MenuReportIcon class="icon-accent h-4 w-4 text-blue-100" />
+                                                    </span>
+                                                    <span class="text-sm">Informes</span>
+                                                </div>
                                             </NewNavLink>
                                             <NewNavLink :href="route('incomes.index')" :active="route().current('incomes.index')" variant="sub">
-                                                <span class="flex items-center gap-2 text-sm">
-                                                    <IncomeIcon class="icon-accent h-4 w-4 text-blue-100" />
-                                                    <span>Ingressos</span>
-                                                </span>
+                                                <div class="flex items-center gap-3">
+                                                    <span class="flex h-7 w-7 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
+                                                        <IncomeIcon class="icon-accent h-4 w-4 text-blue-100" />
+                                                    </span>
+                                                    <span class="text-sm">Ingressos</span>
+                                                </div>
                                             </NewNavLink>
                                             <NewNavLink :href="route('expenses.index')" :active="route().current('expenses.index')" variant="sub">
-                                                <span class="flex items-center gap-2 text-sm">
-                                                    <MenuExpenseIcon class="icon-accent h-4 w-4 text-blue-100" />
-                                                    <span>Despeses</span>
-                                                </span>
+                                                <div class="flex items-center gap-3">
+                                                    <span class="flex h-7 w-7 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
+                                                        <MenuExpenseIcon class="icon-accent h-4 w-4 text-blue-100" />
+                                                    </span>
+                                                    <span class="text-sm">Despeses</span>
+                                                </div>
                                             </NewNavLink>
                                             <NewNavLink :href="route('expenseCategories.index')" :active="route().current('expenseCategories.index')" variant="sub">
-                                                <span class="flex items-center gap-2 text-sm">
-                                                    <MenuCategoryIcon class="icon-accent h-4 w-4 text-blue-100" />
-                                                    <span>Categories</span>
-                                                </span>
+                                                <div class="flex items-center gap-3">
+                                                    <span class="flex h-7 w-7 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
+                                                        <MenuCategoryIcon class="icon-accent h-4 w-4 text-blue-100" />
+                                                    </span>
+                                                    <span class="text-sm">Categories</span>
+                                                </div>
                                             </NewNavLink>
                                             <NewNavLink :href="route('paymentMethods.index')" :active="route().current('paymentMethods.index')" variant="sub">
-                                                <span class="flex items-center gap-2 text-sm">
-                                                    <MenuPaymentIcon class="icon-accent h-4 w-4 text-blue-100" />
-                                                    <span>Mètodes de pagament</span>
-                                                </span>
+                                                <div class="flex items-center gap-3">
+                                                    <span class="flex h-7 w-7 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
+                                                        <MenuPaymentIcon class="icon-accent h-4 w-4 text-blue-100" />
+                                                    </span>
+                                                    <span class="text-sm">Mètodes de pagament</span>
+                                                </div>
                                             </NewNavLink>
                                         </div>
                                     </div>
@@ -204,22 +226,28 @@
                                         </NewNavLink>
                                         <div v-if="isTpvPage" class="ml-4 space-y-2 border-l border-white/10 pl-4">
                                             <NewNavLink :href="route('tikets.create')" :active="route().current('tikets.create')" variant="sub">
-                                                <span class="flex items-center gap-2 text-sm">
-                                                    <MenuPaymentIcon class="icon-accent h-4 w-4 text-blue-100" />
-                                                    <span>Nova venda</span>
-                                                </span>
+                                                <div class="flex items-center gap-3">
+                                                    <span class="flex h-7 w-7 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
+                                                        <MenuPaymentIcon class="icon-accent h-4 w-4 text-blue-100" />
+                                                    </span>
+                                                    <span class="text-sm">Nova venda</span>
+                                                </div>
                                             </NewNavLink>
                                             <NewNavLink :href="route('tikets.index')" :active="route().current('tikets.index')" variant="sub">
-                                                <span class="flex items-center gap-2 text-sm">
-                                                    <MenuInvoiceIcon class="icon-accent h-4 w-4 text-blue-100" />
-                                                    <span>Tickets</span>
-                                                </span>
+                                                <div class="flex items-center gap-3">
+                                                    <span class="flex h-7 w-7 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
+                                                        <MenuInvoiceIcon class="icon-accent h-4 w-4 text-blue-100" />
+                                                    </span>
+                                                    <span class="text-sm">Tickets</span>
+                                                </div>
                                             </NewNavLink>
                                             <NewNavLink :href="route('tikets.productReport')" :active="route().current('tikets.productReport')" variant="sub">
-                                                <span class="flex items-center gap-2 text-sm">
-                                                    <MenuReportIcon class="icon-accent h-4 w-4 text-blue-100" />
-                                                    <span>Informe de productes</span>
-                                                </span>
+                                                <div class="flex items-center gap-3">
+                                                    <span class="flex h-7 w-7 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
+                                                        <MenuReportIcon class="icon-accent h-4 w-4 text-blue-100" />
+                                                    </span>
+                                                    <span class="text-sm">Informe de productes</span>
+                                                </div>
                                             </NewNavLink>
                                         </div>
                                     </div>
@@ -240,46 +268,60 @@
                                         </NewNavLink>
                                         <div v-if="isRRHHPage" class="ml-4 space-y-2 border-l border-white/10 pl-4">
                                             <NewNavLink :href="route('employees.index')" :active="route().current('employees.index')" variant="sub">
-                                                <span class="flex items-center gap-2 text-sm">
-                                                    <MenuClientsIcon class="icon-accent h-4 w-4 text-blue-100" />
-                                                    <span>Empleats</span>
-                                                </span>
+                                                <div class="flex items-center gap-3">
+                                                    <span class="flex h-7 w-7 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
+                                                        <MenuClientsIcon class="icon-accent h-4 w-4 text-blue-100" />
+                                                    </span>
+                                                    <span class="text-sm">Empleats</span>
+                                                </div>
                                             </NewNavLink>
                                             <NewNavLink :href="route('departments.index')" :active="route().current('departments.index')" variant="sub">
-                                                <span class="flex items-center gap-2 text-sm">
-                                                    <MenuCategoryIcon class="icon-accent h-4 w-4 text-blue-100" />
-                                                    <span>Departaments</span>
-                                                </span>
+                                                <div class="flex items-center gap-3">
+                                                    <span class="flex h-7 w-7 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
+                                                        <MenuCategoryIcon class="icon-accent h-4 w-4 text-blue-100" />
+                                                    </span>
+                                                    <span class="text-sm">Departaments</span>
+                                                </div>
                                             </NewNavLink>
                                             <NewNavLink :href="route('payrolls.index')" :active="route().current('payrolls.index')" variant="sub">
-                                                <span class="flex items-center gap-2 text-sm">
-                                                    <MenuInvoiceIcon class="icon-accent h-4 w-4 text-blue-100" />
-                                                    <span>Nòmines</span>
-                                                </span>
+                                                <div class="flex items-center gap-3">
+                                                    <span class="flex h-7 w-7 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
+                                                        <MenuInvoiceIcon class="icon-accent h-4 w-4 text-blue-100" />
+                                                    </span>
+                                                    <span class="text-sm">Nòmines</span>
+                                                </div>
                                             </NewNavLink>
                                             <NewNavLink :href="route('attendances.index')" :active="route().current('attendances.index')" variant="sub">
-                                                <span class="flex items-center gap-2 text-sm">
-                                                    <MenuAccountingIcon class="icon-accent h-4 w-4 text-blue-100" />
-                                                    <span>Control horari</span>
-                                                </span>
+                                                <div class="flex items-center gap-3">
+                                                    <span class="flex h-7 w-7 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
+                                                        <MenuAccountingIcon class="icon-accent h-4 w-4 text-blue-100" />
+                                                    </span>
+                                                    <span class="text-sm">Control horari</span>
+                                                </div>
                                             </NewNavLink>
                                             <NewNavLink :href="route('performance-reviews.index')" :active="route().current('performance-reviews.index')" variant="sub">
-                                                <span class="flex items-center gap-2 text-sm">
-                                                    <MenuReportIcon class="icon-accent h-4 w-4 text-blue-100" />
-                                                    <span>Desempeño</span>
-                                                </span>
+                                                <div class="flex items-center gap-3">
+                                                    <span class="flex h-7 w-7 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
+                                                        <MenuReportIcon class="icon-accent h-4 w-4 text-blue-100" />
+                                                    </span>
+                                                    <span class="text-sm">Desempeño</span>
+                                                </div>
                                             </NewNavLink>
                                             <NewNavLink :href="route('leaves.index')" :active="route().current('leaves.index')" variant="sub">
-                                                <span class="flex items-center gap-2 text-sm">
-                                                    <MenuExpenseIcon class="icon-accent h-4 w-4 text-blue-100" />
-                                                    <span>Vacances i absències</span>
-                                                </span>
+                                                <div class="flex items-center gap-3">
+                                                    <span class="flex h-7 w-7 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
+                                                        <MenuExpenseIcon class="icon-accent h-4 w-4 text-blue-100" />
+                                                    </span>
+                                                    <span class="text-sm">Vacances i absències</span>
+                                                </div>
                                             </NewNavLink>
                                             <NewNavLink :href="route('trainings.index')" :active="route().current('trainings.index')" variant="sub">
-                                                <span class="flex items-center gap-2 text-sm">
-                                                    <AddProductIcon class="icon-accent h-4 w-4 text-blue-100" />
-                                                    <span>Formacions</span>
-                                                </span>
+                                                <div class="flex items-center gap-3">
+                                                    <span class="flex h-7 w-7 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
+                                                        <AddProductIcon class="icon-accent h-4 w-4 text-blue-100" />
+                                                    </span>
+                                                    <span class="text-sm">Formacions</span>
+                                                </div>
                                             </NewNavLink>
                                         </div>
                                     </div>
@@ -300,16 +342,20 @@
                                         </NewNavLink>
                                         <div v-if="isCrmPage" class="ml-4 space-y-2 border-l border-white/10 pl-4">
                                             <NewNavLink :href="route('leads.index')" :active="route().current('leads.index')" variant="sub">
-                                                <span class="flex items-center gap-2 text-sm">
-                                                    <MenuClientsIcon class="icon-accent h-4 w-4 text-blue-100" />
-                                                    <span>Leads</span>
-                                                </span>
+                                                <div class="flex items-center gap-3">
+                                                    <span class="flex h-7 w-7 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
+                                                        <MenuClientsIcon class="icon-accent h-4 w-4 text-blue-100" />
+                                                    </span>
+                                                    <span class="text-sm">Leads</span>
+                                                </div>
                                             </NewNavLink>
                                             <NewNavLink :href="route('opportunities.index')" :active="route().current('opportunities.index')" variant="sub">
-                                                <span class="flex items-center gap-2 text-sm">
-                                                    <MenuCategoryIcon class="icon-accent h-4 w-4 text-blue-100" />
-                                                    <span>Oportunitats</span>
-                                                </span>
+                                                <div class="flex items-center gap-3">
+                                                    <span class="flex h-7 w-7 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
+                                                        <MenuCategoryIcon class="icon-accent h-4 w-4 text-blue-100" />
+                                                    </span>
+                                                    <span class="text-sm">Oportunitats</span>
+                                                </div>
                                             </NewNavLink>
                                         </div>
                                     </div>
@@ -330,22 +376,28 @@
                                         </NewNavLink>
                                         <div v-if="isAdminPage" class="ml-4 space-y-2 border-l border-white/10 pl-4">
                                             <NewNavLink :href="route('users.index')" :active="route().current('users.index')" variant="sub">
-                                                <span class="flex items-center gap-2 text-sm">
-                                                    <MenuClientsIcon class="icon-accent h-4 w-4 text-blue-100" />
-                                                    <span>Usuaris</span>
-                                                </span>
+                                                <div class="flex items-center gap-3">
+                                                    <span class="flex h-7 w-7 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
+                                                        <MenuClientsIcon class="icon-accent h-4 w-4 text-blue-100" />
+                                                    </span>
+                                                    <span class="text-sm">Usuaris</span>
+                                                </div>
                                             </NewNavLink>
                                             <NewNavLink :href="route('user_tasks.index')" :active="route().current('user_tasks.index')" variant="sub">
-                                                <span class="flex items-center gap-2 text-sm">
-                                                    <MenuInvoiceIcon class="icon-accent h-4 w-4 text-blue-100" />
-                                                    <span>Tasques</span>
-                                                </span>
+                                                <div class="flex items-center gap-3">
+                                                    <span class="flex h-7 w-7 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
+                                                        <MenuInvoiceIcon class="icon-accent h-4 w-4 text-blue-100" />
+                                                    </span>
+                                                    <span class="text-sm">Tasques</span>
+                                                </div>
                                             </NewNavLink>
                                             <NewNavLink :href="route('roles.index')" :active="route().current('roles.index')" variant="sub">
-                                                <span class="flex items-center gap-2 text-sm">
-                                                    <MenuCategoryIcon class="icon-accent h-4 w-4 text-blue-100" />
-                                                    <span>Rols</span>
-                                                </span>
+                                                <div class="flex items-center gap-3">
+                                                    <span class="flex h-7 w-7 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
+                                                        <MenuCategoryIcon class="icon-accent h-4 w-4 text-blue-100" />
+                                                    </span>
+                                                    <span class="text-sm">Rols</span>
+                                                </div>
                                             </NewNavLink>
                                         </div>
                                     </div>
