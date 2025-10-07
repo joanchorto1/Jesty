@@ -1,5 +1,5 @@
 <template>
-    <div class="relative min-h-screen bg-slate-950 text-slate-100">
+    <div class="relative min-h-screen bg-slate-950 ">
         <head>
             <title>POPERP by JCTAgency</title>
             <meta
@@ -13,7 +13,7 @@
                 <div class="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-6 py-4">
                     <a href="/dashboard" class="inline-flex items-center gap-3">
                         <span class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm shadow-inner shadow-blue-900/40">
-                            <img src="/storage/JesTy.jpeg" alt="Logo de POPERP" class="h-9 w-9 rounded-xl object-cover">
+                            <img src="/storage/JCTLogo.jpeg" alt="Logo de POPERP" class="h-9 w-9 rounded-xl object-cover">
                         </span>
                         <span class="flex flex-col">
                             <span class="text-lg font-semibold tracking-wide"> JCTAgency</span>
