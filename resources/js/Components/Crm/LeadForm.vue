@@ -17,7 +17,7 @@
                     type="text"
                     required
                     placeholder="Ej. Laura Martínez"
-                    class="mt-2 w-full rounded-2xl border border-white/20 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:border-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-200"
+                    class="mt-2 w-full rounded-2xl border border-white/20 bg-white/5 px-4 py-3 text-sm text-gray-400 placeholder:text-slate-400 focus:border-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-200"
                     :aria-invalid="hasError('name')"
                     :aria-describedby="hasError('name') ? 'lead-name-error' : undefined"
                 />
@@ -32,7 +32,7 @@
                     type="text"
                     required
                     placeholder="Nombre de la empresa"
-                    class="mt-2 w-full rounded-2xl border border-white/20 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:border-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-200"
+                    class="mt-2 w-full rounded-2xl border border-white/20 bg-white/5 px-4 py-3 text-sm text-gray-400 placeholder:text-slate-400 focus:border-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-200"
                     :aria-invalid="hasError('company_name')"
                     :aria-describedby="hasError('company_name') ? 'lead-company-error' : undefined"
                 />
@@ -47,7 +47,7 @@
                     type="email"
                     required
                     placeholder="contacto@empresa.com"
-                    class="mt-2 w-full rounded-2xl border border-white/20 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:border-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-200"
+                    class="mt-2 w-full rounded-2xl border border-white/20 bg-white/5 px-4 py-3 text-sm text-gray-400 placeholder:text-slate-400 focus:border-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-200"
                     :aria-invalid="hasError('email')"
                     :aria-describedby="hasError('email') ? 'lead-email-error' : undefined"
                 />
@@ -61,7 +61,7 @@
                     v-model="form.phone"
                     type="tel"
                     placeholder="+34 600 000 000"
-                    class="mt-2 w-full rounded-2xl border border-white/20 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:border-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-200"
+                    class="mt-2 w-full rounded-2xl border border-white/20 bg-white/5 px-4 py-3 text-sm text-gray-400 placeholder:text-slate-400 focus:border-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-200"
                     :aria-invalid="hasError('phone')"
                     :aria-describedby="hasError('phone') ? 'lead-phone-error' : undefined"
                 />
@@ -75,7 +75,7 @@
                     v-model="form.position"
                     type="text"
                     placeholder="Director/a de compras"
-                    class="mt-2 w-full rounded-2xl border border-white/20 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:border-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-200"
+                    class="mt-2 w-full rounded-2xl border border-white/20 bg-white/5 px-4 py-3 text-sm text-gray-400 placeholder:text-slate-400 focus:border-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-200"
                     :aria-invalid="hasError('position')"
                     :aria-describedby="hasError('position') ? 'lead-position-error' : undefined"
                 />
@@ -90,7 +90,7 @@
                     type="text"
                     :list="sources.length ? sourceListId : undefined"
                     placeholder="Campaña, recomendación, evento..."
-                    class="mt-2 w-full rounded-2xl border border-white/20 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:border-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-200"
+                    class="mt-2 w-full rounded-2xl border border-white/20 bg-white/5 px-4 py-3 text-sm text-gray-400 placeholder:text-slate-400 focus:border-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-200"
                     :aria-invalid="hasError('source')"
                     :aria-describedby="hasError('source') ? 'lead-source-error' : undefined"
                 />
@@ -105,7 +105,7 @@
                 <select
                     id="lead-status"
                     v-model="form.status"
-                    class="mt-2 w-full rounded-2xl border border-white/20 bg-white/5 px-4 py-3 text-sm text-white focus:border-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-200"
+                    class="mt-2 w-full rounded-2xl border border-white/20 bg-white/5 px-4 py-3 text-sm text-gray-400 focus:border-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-200"
                     :aria-invalid="hasError('status')"
                     :aria-describedby="hasError('status') ? 'lead-status-error' : undefined"
                 >
@@ -125,14 +125,14 @@
                 <button
                     v-if="cancelHref"
                     type="button"
-                    class="inline-flex items-center justify-center rounded-2xl border border-white/20 px-4 py-2 text-sm font-semibold text-white/80 hover:bg-white/10 transition"
+                    class="inline-flex items-center justify-center rounded-2xl border border-white/20 px-4 py-2 text-sm font-semibold text-gray-400/80 hover:bg-white/10 transition"
                     @click="$emit('cancel', cancelHref)"
                 >
                     Cancelar
                 </button>
                 <button
                     type="submit"
-                    class="inline-flex items-center justify-center rounded-2xl bg-violet-500 px-6 py-2 text-sm font-semibold text-white shadow-lg shadow-violet-500/30 hover:bg-violet-600 focus:outline-none focus:ring-2 focus:ring-violet-200 focus:ring-offset-2 focus:ring-offset-slate-900 disabled:cursor-not-allowed disabled:opacity-70"
+                    class="inline-flex items-center justify-center rounded-2xl bg-violet-500 px-6 py-2 text-sm font-semibold text-gray-400 shadow-lg shadow-violet-500/30 hover:bg-violet-600 focus:outline-none focus:ring-2 focus:ring-violet-200 focus:ring-offset-2 focus:ring-offset-slate-900 disabled:cursor-not-allowed disabled:opacity-70"
                     :disabled="processing"
                 >
                     <span v-if="processing" class="flex items-center gap-2">
