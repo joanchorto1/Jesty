@@ -25,7 +25,7 @@
                     v-model="form.description"
                     rows="4"
                     placeholder="Describe el reto, necesidad u objetivo del cliente"
-                    class="mt-2 w-full rounded-2xl border border-white/20 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:border-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-200"
+                    class="mt-2 w-full rounded-2xl border border-white/20 bg-white/5 px-4 py-3 text-sm text-gray-400 placeholder:text-slate-400 focus:border-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-200"
                     :aria-invalid="hasError('description')"
                     :aria-describedby="hasError('description') ? 'opportunity-description-error' : undefined"
                 ></textarea>
@@ -44,7 +44,7 @@
                         step="0.01"
                         required
                         placeholder="0,00"
-                        class="w-full bg-transparent text-sm text-white placeholder:text-slate-400 focus:outline-none"
+                        class="w-full bg-transparent text-sm text-gray-400 placeholder:text-slate-400 focus:outline-none"
                         :aria-invalid="hasError('value')"
                         :aria-describedby="hasError('value') ? 'opportunity-value-error' : undefined"
                     />
@@ -57,7 +57,7 @@
                 <select
                     id="opportunity-status"
                     v-model="form.status"
-                    class="mt-2 w-full rounded-2xl border border-white/20 bg-white/5 px-4 py-3 text-sm text-white focus:border-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-200"
+                    class="mt-2 w-full rounded-2xl border border-white/20 bg-white/5 px-4 py-3 text-sm text-gray-400 focus:border-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-200"
                     :aria-invalid="hasError('status')"
                     :aria-describedby="hasError('status') ? 'opportunity-status-error' : undefined"
                 >
@@ -88,7 +88,7 @@
                         type="number"
                         min="0"
                         max="100"
-                        class="w-full rounded-2xl border border-white/20 bg-white/5 px-4 py-2 text-sm text-white placeholder:text-slate-400 focus:border-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-200"
+                        class="w-full rounded-2xl border border-white/20 bg-white/5 px-4 py-2 text-sm text-gray-400 placeholder:text-slate-400 focus:border-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-200"
                         placeholder="Introduce un valor porcentual"
                         :aria-invalid="hasError('probability')"
                         :aria-describedby="hasError('probability') ? 'opportunity-probability-error' : undefined"
@@ -103,7 +103,7 @@
                     id="opportunity-lead"
                     v-model="form.lead_id"
                     :disabled="disableSubmit"
-                    class="mt-2 w-full rounded-2xl border border-white/20 bg-white/5 px-4 py-3 text-sm text-white disabled:cursor-not-allowed disabled:opacity-60 focus:border-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-200"
+                    class="mt-2 w-full rounded-2xl border border-white/20 bg-white/5 px-4 py-3 text-sm text-gray-400 disabled:cursor-not-allowed disabled:opacity-60 focus:border-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-200"
                     :aria-invalid="hasError('lead_id')"
                     :aria-describedby="hasError('lead_id') ? 'opportunity-lead-error' : undefined"
                 >
@@ -115,7 +115,7 @@
 
             <div v-else class="md:col-span-2">
                 <label class="block text-sm font-semibold text-slate-200 uppercase tracking-widest">Lead asociado</label>
-                <div class="mt-2 flex items-center justify-between rounded-2xl border border-white/20 bg-white/5 px-4 py-3 text-sm text-white">
+                <div class="mt-2 flex items-center justify-between rounded-2xl border border-white/20 bg-white/5 px-4 py-3 text-sm text-gray-400">
                     <span>{{ selectedLeadName }}</span>
                     <span class="text-xs uppercase tracking-[0.3em] text-slate-500">Asignado</span>
                 </div>
@@ -133,14 +133,14 @@
                 <button
                     v-if="cancelHref"
                     type="button"
-                    class="inline-flex items-center justify-center rounded-2xl border border-white/20 px-4 py-2 text-sm font-semibold text-white/80 hover:bg-white/10 transition"
+                    class="inline-flex items-center justify-center rounded-2xl border border-white/20 px-4 py-2 text-sm font-semibold text-gray-400/80 hover:bg-white/10 transition"
                     @click="$emit('cancel', cancelHref)"
                 >
                     Cancelar
                 </button>
                 <button
                     type="submit"
-                    class="inline-flex items-center justify-center rounded-2xl bg-violet-500 px-6 py-2 text-sm font-semibold text-white shadow-lg shadow-violet-500/30 hover:bg-violet-600 focus:outline-none focus:ring-2 focus:ring-violet-200 focus:ring-offset-2 focus:ring-offset-slate-900 disabled:cursor-not-allowed disabled:opacity-70"
+                    class="inline-flex items-center justify-center rounded-2xl bg-violet-500 px-6 py-2 text-sm font-semibold text-gray-400 shadow-lg shadow-violet-500/30 hover:bg-violet-600 focus:outline-none focus:ring-2 focus:ring-violet-200 focus:ring-offset-2 focus:ring-offset-slate-900 disabled:cursor-not-allowed disabled:opacity-70"
                     :disabled="processing || disableSubmit"
                 >
                     <span v-if="processing" class="flex items-center gap-2">
