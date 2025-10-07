@@ -40,7 +40,7 @@
                         </button>
                     </div>
                 </div>
-                <div class="grid grid-cols-2 gap-4 mt-4">
+                <div class="grid grid-cols-2 text-gray-700 gap-4 mt-4">
                     <p><strong>Descripción:</strong> {{ opportunity.description }}</p>
                     <p><strong>Valor:</strong> ${{ opportunity.value }}</p>
                     <p><strong>Probabilidad de Éxito:</strong> {{ opportunity.probability }}%</p>
