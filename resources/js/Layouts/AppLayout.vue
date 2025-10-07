@@ -407,7 +407,7 @@
                     </aside>
   <main class="flex-1 min-w-0">
                         <div class="h-full w-full rounded-3xl border border-white/10 bg-slate-900/60 px-4 py-6 shadow-2xl shadow-blue-500/20 backdrop-blur lg:px-8 lg:py-10">
-                           <slot />
+                           <slot class="text-gray-700"/>
                         </div>
                     </main>
                 </div>
