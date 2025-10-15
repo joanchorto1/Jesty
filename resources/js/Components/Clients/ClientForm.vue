@@ -33,11 +33,13 @@
                 <component
                     :is="field.component"
                     :id="field.key"
-                    v-model="form[field.key]"
+                    :value="form[field.key]"
                     v-bind="field.props"
                     class="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-200"
                     :aria-invalid="hasError(field.key)"
                     :aria-describedby="hasError(field.key) ? `${field.key}-error` : undefined"
+                    @input="updateField(field.key, $event)"
+                    @change="updateField(field.key, $event)"
                 />
                 <p v-if="hasError(field.key)" :id="`${field.key}-error`" class="mt-2 text-sm text-rose-500">{{ form.errors[field.key] }}</p>
             </div>
@@ -115,5 +117,14 @@ const fields = computed(() => [
 
 function hasError(key) {
     return Boolean(props.form.errors?.[key]);
+}
+
+function updateField(key, event) {
+    if (event && event.target) {
+        props.form[key] = event.target.value;
+        return;
+    }
+
+    props.form[key] = event;
 }
 </script>
