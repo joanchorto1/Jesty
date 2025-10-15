@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Mail\InvoiceMail;
 use App\Models\Budget;
 use App\Models\BudgetItem;
+use App\Models\Category;
 use App\Models\CreditNote;
 use App\Models\EmailConfiguration;
 use App\Models\Income;
@@ -45,11 +46,15 @@ class InvoiceController extends Controller
     {
         $clients = Client::where('company_id', Auth::user()->company_id)->get();
         $companies = Company::all();
-        $products = Product::where('company_id', Auth::user()->company_id)->where('disabled', false)->get();
+        $products = Product::where('company_id', Auth::user()->company_id)
+            ->where('disabled', false)
+            ->with('category')
+            ->get();
         return Inertia::render('Invoices/Create', [
             'clients' => $clients,
             'companies' => $companies,
-            'products' => $products
+            'products' => $products,
+            'categories' => Category::where('company_id', Auth::user()->company_id)->get(),
         ]);
     }
 
@@ -126,8 +131,11 @@ class InvoiceController extends Controller
         return Inertia::render('Invoices/Edit', [
             'invoice' => $invoice,
             'invoiceItems' => $invoiceItems,
-            'products' => Product::where('company_id', Auth::user()->company_id)->get(),
+            'products' => Product::where('company_id', Auth::user()->company_id)
+                ->with('category')
+                ->get(),
             'clients' => Client::where('company_id', Auth::user()->company_id)->get(),
+            'categories' => Category::where('company_id', Auth::user()->company_id)->get(),
         ]);
     }
 
