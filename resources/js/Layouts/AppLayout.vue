@@ -84,6 +84,14 @@
                                                     <span class="text-sm">Pressupostos</span>
                                                 </div>
                                             </NewNavLink>
+                                            <NewNavLink :href="route('parts.index')" :active="route().current('parts.index')" variant="sub">
+                                                <div class="flex items-center gap-3">
+                                                    <span class="flex h-7 w-7 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
+                                                        <MenuPartIcon class="icon-accent h-4 w-4 text-blue-100" />
+                                                    </span>
+                                                    <span class="text-sm">Partes</span>
+                                                </div>
+                                            </NewNavLink>
                                         </div>
                                     </div>
 
@@ -421,6 +429,7 @@ import UserDropdown from "@/Components/UserDropdown.vue";
 import MenuBillingIcon from "@/Components/Icons/MenuBillingIcon.vue";
 import MenuInvoiceIcon from "@/Components/Icons/MenuInvoiceIcon.vue";
 import MenuBudgetIcon from "@/Components/Icons/MenuBudgetIcon.vue";
+import MenuPartIcon from "@/Components/Icons/MenuPartIcon.vue";
 import MenuInventoryIcon from "@/Components/Icons/MenuInventoryIcon.vue";
 import MenuProductIcon from "@/Components/Icons/MenuProductIcon.vue";
 import MenuCategoryIcon from "@/Components/Icons/MenuCategoryIcon.vue";
@@ -445,7 +454,7 @@ const features = computed(() => usePage().props.features);
 const hasFeature = (featureName) => features.value?.some((feature) => feature.name === featureName);
 
 const isRRHHPage = route().current('dashboard.rrhh') || route().current('employees.index') || route().current('departments.index') || route().current('payrolls.index') || route().current('attendances.index') || route().current('performance-reviews.index') || route().current('leaves.index') || route().current('trainings.index');
-const isBillingPage = route().current('dashboard.billing') || route().current('budgets.index') || route().current('invoices.index');
+const isBillingPage = route().current('dashboard.billing') || route().current('budgets.index') || route().current('invoices.index') || route().current('parts.index') || route().current('parts.create');
 const isProductsPage = route().current('products.index') || route().current('categories.index') || route().current('dashboard.products') || route().current('suppliers.index') || route().current('stockEntries.index');
 const isAccountingPage = route().current('expenses.index') || route().current('expenses.report') || route().current('dashboard.accounting') || route().current('expenseCategories.index') || route().current('paymentMethods.index') || route().current('incomes.index');
 const isTpvPage = route().current('dashboard.tpv') || route().current('tikets.create') || route().current('tikets.index') || route().current('tikets.productReport');

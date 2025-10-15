@@ -8,6 +8,7 @@ use App\Http\Controllers\InvoiceItemController;
 use App\Http\Controllers\BudgetController;
 use App\Http\Controllers\BudgetItemController;
 use App\Http\Controllers\CreditNoteController;
+use App\Http\Controllers\PartController;
 
 
 
@@ -65,6 +66,19 @@ Route::middleware(['route.features.access:1'])->group(function() {
 
     Route::post('/budgets/store-with-items', [BudgetController::class, 'storeWithItems'])->name('budgets.storeWithItems');
     Route::get('/budgets/{budget}/print', [BudgetController::class, 'print'])->name('budgets.print');
+
+
+// Routes for Parts
+    Route::resource('parts', PartController::class)
+        ->only(['index', 'create', 'store', 'destroy'])
+        ->names([
+            'index' => 'parts.index',
+            'create' => 'parts.create',
+            'store' => 'parts.store',
+            'destroy' => 'parts.destroy',
+        ]);
+
+    Route::post('/parts/convert-to-invoice', [PartController::class, 'convertToInvoice'])->name('parts.convertToInvoice');
 
 
     //Envios por email
