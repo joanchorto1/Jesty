@@ -96,30 +96,33 @@ const props = defineProps({
     products: Array,
 });
 
+const toNumber = (value, fallback = 0) => {
+    const number = typeof value === "number" ? value : parseFloat(value);
+    return Number.isFinite(number) ? number : fallback;
+};
+
 // Format price fields
 const invoiceItems = props.invoiceItems.map((item) => {
     return {
         ...item,
-        unit_price: item.unit_price.toFixed(2),
-        total: item.total.toFixed(2),
+        unit_price: toNumber(item.unit_price).toFixed(2),
+        total: toNumber(item.total).toFixed(2),
     };
 });
 
 // Calcular IRPF
 const irpfRate = 0.15;
-const retencionIrpf = +(props.invoice.base_imponible * irpfRate).toFixed(2);
-const totalFinal = +(
-    props.invoice.base_imponible +
-    props.invoice.monto_iva -
-    retencionIrpf
-).toFixed(2);
+const baseImponible = toNumber(props.invoice.base_imponible);
+const montoIva = toNumber(props.invoice.monto_iva);
+const retencionIrpf = +(baseImponible * irpfRate).toFixed(2);
+const totalFinal = +(baseImponible + montoIva - retencionIrpf).toFixed(2);
 
 // Format invoice fields
 const invoice = {
     ...props.invoice,
-    base_imponible: props.invoice.base_imponible.toFixed(2),
-    monto_iva: props.invoice.monto_iva.toFixed(2),
-    total: props.invoice.total.toFixed(2),
+    base_imponible: baseImponible.toFixed(2),
+    monto_iva: montoIva.toFixed(2),
+    total: toNumber(props.invoice.total).toFixed(2),
 };
 
 const printBudget = () => {
