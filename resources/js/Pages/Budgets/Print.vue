@@ -94,19 +94,24 @@ const props = defineProps({
     products: Array,
 });
 
+const toNumber = (value, fallback = 0) => {
+    const number = typeof value === "number" ? value : parseFloat(value);
+    return Number.isFinite(number) ? number : fallback;
+};
+
 //reducir los decimales a dos de los precios de los productos y de los totales
 const budgetItems = props.budgetItems.map((item) => {
     return {
         ...item,
-        unit_price: item.unit_price.toFixed(2),
-        total: item.total.toFixed(2),
+        unit_price: toNumber(item.unit_price).toFixed(2),
+        total: toNumber(item.total).toFixed(2),
     };
 });
 const budget = {
     ...props.budget,
-    base_imponible: props.budget.base_imponible.toFixed(2),
-    monto_iva: props.budget.monto_iva.toFixed(2),
-    total: props.budget.total.toFixed(2),
+    base_imponible: toNumber(props.budget.base_imponible).toFixed(2),
+    monto_iva: toNumber(props.budget.monto_iva).toFixed(2),
+    total: toNumber(props.budget.total).toFixed(2),
 };
 
 const printBudget = () => {
