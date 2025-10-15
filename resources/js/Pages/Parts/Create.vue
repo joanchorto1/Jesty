@@ -74,9 +74,10 @@
                             </div>
                             <button
                                 type="button"
-                                @click="addItem"
+                                @click="openProductModal"
                                 class="inline-flex items-center gap-2 rounded-2xl bg-sky-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700"
                             >
+                                <AddProductIcon class="h-5 w-5" />
                                 Afegir línia
                             </button>
                         </div>
@@ -171,6 +172,67 @@
                 </form>
             </div>
         </div>
+
+        <div v-if="showProductModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/70 px-4">
+            <div class="w-full max-w-2xl rounded-3xl bg-white p-6 shadow-xl">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <h3 class="text-lg font-semibold text-slate-800">Seleccionar producte</h3>
+                        <p class="mt-1 text-sm text-slate-500">Filtra pel nom o la categoria per afegir-lo al parte.</p>
+                    </div>
+                    <button type="button" class="text-slate-400 transition hover:text-slate-600" @click="closeProductModal">&times;</button>
+                </div>
+
+                <div class="mt-5 grid gap-4 md:grid-cols-2">
+                    <div class="space-y-2">
+                        <InputLabel for="product-search" value="Cercar" />
+                        <TextInput
+                            id="product-search"
+                            v-model="searchTerm"
+                            type="text"
+                            class="mt-2 block w-full"
+                            placeholder="Nom o codi de barres"
+                        />
+                    </div>
+                    <div class="space-y-2">
+                        <InputLabel for="product-category" value="Categoria" />
+                        <SelectInput id="product-category" v-model="selectedCategory" class="mt-2 block w-full">
+                            <option value="">Totes les categories</option>
+                            <option v-for="category in availableCategories" :key="category" :value="category">
+                                {{ category }}
+                            </option>
+                        </SelectInput>
+                    </div>
+                </div>
+
+                <ul class="mt-6 max-h-72 space-y-2 overflow-y-auto pr-1">
+                    <li
+                        v-for="product in filteredProducts"
+                        :key="product.id"
+                        class="flex items-center justify-between rounded-2xl border border-slate-200/70 bg-white px-4 py-3 shadow-sm"
+                    >
+                        <div>
+                            <p class="text-sm font-semibold text-slate-700">{{ product.name }}</p>
+                            <p class="text-xs text-slate-500">
+                                {{ formatCurrency(product.price) }}
+                                <span v-if="product.category" class="ml-1">· {{ product.category.name }}</span>
+                            </p>
+                        </div>
+                        <button
+                            type="button"
+                            class="inline-flex items-center gap-2 rounded-xl bg-sky-600 px-3 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-sky-700"
+                            @click="selectProduct(product)"
+                        >
+                            <AddProductIcon class="h-4 w-4" />
+                            Afegir
+                        </button>
+                    </li>
+                    <li v-if="filteredProducts.length === 0" class="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center text-sm text-slate-500">
+                        No hi ha productes que coincideixin amb la cerca.
+                    </li>
+                </ul>
+            </div>
+        </div>
     </AppLayout>
 </template>
 
@@ -187,6 +249,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import InputError from '@/Components/InputError.vue';
 import DeleteIcon from '@/Components/Icons/DeleteIcon.vue';
 import MenuPartIcon from '@/Components/Icons/MenuPartIcon.vue';
+import AddProductIcon from '@/Components/Icons/AddProductIcon.vue';
 
 const props = defineProps({
     clients: { type: Array, default: () => [] },
@@ -200,9 +263,10 @@ const form = useForm({
     notes: '',
 });
 
-const items = ref([
-    { product_id: '', quantity: 1, unit_price: 0, total: 0 },
-]);
+const items = ref([]);
+const showProductModal = ref(false);
+const searchTerm = ref('');
+const selectedCategory = ref('');
 
 const formatCurrency = (value) =>
     new Intl.NumberFormat('ca-ES', {
@@ -211,6 +275,38 @@ const formatCurrency = (value) =>
     }).format(Number(value) || 0);
 
 const partTotal = computed(() => items.value.reduce((total, item) => total + Number(item.total || 0), 0));
+
+const availableCategories = computed(() => {
+    const categories = props.products
+        .map((product) => product.category?.name)
+        .filter((category) => Boolean(category));
+
+    return Array.from(new Set(categories)).sort((a, b) => a.localeCompare(b, 'ca')); // alphabetical order
+});
+
+const filteredProducts = computed(() => {
+    const term = searchTerm.value.trim().toLowerCase();
+
+    return props.products
+        .filter((product) => {
+            const matchesCategory = selectedCategory.value
+                ? product.category && product.category.name === selectedCategory.value
+                : true;
+
+            if (!term) {
+                return matchesCategory;
+            }
+
+            const name = product.name?.toLowerCase() ?? '';
+            const codebar = product.codebar?.toLowerCase() ?? '';
+
+            return (
+                matchesCategory &&
+                (name.includes(term) || codebar.includes(term))
+            );
+        })
+        .sort((a, b) => a.name.localeCompare(b.name, 'ca'));
+});
 
 const sanitizeNumber = (value) => Number(value) || 0;
 
@@ -261,12 +357,31 @@ const onProductSelected = (index) => {
     updateItemTotal(index);
 };
 
-const addItem = () => {
-    items.value.push({ product_id: '', quantity: 1, unit_price: 0, total: 0 });
-};
-
 const removeItem = (index) => {
     items.value.splice(index, 1);
+};
+
+const openProductModal = () => {
+    searchTerm.value = '';
+    selectedCategory.value = '';
+    showProductModal.value = true;
+};
+
+const closeProductModal = () => {
+    showProductModal.value = false;
+};
+
+const selectProduct = (product) => {
+    items.value.push({
+        product_id: product.id,
+        quantity: 1,
+        unit_price: Number(product.price) || 0,
+        total: Number(product.price) || 0,
+    });
+
+    form.clearErrors('items');
+    updateItemTotal(items.value.length - 1);
+    closeProductModal();
 };
 
 const submit = () => {
@@ -279,7 +394,7 @@ const submit = () => {
     })).post(route('parts.store'), {
         onSuccess: () => {
             form.reset();
-            items.value = [{ product_id: '', quantity: 1, unit_price: 0, total: 0 }];
+            items.value = [];
         },
     });
 };
