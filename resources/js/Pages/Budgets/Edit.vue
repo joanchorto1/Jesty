@@ -317,11 +317,35 @@ import MenuProductIcon from '@/Components/Icons/MenuProductIcon.vue';
 import MenuCategoryIcon from '@/Components/Icons/MenuCategoryIcon.vue';
 
 const props = defineProps({
-    budget: Object,
-    budgetItems: Array,
-    products: Array,
-    clients: Array,
-    categories: Array,
+    budget: {
+        type: Object,
+        default: () => ({
+            client_id: null,
+            date: '',
+            name: '',
+            state: 'in_process',
+            base_imponible: 0,
+            iva: 0,
+            monto_iva: 0,
+            total: 0,
+        }),
+    },
+    budgetItems: {
+        type: Array,
+        default: () => [],
+    },
+    products: {
+        type: Array,
+        default: () => [],
+    },
+    clients: {
+        type: Array,
+        default: () => [],
+    },
+    categories: {
+        type: Array,
+        default: () => [],
+    },
 });
 
 const form = ref({
