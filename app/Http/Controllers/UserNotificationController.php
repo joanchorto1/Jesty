@@ -51,6 +51,12 @@ class UserNotificationController extends Controller
 
         $feature = Feature::where('name', $type)->first();
 
+        if (! $feature) {
+            Log::warning('Feature not found for notification type: '.$type);
+
+            return;
+        }
+
         Log::info('Feature: '.$feature);
 
         $roles = $feature->roles;
