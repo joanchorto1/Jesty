@@ -6,6 +6,7 @@ use App\Mail\BudgetMail;
 use App\Mail\InvoiceMail;
 use App\Models\Budget;
 use App\Models\BudgetItem;
+use App\Models\Category;
 use App\Models\Client;
 use App\Models\Company;
 use App\Models\EmailConfiguration;
@@ -34,11 +35,15 @@ class BudgetController extends Controller
     {
         $clients = Client::where('company_id', Auth::user()->company_id)->get();
         $companies = Company::all();
-        $products = Product::where('company_id', Auth::user()->company_id)->where('disabled', false)->get();
+        $products = Product::where('company_id', Auth::user()->company_id)
+            ->where('disabled', false)
+            ->with('category')
+            ->get();
         return Inertia::render('Budgets/Create', [
             'clients' => $clients,
             'companies' => $companies,
-            'products' => $products
+            'products' => $products,
+            'categories' => Category::where('company_id', Auth::user()->company_id)->get(),
         ]);
 
 
@@ -125,8 +130,11 @@ class BudgetController extends Controller
         return Inertia::render('Budgets/Edit', [
             'budget' => $budget,
             'budgetItems' => $budgetItems,
-            'products' => Product::where('company_id', Auth::user()->company_id)->get(),
+            'products' => Product::where('company_id', Auth::user()->company_id)
+                ->with('category')
+                ->get(),
             'clients' => Client::where('company_id', Auth::user()->company_id)->get(),
+            'categories' => Category::where('company_id', Auth::user()->company_id)->get(),
         ]);
     }
 
