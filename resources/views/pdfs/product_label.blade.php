@@ -50,6 +50,7 @@
     <h2>{{ $product->name }}</h2>
     <p>{{ $product->description }}</p>
     <p>Precio: {{ $product->price }}€</p>
+    <p>IVA: {{ $product->iva }}%</p>
     <p>Código: {{ $product->codebar }}</p>
     <div class="barcode">
         <img src="{{ 'storage/' . $barcodePath }}" alt="Código de Barras">

@@ -33,6 +33,7 @@ const form = useForm({
     supplier_id: '',
     description: '',
     price: '',
+    iva: 21,
     cost_price: '',
     stock: '',
     is_stackable: false,
@@ -183,6 +184,20 @@ const isInventoryManaged = computed(() => Boolean(form.is_stackable));
                                         class="mt-2 block w-full"
                                     />
                                     <InputError :message="form.errors.price" class="mt-2" />
+                                </div>
+
+                                <div class="col-span-6 sm:col-span-3">
+                                    <InputLabel for="iva" value="IVA (%)" />
+                                    <TextInput
+                                        id="iva"
+                                        v-model="form.iva"
+                                        type="number"
+                                        min="0"
+                                        max="100"
+                                        step="0.01"
+                                        class="mt-2 block w-full"
+                                    />
+                                    <InputError :message="form.errors.iva" class="mt-2" />
                                 </div>
 
                                 <div v-if="isInventoryManaged" class="col-span-6 sm:col-span-3">

@@ -36,6 +36,7 @@ const form = useForm({
     supplier_id: props.product.supplier_id ?? '',
     description: props.product.description ?? '',
     price: props.product.price ?? '',
+    iva: props.product.iva ?? 21,
     cost_price: props.product.cost_price ?? '',
     stock: props.product.stock ?? '',
     is_stackable: Boolean(props.product.is_stackable),
@@ -161,6 +162,20 @@ const formattedStock = computed(() => (isInventoryManaged.value ? form.stock || 
                                     <InputLabel for="price" value="Preu de venda" />
                                     <TextInput id="price" v-model="form.price" type="number" min="0" step="0.01" class="mt-2 block w-full" />
                                     <InputError :message="form.errors.price" class="mt-2" />
+                                </div>
+
+                                <div class="col-span-6 sm:col-span-3">
+                                    <InputLabel for="iva" value="IVA (%)" />
+                                    <TextInput
+                                        id="iva"
+                                        v-model="form.iva"
+                                        type="number"
+                                        min="0"
+                                        max="100"
+                                        step="0.01"
+                                        class="mt-2 block w-full"
+                                    />
+                                    <InputError :message="form.errors.iva" class="mt-2" />
                                 </div>
 
                                 <div v-if="isInventoryManaged" class="col-span-6 sm:col-span-3">
