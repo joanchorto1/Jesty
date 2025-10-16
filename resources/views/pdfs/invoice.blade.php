@@ -135,8 +135,43 @@
     </div>
 
     @php
-        $irpf = $invoice->base_imponible * 0.15;
-        $total_final = $invoice->base_imponible + $invoice->monto_iva - $irpf;
+        $ivaBreakdown = [];
+
+        foreach ($invoice->items as $item) {
+            $lineBase = round($item->total ?? 0, 2);
+
+            if ($lineBase <= 0) {
+                continue;
+            }
+
+            $rate = round($item->iva ?? $item->product->iva ?? 0, 2);
+            $lineTax = round(($lineBase * $rate) / 100, 2);
+            $rateKey = number_format($rate, 2, '.', '');
+
+            if (! isset($ivaBreakdown[$rateKey])) {
+                $ivaBreakdown[$rateKey] = [
+                    'rate' => $rate,
+                    'base' => 0.0,
+                    'tax' => 0.0,
+                ];
+            }
+
+            $ivaBreakdown[$rateKey]['base'] += $lineBase;
+            $ivaBreakdown[$rateKey]['tax'] += $lineTax;
+        }
+
+        ksort($ivaBreakdown, SORT_NUMERIC);
+
+        $ivaBreakdown = array_map(function ($tier) {
+            return [
+                'rate' => $tier['rate'],
+                'base' => round($tier['base'], 2),
+                'tax' => round($tier['tax'], 2),
+            ];
+        }, $ivaBreakdown);
+
+        $irpf = round($invoice->base_imponible * 0.15, 2);
+        $total_final = round($invoice->base_imponible + $invoice->monto_iva - $irpf, 2);
     @endphp
 
     <div class="totals">
@@ -145,10 +180,23 @@
                 <th>Base Imponible:</th>
                 <td>${{ number_format($invoice->base_imponible, 2) }}</td>
             </tr>
-            <tr>
-                <th>IVA (21%):</th>
-                <td>${{ number_format($invoice->monto_iva, 2) }}</td>
-            </tr>
+            @forelse ($ivaBreakdown as $tier)
+                @php
+                    $formattedRate = rtrim(rtrim(number_format($tier['rate'], 2, ',', ''), '0'), ',');
+                @endphp
+                <tr>
+                    <th>IVA ({{ $formattedRate }}%):</th>
+                    <td>
+                        ${{ number_format($tier['tax'], 2) }}<br>
+                        <small>Base: ${{ number_format($tier['base'], 2) }}</small>
+                    </td>
+                </tr>
+            @empty
+                <tr>
+                    <th>IVA:</th>
+                    <td>$0.00</td>
+                </tr>
+            @endforelse
             <tr>
                 <th>Retención IRPF (15%):</th>
                 <td>− ${{ number_format($irpf, 2) }}</td>

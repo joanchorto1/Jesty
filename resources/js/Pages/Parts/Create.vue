@@ -63,6 +63,50 @@
                                 />
                             </div>
                         </div>
+
+                        <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+                            <div class="space-y-2">
+                                <InputLabel value="Base sense IVA" />
+                                <TextInput :value="formatCurrency(partTotal)" disabled class="mt-2 block w-full text-slate-600" />
+                            </div>
+                            <div class="space-y-2">
+                                <InputLabel value="IVA estimat" />
+                                <TextInput :value="formatCurrency(partTaxTotal)" disabled class="mt-2 block w-full text-slate-600" />
+                            </div>
+                            <div class="space-y-2">
+                                <InputLabel value="Total amb IVA" />
+                                <TextInput :value="formatCurrency(partTotalWithTax)" disabled class="mt-2 block w-full text-slate-600" />
+                            </div>
+                        </div>
+
+                        <div class="space-y-3">
+                            <h3 class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">
+                                Desglossament per tipus d'IVA
+                            </h3>
+                            <div
+                                v-if="ivaBreakdown.length"
+                                class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"
+                            >
+                                <div
+                                    v-for="tier in ivaBreakdown"
+                                    :key="tier.rate"
+                                    class="rounded-2xl border border-slate-200/70 bg-slate-50/80 p-4"
+                                >
+                                    <p class="text-sm font-semibold text-slate-800">
+                                        {{ formatPercentage(tier.rate) }}
+                                    </p>
+                                    <p class="mt-1 text-xs text-slate-500">
+                                        Base: {{ formatCurrency(tier.base) }}
+                                    </p>
+                                    <p class="text-xs text-slate-500">
+                                        IVA: {{ formatCurrency(tier.tax) }}
+                                    </p>
+                                </div>
+                            </div>
+                            <p v-else class="text-xs text-slate-500">
+                                Afegeix productes al parte per calcular automàticament els trams d'IVA aplicats.
+                            </p>
+                        </div>
                     </section>
 
                     <section class="space-y-6 rounded-3xl border border-slate-200/80 bg-white/70 p-6 shadow-sm">
@@ -274,7 +318,42 @@ const formatCurrency = (value) =>
         currency: 'EUR',
     }).format(Number(value) || 0);
 
+const formatPercentage = (value) => `${Number(value || 0).toFixed(2)}%`;
+
 const partTotal = computed(() => items.value.reduce((total, item) => total + Number(item.total || 0), 0));
+const ivaBreakdown = computed(() => {
+    const breakdown = {};
+
+    items.value.forEach((item) => {
+        const lineBase = Number(item.total) || 0;
+        if (lineBase <= 0) {
+            return;
+        }
+
+        const product = props.products.find((p) => p.id === item.product_id);
+        const ivaRate = Number.isFinite(Number(item.iva)) ? Number(item.iva) : Number(product?.iva ?? 0);
+        const lineTax = Number(((lineBase * ivaRate) / 100).toFixed(2));
+        const rateKey = ivaRate.toFixed(2);
+
+        if (!breakdown[rateKey]) {
+            breakdown[rateKey] = { base: 0, tax: 0 };
+        }
+
+        breakdown[rateKey].base += lineBase;
+        breakdown[rateKey].tax += lineTax;
+    });
+
+    return Object.entries(breakdown)
+        .map(([rate, amounts]) => ({
+            rate: Number(rate),
+            base: Number(amounts.base.toFixed(2)),
+            tax: Number(amounts.tax.toFixed(2)),
+        }))
+        .sort((a, b) => a.rate - b.rate);
+});
+
+const partTaxTotal = computed(() => ivaBreakdown.value.reduce((total, tier) => total + tier.tax, 0));
+const partTotalWithTax = computed(() => Number((partTotal.value + partTaxTotal.value).toFixed(2)));
 
 const availableCategories = computed(() => {
     const categories = props.products
@@ -362,6 +441,7 @@ const onProductSelected = (index) => {
     }
 
     item.unit_price = Number(product.price);
+    item.iva = sanitizeNumber(product.iva);
     if (!item.quantity || sanitizeNumber(item.quantity) < 1) {
         item.quantity = 1;
     }
@@ -389,6 +469,7 @@ const selectProduct = (product) => {
         quantity: 1,
         unit_price: Number(product.price) || 0,
         total: Number(product.price) || 0,
+        iva: sanitizeNumber(product.iva),
     });
 
     form.clearErrors('items');
