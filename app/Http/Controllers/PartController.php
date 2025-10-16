@@ -9,6 +9,8 @@ use App\Models\InvoiceItem;
 use App\Models\Part;
 use App\Models\PartItem;
 use App\Models\Product;
+use App\Services\DocumentNumberGenerator;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -24,9 +26,18 @@ class PartController extends Controller
 
         $clients = Client::where('company_id', Auth::user()->company_id)->get();
 
+        $nextInvoiceNumber = DocumentNumberGenerator::generate(
+            Invoice::class,
+            'name',
+            'FA',
+            Auth::user()->company_id,
+            Carbon::now()
+        );
+
         return Inertia::render('Parts/Index', [
             'parts' => $parts,
             'clients' => $clients,
+            'nextInvoiceNumber' => $nextInvoiceNumber,
         ]);
     }
 
@@ -38,16 +49,25 @@ class PartController extends Controller
             ->with('category')
             ->get();
 
+        $nextPartReference = DocumentNumberGenerator::generate(
+            Part::class,
+            'reference',
+            'AB',
+            Auth::user()->company_id,
+            Carbon::now()
+        );
+
         return Inertia::render('Parts/Create', [
             'clients' => $clients,
             'products' => $products,
+            'nextPartReference' => $nextPartReference,
         ]);
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'reference' => 'required|string|max:255',
+            'reference' => 'nullable|string|max:255',
             'date' => 'required|date',
             'client_id' => 'required|exists:clients,id',
             'notes' => 'nullable|string',
@@ -70,10 +90,17 @@ class PartController extends Controller
             return back()->withErrors(['items' => 'Se han seleccionado productos no disponibles.']);
         }
 
+        $issueDate = Carbon::parse($validated['date']);
         $part = Part::create([
             'company_id' => Auth::user()->company_id,
             'client_id' => $client->id,
-            'reference' => $validated['reference'],
+            'reference' => DocumentNumberGenerator::generate(
+                Part::class,
+                'reference',
+                'AB',
+                Auth::user()->company_id,
+                $issueDate
+            ),
             'date' => $validated['date'],
             'status' => 'pending',
             'total' => 0,
@@ -121,7 +148,6 @@ class PartController extends Controller
         $validated = $request->validate([
             'parts' => 'required|array|min:1',
             'parts.*' => 'exists:parts,id',
-            'invoice.name' => 'required|string|max:255',
             'invoice.date' => 'required|date',
             'invoice.state' => 'required|in:pending,paid,cancelled',
             'invoice.iva' => 'required|numeric|min:0',
@@ -150,11 +176,18 @@ class PartController extends Controller
         $montoIva = round($baseImponible * ($ivaRate / 100), 2);
         $total = round($baseImponible + $montoIva, 2);
 
+        $invoiceDate = Carbon::parse($validated['invoice']['date']);
         $invoice = Invoice::create([
             'company_id' => Auth::user()->company_id,
             'client_id' => $clientIds->first(),
             'date' => $validated['invoice']['date'],
-            'name' => $validated['invoice']['name'],
+            'name' => DocumentNumberGenerator::generate(
+                Invoice::class,
+                'name',
+                'FA',
+                Auth::user()->company_id,
+                $invoiceDate
+            ),
             'base_imponible' => $baseImponible,
             'iva' => $ivaRate,
             'monto_iva' => $montoIva,

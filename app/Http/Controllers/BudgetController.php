@@ -13,11 +13,13 @@ use App\Models\EmailConfiguration;
 use App\Models\Invoice;
 use App\Models\Product;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
+use App\Services\DocumentNumberGenerator;
 
 class BudgetController extends Controller
 {
@@ -39,11 +41,21 @@ class BudgetController extends Controller
             ->where('disabled', false)
             ->with('category')
             ->get();
+
+        $nextBudgetNumber = DocumentNumberGenerator::generate(
+            Budget::class,
+            'name',
+            'PR',
+            Auth::user()->company_id,
+            Carbon::now()
+        );
+
         return Inertia::render('Budgets/Create', [
             'clients' => $clients,
             'companies' => $companies,
             'products' => $products,
             'categories' => Category::where('company_id', Auth::user()->company_id)->get(),
+            'nextBudgetNumber' => $nextBudgetNumber,
         ]);
 
 
@@ -59,12 +71,19 @@ class BudgetController extends Controller
                 'date' => 'required|date',
                 'base_imponible' => 'required|numeric|min:0',
                 'iva' => 'nullable|numeric',
-                'name' => 'required|string|max:255',
                 'state' => 'required|string|in:draft,approved,rejected',
             ]);
 
-            $data = $request->all();
+            $issueDate = Carbon::parse($request->input('date'));
+            $data = $request->except('name');
             $data['company_id'] = Auth::user()->company_id;
+            $data['name'] = DocumentNumberGenerator::generate(
+                Budget::class,
+                'name',
+                'PR',
+                Auth::user()->company_id,
+                $issueDate
+            );
 
             Budget::create($data);
 
@@ -82,7 +101,6 @@ class BudgetController extends Controller
         // Validar los datos del request
         $validated = $request->validate([
             'date' => 'required|date',
-            'name' => 'required|string',
             'base_imponible' => 'required|numeric',
             'state' => 'required|string',
             'client_id' => 'required|exists:clients,id',
@@ -98,8 +116,16 @@ class BudgetController extends Controller
         ]);
 
         // Crear el presupuesto
-        $data=$request->only('date','name','base_imponible','state','client_id','total','iva','monto_iva');
+        $issueDate = Carbon::parse($validated['date']);
+        $data=$request->only('date','base_imponible','state','client_id','total','iva','monto_iva');
         $data['company_id']=Auth::user()->company_id;
+        $data['name'] = DocumentNumberGenerator::generate(
+            Budget::class,
+            'name',
+            'PR',
+            Auth::user()->company_id,
+            $issueDate
+        );
         $budget = Budget::create($data);
 
         // Crear los ítems de presupuesto
