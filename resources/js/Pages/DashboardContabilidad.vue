@@ -106,8 +106,8 @@ const availableYears = computed(() => {
     return years.length ? years : [selectedYear.value];
 });
 
-const totalIncomes = computed(() => incomes.value.reduce((acc, income) => acc + (income.total_amount ?? 0), 0).toFixed(2));
-const totalExpenses = computed(() => expenses.value.reduce((acc, expense) => acc + (expense.amount ?? 0), 0).toFixed(2));
+const totalIncomes = computed(() => incomes.value.reduce((acc, income) => acc + Number(income.total_amount ?? 0), 0).toFixed(2));
+const totalExpenses = computed(() => expenses.value.reduce((acc, expense) => acc + Number(expense.amount ?? 0), 0).toFixed(2));
 const profit = computed(() => (totalIncomes.value - totalExpenses.value).toFixed(2));
 const totalTransactions = computed(() => incomes.value.length + expenses.value.length);
 
@@ -115,14 +115,18 @@ const averageIncome = computed(() => {
     if (!incomes.value.length) {
         return '0.00';
     }
-    return (incomes.value.reduce((acc, income) => acc + (income.total_amount ?? 0), 0) / incomes.value.length).toFixed(2);
+    return (
+        incomes.value.reduce((acc, income) => acc + Number(income.total_amount ?? 0), 0) / incomes.value.length
+    ).toFixed(2);
 });
 
 const averageExpense = computed(() => {
     if (!expenses.value.length) {
         return '0.00';
     }
-    return (expenses.value.reduce((acc, expense) => acc + (expense.amount ?? 0), 0) / expenses.value.length).toFixed(2);
+    return (
+        expenses.value.reduce((acc, expense) => acc + Number(expense.amount ?? 0), 0) / expenses.value.length
+    ).toFixed(2);
 });
 
 const profitMargin = computed(() => {
@@ -140,7 +144,7 @@ const cumulativeIncomeData = computed(() => {
         .filter(income => new Date(income.date).getFullYear() === selectedYear.value)
         .forEach(income => {
             const monthIndex = new Date(income.date).getMonth();
-            dataByMonth[monthIndex] += income.total_amount ?? 0;
+            dataByMonth[monthIndex] += Number(income.total_amount ?? 0);
         });
 
     return {
@@ -178,7 +182,7 @@ const monthlyExpensesData = computed(() => {
         .filter(expense => new Date(expense.date).getFullYear() === selectedYear.value)
         .forEach(expense => {
             const monthIndex = new Date(expense.date).getMonth();
-            monthlyTotals[monthIndex] += expense.amount ?? 0;
+            monthlyTotals[monthIndex] += Number(expense.amount ?? 0);
         });
 
     return {
@@ -202,13 +206,13 @@ const monthlyBalanceChart = computed(() => {
     incomes.value.forEach(income => {
         const date = new Date(income.date);
         if (date.getFullYear() !== selectedYear.value) return;
-        monthlyIncome[date.getMonth()] += income.total_amount ?? 0;
+        monthlyIncome[date.getMonth()] += Number(income.total_amount ?? 0);
     });
 
     expenses.value.forEach(expense => {
         const date = new Date(expense.date);
         if (date.getFullYear() !== selectedYear.value) return;
-        monthlyExpense[date.getMonth()] += expense.amount ?? 0;
+        monthlyExpense[date.getMonth()] += Number(expense.amount ?? 0);
     });
 
     const net = monthlyIncome.map((value, index) => value - monthlyExpense[index]);
