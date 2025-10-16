@@ -10,7 +10,13 @@ class BudgetItem extends Model
     use HasFactory;
 
     protected $fillable = [
-        'budget_id', 'product_id','discount', 'quantity', 'unit_price', 'total'
+        'budget_id',
+        'product_id',
+        'discount',
+        'quantity',
+        'unit_price',
+        'total',
+        'iva',
     ];
 
     public function budget()

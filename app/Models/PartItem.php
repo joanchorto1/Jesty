@@ -15,6 +15,7 @@ class PartItem extends Model
         'quantity',
         'unit_price',
         'total',
+        'iva',
     ];
 
     public function part()

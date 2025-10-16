@@ -94,16 +94,8 @@
                                 </SelectInput>
                             </div>
                             <div class="space-y-2">
-                                <InputLabel for="budget-iva" value="IVA (%)" />
-                                <TextInput
-                                    id="budget-iva"
-                                    v-model="ivaPercentage"
-                                    type="number"
-                                    min="0"
-                                    step="0.01"
-                                    class="mt-2 block w-full"
-                                    @input="calculateTotals"
-                                />
+                                <InputLabel value="IVA medio (%)" />
+                                <TextInput :value="formatPercentage(effectiveIva)" disabled class="mt-2 block w-full text-slate-600" />
                             </div>
                         </div>
 
@@ -146,10 +138,11 @@
 
                         <div v-else class="space-y-4">
                             <div class="hidden grid-cols-12 gap-3 rounded-2xl border border-slate-200 bg-slate-100/60 px-4 py-3 text-sm font-semibold text-slate-500 md:grid">
-                                <span class="md:col-span-4">Producto</span>
+                                <span class="md:col-span-3">Producto</span>
                                 <span class="md:col-span-2">Cantidad</span>
                                 <span class="md:col-span-2">Precio unitario</span>
                                 <span class="md:col-span-2">Descuento (%)</span>
+                                <span class="md:col-span-1">IVA (%)</span>
                                 <span class="md:col-span-2">Importe</span>
                             </div>
 
@@ -158,7 +151,7 @@
                                 :key="index"
                                 class="grid grid-cols-1 gap-4 rounded-3xl border border-slate-200/80 bg-white/80 p-4 shadow-sm md:grid-cols-12 md:items-end"
                             >
-                                <div class="space-y-2 md:col-span-4">
+                                <div class="space-y-2 md:col-span-3">
                                     <InputLabel :for="`product-${index}`" value="Producto" />
                                     <SelectInput
                                         :id="`product-${index}`"
@@ -206,6 +199,18 @@
                                         step="0.01"
                                         class="mt-2 block w-full"
                                         @input="updateItemTotal(index)"
+                                    />
+                                </div>
+                                <div class="space-y-2 md:col-span-1">
+                                    <InputLabel :for="`iva-${index}`" value="IVA (%)" />
+                                    <TextInput
+                                        :id="`iva-${index}`"
+                                        v-model="item.iva"
+                                        type="number"
+                                        min="0"
+                                        step="0.01"
+                                        class="mt-2 block w-full"
+                                        @input="updateItemIva(index)"
                                     />
                                 </div>
                                 <div class="space-y-2 md:col-span-2">
@@ -347,7 +352,6 @@ const budgetItems = ref([]);
 const showProductModal = ref(false);
 const searchTerm = ref('');
 const selectedCategory = ref('');
-const ivaPercentage = ref(21);
 const baseImponible = ref(0);
 const montoIva = ref(0);
 const clientSearchTerm = ref('');
@@ -391,14 +395,34 @@ const formatCurrency = (value) =>
         currency: 'EUR',
     }).format(Number(value) || 0);
 
+const formatPercentage = (value) => `${Number(value || 0).toFixed(2)}%`;
+
 const sanitizeNumber = (value) => Number(value) || 0;
 
 const calculateTotals = () => {
-    baseImponible.value = budgetItems.value.reduce((sum, item) => sum + sanitizeNumber(item.total), 0);
-    const iva = sanitizeNumber(ivaPercentage.value);
-    montoIva.value = baseImponible.value * (iva / 100);
-    budget.value.total = baseImponible.value + montoIva.value;
+    let base = 0;
+    let tax = 0;
+
+    budgetItems.value.forEach((item) => {
+        const lineBase = sanitizeNumber(item.total);
+        const iva = sanitizeNumber(item.iva);
+
+        base += lineBase;
+        tax += (lineBase * iva) / 100;
+    });
+
+    baseImponible.value = Number(base.toFixed(2));
+    montoIva.value = Number(tax.toFixed(2));
+    budget.value.total = Number((baseImponible.value + montoIva.value).toFixed(2));
 };
+
+const effectiveIva = computed(() => {
+    if (baseImponible.value === 0) {
+        return 0;
+    }
+
+    return Number(((montoIva.value / baseImponible.value) * 100).toFixed(2));
+});
 
 const updateItemTotal = (index) => {
     const item = budgetItems.value[index];
@@ -410,6 +434,17 @@ const updateItemTotal = (index) => {
     if (discount > 0) {
         item.total -= (item.total * discount) / 100;
     }
+    item.total = Number(item.total.toFixed(2));
+    calculateTotals();
+};
+
+const updateItemIva = (index) => {
+    const item = budgetItems.value[index];
+    if (!item) {
+        return;
+    }
+
+    item.iva = sanitizeNumber(item.iva);
     calculateTotals();
 };
 
@@ -452,6 +487,7 @@ const onProductSelected = (index) => {
     }
 
     item.unit_price = product.price;
+    item.iva = sanitizeNumber(product.iva);
     if (!item.quantity || sanitizeNumber(item.quantity) < 1) {
         item.quantity = 1;
     }
@@ -470,7 +506,8 @@ const selectProduct = (product) => {
         quantity: 1,
         discount: 0,
         unit_price: product.price,
-        total: product.price,
+        total: Number(product.price) || 0,
+        iva: sanitizeNumber(product.iva),
     });
 
     calculateTotals();
@@ -486,7 +523,7 @@ const submitForm = () => {
     Inertia.post(route('budgets.storeWithItems'), {
         ...budget.value,
         budgetItems: budgetItems.value,
-        iva: sanitizeNumber(ivaPercentage.value),
+        iva: effectiveIva.value,
         monto_iva: montoIva.value,
         base_imponible: baseImponible.value,
     });

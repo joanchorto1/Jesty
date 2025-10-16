@@ -10,6 +10,7 @@ use App\Models\Part;
 use App\Models\PartItem;
 use App\Models\Product;
 use App\Services\DocumentNumberGenerator;
+use App\Services\DocumentTotalsCalculator;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -120,6 +121,7 @@ class PartController extends Controller
                 'quantity' => $quantity,
                 'unit_price' => $unitPrice,
                 'total' => $lineTotal,
+                'iva' => $product->iva ?? 0,
             ]);
 
             $total += $lineTotal;
@@ -150,7 +152,6 @@ class PartController extends Controller
             'parts.*' => 'exists:parts,id',
             'invoice.date' => 'required|date',
             'invoice.state' => 'required|in:pending,paid,cancelled',
-            'invoice.iva' => 'required|numeric|min:0',
         ]);
 
         $parts = Part::with('items')
@@ -171,10 +172,20 @@ class PartController extends Controller
             return back()->withErrors(['parts' => 'Los partes seleccionados deben pertenecer al mismo cliente.']);
         }
 
-        $baseImponible = round($parts->sum('total'), 2);
-        $ivaRate = (float) $validated['invoice']['iva'];
-        $montoIva = round($baseImponible * ($ivaRate / 100), 2);
-        $total = round($baseImponible + $montoIva, 2);
+        $itemsForTotals = $parts->flatMap(function (Part $part) {
+            return $part->items->map(function (PartItem $item) {
+                $ivaRate = $item->iva ?? $item->product->iva ?? 0;
+
+                return [
+                    'quantity' => $item->quantity,
+                    'unit_price' => $item->unit_price,
+                    'discount' => 0,
+                    'iva' => $ivaRate,
+                ];
+            });
+        })->toArray();
+
+        $totals = DocumentTotalsCalculator::calculate($itemsForTotals);
 
         $invoiceDate = Carbon::parse($validated['invoice']['date']);
         $invoice = Invoice::create([
@@ -188,10 +199,10 @@ class PartController extends Controller
                 Auth::user()->company_id,
                 $invoiceDate
             ),
-            'base_imponible' => $baseImponible,
-            'iva' => $ivaRate,
-            'monto_iva' => $montoIva,
-            'total' => $total,
+            'base_imponible' => $totals['base'],
+            'iva' => $totals['effectiveRate'],
+            'monto_iva' => $totals['tax'],
+            'total' => $totals['total'],
             'state' => $validated['invoice']['state'],
         ]);
 
@@ -204,6 +215,7 @@ class PartController extends Controller
                     'unit_price' => $item->unit_price,
                     'discount' => 0,
                     'total' => $item->total,
+                    'iva' => $item->iva ?? 0,
                 ]);
 
                 $this->updateStockProduct($item->product_id, $item->quantity);

@@ -12,6 +12,7 @@ use App\Models\Company;
 use App\Models\EmailConfiguration;
 use App\Models\Invoice;
 use App\Models\Product;
+use App\Services\DocumentTotalsCalculator;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -101,23 +102,29 @@ class BudgetController extends Controller
         // Validar los datos del request
         $validated = $request->validate([
             'date' => 'required|date',
-            'base_imponible' => 'required|numeric',
             'state' => 'required|string',
             'client_id' => 'required|exists:clients,id',
-            'total' => 'required|numeric',
-            'iva' => 'required|numeric',
-            'monto_iva' => 'required|numeric',
             'budgetItems' => 'required|array',
             'budgetItems.*.product_id' => 'required|exists:products,id',
             'budgetItems.*.quantity' => 'required|integer',
             'budgetItems.*.discount' => 'required|numeric',
             'budgetItems.*.unit_price' => 'required|numeric',
-            'budgetItems.*.total' => 'required|numeric',
+            'budgetItems.*.iva' => 'nullable|numeric',
         ]);
 
         // Crear el presupuesto
         $issueDate = Carbon::parse($validated['date']);
-        $data=$request->only('date','base_imponible','state','client_id','total','iva','monto_iva');
+        $totals = DocumentTotalsCalculator::calculate($validated['budgetItems']);
+
+        $data = [
+            'date' => $validated['date'],
+            'state' => $validated['state'],
+            'client_id' => $validated['client_id'],
+            'base_imponible' => $totals['base'],
+            'monto_iva' => $totals['tax'],
+            'total' => $totals['total'],
+            'iva' => $totals['effectiveRate'],
+        ];
         $data['company_id']=Auth::user()->company_id;
         $data['name'] = DocumentNumberGenerator::generate(
             Budget::class,
@@ -130,13 +137,20 @@ class BudgetController extends Controller
 
         // Crear los ítems de presupuesto
         foreach ($validated['budgetItems'] as $item) {
+            $lineBase = $item['quantity'] * $item['unit_price'];
+            if ($item['discount'] > 0) {
+                $lineBase -= ($lineBase * $item['discount']) / 100;
+            }
+            $lineBase = round($lineBase, 2);
+
             BudgetItem::create([
                 'budget_id' => $budget->id,
                 'product_id' => $item['product_id'],
                 'quantity' => $item['quantity'],
                 'unit_price' => $item['unit_price'],
                 'discount' => $item['discount'],
-                'total' => $item['total'],
+                'total' => $lineBase,
+                'iva' => $item['iva'] ?? 0,
             ]);
         }
 
@@ -166,13 +180,9 @@ class BudgetController extends Controller
 
     public function update(Request $request, $id)
     {
-        $request->validate([
+        $validated = $request->validate([
             'client_id' => 'required',
             'date' => 'required|date',
-            'base_imponible' => 'required|numeric|min:0',
-            'iva' => 'nullable|numeric',
-            'total'=>'required|numeric',
-            'monto_iva'=>'required|numeric',
             'name' => 'required|string|max:255',
             'state' => 'required|string|in:in_process,accepted,rejected',
             'items' => 'required|array',
@@ -180,28 +190,44 @@ class BudgetController extends Controller
             'items.*.quantity' => 'required|integer|min:1',
             'items.*.discount' => 'required|numeric|min:0',
             'items.*.unit_price' => 'required|numeric|min:0',
-            'items.*.total' => 'required|numeric|min:0',
-
+            'items.*.iva' => 'nullable|numeric',
         ]);
 
         $budget = Budget::findOrFail($id);
 
+        $totals = DocumentTotalsCalculator::calculate($validated['items']);
+
         // Actualizar el presupuesto
-        $data = $request->only(['client_id', 'date', 'base_imponible', 'iva', 'name', 'state','total','monto_iva']);
-        $budget->update($data);
+        $budget->update([
+            'client_id' => $validated['client_id'],
+            'date' => $validated['date'],
+            'name' => $validated['name'],
+            'state' => $validated['state'],
+            'base_imponible' => $totals['base'],
+            'monto_iva' => $totals['tax'],
+            'total' => $totals['total'],
+            'iva' => $totals['effectiveRate'],
+        ]);
 
         // Eliminar ítems existentes
         BudgetItem::where('budget_id', $id)->delete();
 
         // Crear nuevos ítems
-        foreach ($request->items as $item) {
+        foreach ($validated['items'] as $item) {
+            $lineBase = $item['quantity'] * $item['unit_price'];
+            if ($item['discount'] > 0) {
+                $lineBase -= ($lineBase * $item['discount']) / 100;
+            }
+            $lineBase = round($lineBase, 2);
+
             BudgetItem::create([
                 'budget_id' => $id,
                 'product_id' => $item['product_id'],
                 'quantity' => $item['quantity'],
                 'unit_price' => $item['unit_price'],
                 'discount' => $item['discount'],
-                'total' => $item['total'],
+                'total' => $lineBase,
+                'iva' => $item['iva'] ?? 0,
             ]);
         }
 
