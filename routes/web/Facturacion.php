@@ -78,6 +78,8 @@ Route::middleware(['route.features.access:1'])->group(function() {
             'destroy' => 'parts.destroy',
         ]);
 
+    Route::get('/parts/{part}/print', [PartController::class, 'print'])->name('parts.print');
+
     Route::post('/parts/convert-to-invoice', [PartController::class, 'convertToInvoice'])->name('parts.convertToInvoice');
 
 

@@ -1,24 +1,18 @@
 <template>
     <div class="min-h-screen bg-slate-100 py-10 print:bg-white print:py-0">
         <div
-            id="budget"
+            id="part-document"
             class="mx-auto max-w-3xl rounded-3xl border border-slate-200 bg-white px-10 py-12 shadow-2xl print:rounded-none print:border-0 print:px-8 print:py-10 print:shadow-none"
         >
-            <header class="text-center">
-                <h1 class="text-3xl font-semibold tracking-tight text-slate-800">
-                    Pressupost #{{ budget.id }}
-                </h1>
+            <header class="flex flex-col items-center text-center">
+                <h1 class="text-3xl font-semibold tracking-tight text-slate-800">Part de treball #{{ part.reference }}</h1>
                 <p class="mt-2 text-sm text-slate-500">
                     <span class="font-semibold text-slate-600">Data:</span>
-                    {{ formatDate(budget.date) }}
+                    {{ formatDate(part.date) }}
                 </p>
-                <p v-if="budget.due_date" class="text-sm text-slate-500">
-                    <span class="font-semibold text-slate-600">Venciment:</span>
-                    {{ formatDate(budget.due_date) }}
-                </p>
-                <p v-if="budget.name" class="text-sm text-slate-500">
-                    <span class="font-semibold text-slate-600">Títol:</span>
-                    {{ budget.name }}
+                <p class="text-sm text-slate-500" v-if="part.status">
+                    <span class="font-semibold text-slate-600">Estat:</span>
+                    {{ statusCopy(part.status) }}
                 </p>
             </header>
 
@@ -48,19 +42,17 @@
             <section class="mt-12">
                 <div class="flex items-center justify-between">
                     <h2 class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">Detall de línies</h2>
-                    <span class="text-xs font-medium uppercase tracking-[0.2em] text-slate-400">
-                        {{ items.length }} productes
-                    </span>
+                    <span class="text-xs font-medium uppercase tracking-[0.2em] text-slate-400">{{ items.length }} serveis</span>
                 </div>
                 <div class="mt-4 overflow-hidden rounded-2xl border border-slate-200">
                     <table class="w-full border-collapse text-sm">
                         <thead>
                             <tr class="bg-slate-50 text-xs uppercase tracking-[0.2em] text-blue-600">
                                 <th class="px-4 py-3 text-left">#</th>
-                                <th class="px-4 py-3 text-left">Producte</th>
+                                <th class="px-4 py-3 text-left">Concepte</th>
                                 <th class="px-4 py-3 text-center">Quantitat</th>
                                 <th class="px-4 py-3 text-center">Preu unitari</th>
-                                <th class="px-4 py-3 text-center">Descompte</th>
+                                <th class="px-4 py-3 text-center">IVA</th>
                                 <th class="px-4 py-3 text-right">Subtotal</th>
                             </tr>
                         </thead>
@@ -70,15 +62,12 @@
                                 <td class="px-4 py-3 text-left text-slate-700">{{ item.productName }}</td>
                                 <td class="px-4 py-3 text-center">{{ item.quantity }}</td>
                                 <td class="px-4 py-3 text-center">{{ formatCurrency(item.unit_price) }}</td>
-                                <td class="px-4 py-3 text-center">
-                                    <span v-if="item.hasDiscount">{{ formatRate(item.discount) }}</span>
-                                    <span v-else class="text-slate-400">—</span>
-                                </td>
+                                <td class="px-4 py-3 text-center">{{ formatRate(item.iva) }}</td>
                                 <td class="px-4 py-3 text-right font-medium text-slate-700">{{ formatCurrency(item.total) }}</td>
                             </tr>
                             <tr v-if="items.length === 0">
                                 <td colspan="6" class="px-4 py-6 text-center text-sm text-slate-400">
-                                    Encara no hi ha línies associades a aquest pressupost.
+                                    Encara no hi ha línies associades a aquest part.
                                 </td>
                             </tr>
                         </tbody>
@@ -92,7 +81,7 @@
                     <dl class="mt-4 space-y-3 text-sm text-slate-600">
                         <div class="flex items-center justify-between">
                             <dt>Base imposable</dt>
-                            <dd class="font-medium text-slate-800">{{ formatCurrency(budget.base_imponible) }}</dd>
+                            <dd class="font-medium text-slate-800">{{ formatCurrency(baseTotal) }}</dd>
                         </div>
                         <div>
                             <dt class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">IVA desglossat</dt>
@@ -105,23 +94,27 @@
                                     <p class="text-xs text-slate-500">Base: {{ formatCurrency(tier.base) }}</p>
                                 </div>
                             </div>
-                            <p v-else class="mt-2 text-xs text-slate-400">Sense IVA aplicat en aquest pressupost.</p>
+                            <p v-else class="mt-2 text-xs text-slate-400">Sense IVA aplicat en aquest part.</p>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <dt>Total IVA</dt>
+                            <dd class="font-medium text-slate-800">{{ formatCurrency(ivaTotal) }}</dd>
                         </div>
                         <div class="flex items-center justify-between text-base font-semibold text-slate-900">
-                            <dt>Total pressupostat</dt>
-                            <dd>{{ formatCurrency(budget.total) }}</dd>
+                            <dt>Total amb impostos</dt>
+                            <dd>{{ formatCurrency(totalWithTax) }}</dd>
                         </div>
                     </dl>
                 </div>
                 <div class="flex-1 rounded-2xl border border-dashed border-slate-200 px-6 py-5 text-sm text-slate-500 shadow-sm">
                     <p class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Observacions</p>
-                    <p class="mt-3 leading-relaxed" v-if="budget.notes">{{ budget.notes }}</p>
-                    <p v-else class="mt-3 text-slate-400">No hi ha observacions addicionals per a aquest pressupost.</p>
+                    <p class="mt-3 leading-relaxed" v-if="part.notes">{{ part.notes }}</p>
+                    <p v-else class="mt-3 text-slate-400">No hi ha observacions addicionals registrades.</p>
                 </div>
             </section>
 
             <footer class="mt-12 border-t border-slate-200 pt-6 text-center text-xs text-slate-400">
-                <p>Gràcies per considerar la nostra proposta.</p>
+                <p>Gràcies per la vostra confiança.</p>
                 <p>© {{ new Date().getFullYear() }} {{ company.name }}</p>
             </footer>
 
@@ -129,7 +122,7 @@
                 <button
                     id="print-button"
                     class="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-blue-700"
-                    @click="downloadBudget"
+                    @click="downloadPart"
                 >
                     <span>Descarregar PDF</span>
                     <PrintIcon class="h-5 w-5" />
@@ -146,8 +139,8 @@ import PrintIcon from "@/Components/Icons/PrintIcon.vue";
 const props = defineProps({
     company: { type: Object, default: () => ({}) },
     client: { type: Object, default: () => ({}) },
-    budget: { type: Object, default: () => ({}) },
-    budgetItems: { type: Array, default: () => [] },
+    part: { type: Object, default: () => ({}) },
+    partItems: { type: Array, default: () => [] },
     products: { type: Array, default: () => [] },
 });
 
@@ -185,17 +178,22 @@ const formatDate = (value) => {
     return Number.isNaN(date.getTime()) ? value : dateFormatter.format(date);
 };
 
-const budget = {
-    ...props.budget,
-    base_imponible: numberFrom(props.budget.base_imponible),
-    monto_iva: numberFrom(props.budget.monto_iva),
-    total: numberFrom(props.budget.total),
+const statusCopy = (status) => {
+    switch (status) {
+        case "pending":
+            return "Pendent";
+        case "invoiced":
+            return "Facturat";
+        default:
+            return status;
+    }
 };
 
 const productMap = new Map(props.products.map((product) => [product.id, product.name]));
 
-const items = props.budgetItems.map((item, index) => {
-    const discount = numberFrom(item.discount);
+const items = props.partItems.map((item, index) => {
+    const base = numberFrom(item.total);
+    const rate = numberFrom(item.iva);
 
     return {
         ...item,
@@ -203,12 +201,14 @@ const items = props.budgetItems.map((item, index) => {
         productName: productMap.get(item.product_id) ?? "—",
         quantity: numberFrom(item.quantity),
         unit_price: numberFrom(item.unit_price),
-        discount,
-        hasDiscount: discount > 0,
-        total: numberFrom(item.total),
-        iva: numberFrom(item.iva),
+        iva: rate,
+        total: base,
     };
 });
+
+const baseTotal = items.reduce((sum, item) => sum + numberFrom(item.total), 0);
+const ivaTotal = items.reduce((sum, item) => sum + numberFrom(item.total) * numberFrom(item.iva) / 100, 0);
+const totalWithTax = baseTotal + ivaTotal;
 
 const buildTaxBreakdown = (lineItems) => {
     const map = new Map();
@@ -238,8 +238,8 @@ const buildTaxBreakdown = (lineItems) => {
 
 const taxBreakdown = buildTaxBreakdown(items);
 
-const downloadBudget = () => {
-    const element = document.getElementById("budget");
+const downloadPart = () => {
+    const element = document.getElementById("part-document");
     const button = document.getElementById("print-button");
 
     if (!element) {
@@ -252,7 +252,7 @@ const downloadBudget = () => {
 
     const options = {
         margin: 12,
-        filename: `Pressupost_${props.budget.id}_${props.client.name}.pdf`,
+        filename: `Part_${props.part.reference || props.part.id}_${props.client.name}.pdf`,
         image: { type: "jpeg", quality: 0.98 },
         html2canvas: { scale: 2 },
         jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
