@@ -62,11 +62,21 @@
 
         <!-- Invoice Totals -->
         <div class="flex justify-end mt-8 text-gray-800">
-            <div class="text-right">
-                <p class="mb-2"><strong>Base Imponible:</strong> {{ invoice.base_imponible }}€</p>
-                <p class="mb-2"><strong>IVA (21%):</strong> {{ invoice.monto_iva }}€</p>
-                <p class="mb-2"><strong>Retenció IRPF (15%):</strong> −{{ retencionIrpf.toFixed(2) }}€</p>
-                <p class="text-lg font-bold mt-2"><strong>Total a pagar:</strong> {{ totalFinal.toFixed(2) }}€</p>
+            <div class="text-right space-y-2">
+                <p class="mb-2"><strong>Base Imponible:</strong> {{ formatEuro(invoice.base_imponible) }}</p>
+                <div>
+                    <p class="text-sm font-semibold text-gray-700">IVA desglossat:</p>
+                    <ul v-if="taxBreakdown.length" class="mt-1 space-y-1 text-sm">
+                        <li v-for="tier in taxBreakdown" :key="tier.rate" class="leading-tight">
+                            <span class="font-semibold text-gray-800">{{ formatRate(tier.rate) }}</span>
+                            <span class="ml-2">{{ formatEuro(tier.tax) }}</span>
+                            <span class="block text-xs text-gray-500">Base: {{ formatEuro(tier.base) }}</span>
+                        </li>
+                    </ul>
+                    <p v-else class="text-xs text-gray-500">Sense IVA aplicat a les línies actuals.</p>
+                </div>
+                <p class="mb-2"><strong>Retenció IRPF (15%):</strong> −{{ formatEuro(retencionIrpf) }}</p>
+                <p class="text-lg font-bold mt-2"><strong>Total a pagar:</strong> {{ formatEuro(totalFinal) }}</p>
             </div>
         </div>
 
@@ -101,6 +111,9 @@ const toNumber = (value, fallback = 0) => {
     return Number.isFinite(number) ? number : fallback;
 };
 
+const formatEuro = (value) => `${toNumber(value).toFixed(2)}€`;
+const formatRate = (value) => `${toNumber(value).toFixed(2)}%`;
+
 // Format price fields
 const invoiceItems = props.invoiceItems.map((item) => {
     return {
@@ -124,6 +137,33 @@ const invoice = {
     monto_iva: montoIva.toFixed(2),
     total: toNumber(props.invoice.total).toFixed(2),
 };
+
+const buildTaxBreakdown = (items) => {
+    const map = new Map();
+
+    items.forEach((item) => {
+        const lineBase = toNumber(item.total);
+        if (lineBase <= 0) {
+            return;
+        }
+
+        const rate = toNumber(item.iva);
+        const lineTax = +((lineBase * rate) / 100).toFixed(2);
+        const key = rate.toFixed(2);
+
+        if (!map.has(key)) {
+            map.set(key, { rate: Number(key), base: 0, tax: 0 });
+        }
+
+        const entry = map.get(key);
+        entry.base = +(entry.base + lineBase).toFixed(2);
+        entry.tax = +(entry.tax + lineTax).toFixed(2);
+    });
+
+    return Array.from(map.values()).sort((a, b) => a.rate - b.rate);
+};
+
+const taxBreakdown = buildTaxBreakdown(invoiceItems);
 
 const printBudget = () => {
     const element = document.getElementById("invoice");

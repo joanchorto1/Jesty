@@ -113,6 +113,35 @@
                                 <TextInput :value="formatCurrency(form.total)" disabled class="mt-2 block w-full text-slate-600" />
                             </div>
                         </div>
+
+                        <div class="space-y-3">
+                            <h3 class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">
+                                Desglose por tipo de IVA
+                            </h3>
+                            <div
+                                v-if="taxBreakdown.length"
+                                class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"
+                            >
+                                <div
+                                    v-for="tier in taxBreakdown"
+                                    :key="tier.rate"
+                                    class="rounded-2xl border border-slate-200/70 bg-slate-50/80 p-4"
+                                >
+                                    <p class="text-sm font-semibold text-slate-800">
+                                        {{ formatPercentage(tier.rate) }}
+                                    </p>
+                                    <p class="mt-1 text-xs text-slate-500">
+                                        Base: {{ formatCurrency(tier.base) }}
+                                    </p>
+                                    <p class="text-xs text-slate-500">
+                                        IVA: {{ formatCurrency(tier.tax) }}
+                                    </p>
+                                </div>
+                            </div>
+                            <p v-else class="text-xs text-slate-500">
+                                Añade conceptos con impuestos para consultar el desglose por tramo.
+                            </p>
+                        </div>
                     </section>
 
                     <section class="space-y-6 rounded-3xl border border-slate-200/80 bg-white/70 p-6 shadow-sm">
@@ -376,6 +405,7 @@ const showProductModal = ref(false);
 const searchTerm = ref('');
 const selectedCategory = ref('');
 const clientSearchTerm = ref('');
+const taxBreakdown = ref([]);
 
 const totalClients = computed(() => props.clients.length);
 const totalProducts = computed(() => props.products.length);
@@ -413,13 +443,28 @@ const sanitizeNumber = (value) => Number(value) || 0;
 const recalculateTotals = () => {
     let base = 0;
     let tax = 0;
+    const breakdown = {};
 
     form.value.items.forEach((item) => {
         const lineBase = sanitizeNumber(item.total);
         const iva = sanitizeNumber(item.iva);
 
+        if (lineBase <= 0) {
+            return;
+        }
+
+        const lineTax = Number(((lineBase * iva) / 100).toFixed(2));
+        const rateKey = iva.toFixed(2);
+
         base += lineBase;
-        tax += (lineBase * iva) / 100;
+        tax += lineTax;
+
+        if (!breakdown[rateKey]) {
+            breakdown[rateKey] = { base: 0, tax: 0 };
+        }
+
+        breakdown[rateKey].base += lineBase;
+        breakdown[rateKey].tax += lineTax;
     });
 
     form.value.base_imponible = Number(base.toFixed(2));
@@ -428,6 +473,14 @@ const recalculateTotals = () => {
     form.value.iva = form.value.base_imponible === 0
         ? 0
         : Number(((form.value.monto_iva / form.value.base_imponible) * 100).toFixed(2));
+
+    taxBreakdown.value = Object.entries(breakdown)
+        .map(([rate, amounts]) => ({
+            rate: Number(rate),
+            base: Number(amounts.base.toFixed(2)),
+            tax: Number(amounts.tax.toFixed(2)),
+        }))
+        .sort((a, b) => a.rate - b.rate);
 };
 
 const effectiveIva = computed(() => form.value.iva || 0);
