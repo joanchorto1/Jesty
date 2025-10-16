@@ -14,67 +14,106 @@
         body {
             font-family: 'DejaVu Sans', Arial, sans-serif;
             font-size: 10px;
-            color: #333;
-            background-color: #fff;
-            margin: 20px;
+            color: #2f3542;
+            background-color: #f5f6fa;
+            margin: 24px;
         }
 
         header, footer {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
+        }
+
+        h1, h2, h3, p {
+            margin: 4px 0;
         }
 
         .container {
             width: 100%;
             max-width: 850px;
             margin: 0 auto;
+            background: #ffffff;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 6px 24px rgba(15, 31, 53, 0.08);
         }
 
-        .details, .items, .totals {
-            margin-bottom: 20px;
+        .details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
         }
 
-        h1, h2, h3, p {
-            margin: 5px 0;
+        .items, .totals {
+            margin-bottom: 24px;
         }
 
         .panel {
-            margin-bottom: 20px;
-            background: #ffffff;
-            border: 1px solid #ddd;
-            padding: 10px;
-            border-radius: 5px;
+            border: 1px solid #e5e9f2;
+            border-left: 4px solid #2563eb;
+            padding: 16px;
+            border-radius: 10px;
+            background: #fff;
         }
 
         .panel-heading {
-            font-weight: bold;
-            margin-bottom: 10px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #1f2937;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-size: 9px;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
+            margin-top: 12px;
         }
 
         th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: center;
+            padding: 10px 12px;
+            border-bottom: 1px solid #e5e9f2;
+            text-align: left;
         }
 
         th {
-            background: #3498db;
-            color: #fff;
+            font-weight: 600;
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #2563eb;
+            background: transparent;
+        }
+
+        .items tbody tr:last-child td {
+            border-bottom: none;
         }
 
         .totals {
-            float: right;
-            width: 50%;
+            max-width: 320px;
+            margin-left: auto;
         }
 
-        .totals th, .totals td {
+        .totals table th {
+            color: #4b5563;
+            width: 55%;
+        }
+
+        .totals table td {
             text-align: right;
+            color: #111827;
+        }
+
+        .totals table tr:last-child th,
+        .totals table tr:last-child td {
+            border-bottom: none;
+        }
+
+        footer p {
+            color: #6b7280;
+            font-size: 9px;
         }
     </style>
 </head>

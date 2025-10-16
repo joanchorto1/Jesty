@@ -6,56 +6,68 @@
     <title>Nómina #{{ $payroll->id }}</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'DejaVu Sans', Arial, sans-serif;
             margin: 0;
-            padding: 0;
-            background-color: #f4f4f9;
-            color: #333;
+            padding: 24px;
+            background-color: #f5f6fa;
+            color: #2f3542;
         }
         .container {
             width: 90%;
-            margin: 20px auto;
+            margin: 0 auto;
             background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 32px;
+            border-radius: 12px;
+            box-shadow: 0 6px 24px rgba(15, 31, 53, 0.08);
         }
         .header, .footer {
             text-align: center;
-            margin: 20px 0;
+            margin: 24px 0;
         }
         .header h1 {
             margin: 0;
-            color: #0044cc;
+            color: #1f2937;
+            font-size: 20px;
+            letter-spacing: 0.04em;
         }
         .header p {
-            margin: 5px 0;
+            margin: 4px 0;
+            color: #6b7280;
         }
         .section-title {
-            background-color: #0044cc;
-            color: #fff;
-            padding: 10px;
-            margin-top: 20px;
-            border-radius: 4px;
-            font-size: 18px;
+            margin-top: 24px;
+            padding-left: 12px;
+            border-left: 4px solid #2563eb;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #1f2937;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin: 20px 0;
+            margin: 16px 0 0;
         }
         table th, table td {
-            border: 1px solid #ddd;
-            padding: 10px;
+            border-bottom: 1px solid #e5e9f2;
+            padding: 10px 12px;
             text-align: left;
         }
         table th {
-            background-color: #f4f4f9;
-            font-weight: bold;
+            font-weight: 600;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #2563eb;
+            background: transparent;
+        }
+        table tr:last-child td {
+            border-bottom: none;
         }
         .footer p {
-            font-size: 14px;
-            color: #777;
+            font-size: 10px;
+            color: #9ca3af;
         }
     </style>
 </head>
