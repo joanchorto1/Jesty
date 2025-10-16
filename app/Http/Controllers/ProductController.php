@@ -48,6 +48,7 @@ class ProductController extends Controller
             'category_id' => 'required',
             'description' => 'required',
             'price' => 'required|numeric',
+            'iva' => 'required|numeric|min:0|max:100',
             'supplier_id' => 'required',
             'cost_price' => 'required|numeric',
             'stock' => 'required_if:is_stackable,true',
@@ -92,9 +93,10 @@ class ProductController extends Controller
             'name' => 'required',
             'description' => 'required',
             'category_id' => 'required',
-            'price' => 'required',
+            'price' => 'required|numeric',
+            'iva' => 'required|numeric|min:0|max:100',
             'stock' => 'required_if:is_stackable,true',
-            'cost_price' => 'required',
+            'cost_price' => 'required|numeric',
             'supplier_id' => 'required',
             'is_stackable' => 'required'
         ]);
