@@ -175,6 +175,13 @@
                                     </td>
                                     <td class="px-6 py-4">
                                         <div class="flex items-center justify-end gap-3 text-slate-400">
+                                            <NavLink
+                                                :href="route('parts.print', part.id)"
+                                                class="inline-flex items-center justify-center rounded-full border border-transparent bg-slate-100 p-2 text-slate-500 transition hover:bg-slate-200 hover:text-slate-700"
+                                                title="Imprimir part"
+                                            >
+                                                <PrintIcon class="h-5 w-5" />
+                                            </NavLink>
                                             <button
                                                 @click="deletePart(part.id)"
                                                 class="hover:text-rose-500 transition"
@@ -265,6 +272,7 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 import NavLink from '@/Components/NavLink.vue';
 import AddIcon from '@/Components/Icons/AddIcon.vue';
 import DeleteIcon from '@/Components/Icons/DeleteIcon.vue';
+import PrintIcon from '@/Components/Icons/PrintIcon.vue';
 import DialogModal from '@/Components/DialogModal.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';

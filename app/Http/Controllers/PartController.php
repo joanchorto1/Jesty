@@ -9,6 +9,7 @@ use App\Models\InvoiceItem;
 use App\Models\Part;
 use App\Models\PartItem;
 use App\Models\Product;
+use App\Models\Company;
 use App\Services\DocumentNumberGenerator;
 use App\Services\DocumentTotalsCalculator;
 use Carbon\Carbon;
@@ -143,6 +144,24 @@ class PartController extends Controller
         $part->delete();
 
         return redirect()->route('parts.index');
+    }
+
+    public function print(Part $part)
+    {
+        abort_unless($part->company_id === Auth::user()->company_id, 403);
+
+        $part->load(['items', 'client']);
+
+        $company = Company::find(Auth::user()->company_id);
+        $products = Product::where('company_id', Auth::user()->company_id)->get();
+
+        return Inertia::render('Parts/Print', [
+            'part' => $part,
+            'partItems' => $part->items,
+            'client' => $part->client,
+            'company' => $company,
+            'products' => $products,
+        ]);
     }
 
     public function convertToInvoice(Request $request)

@@ -1,95 +1,144 @@
 <template>
-    <div id="invoice" class="max-w-4xl min-h-screen mx-auto p-6 bg-white shadow-lg rounded-lg">
-        <!-- Header - Company Information -->
-        <div class="flex justify-between mb-10">
-            <!-- Company Details -->
-            <div>
-                <img src="/storage/JCTLogo.jpeg" alt="Company Logo" class="w-16 rounded-md mb-4" />
-                <h1 class="text-xl font-bold">{{ company.name }}</h1>
-                <p class="text-gray-600">{{ company.address }}</p>
-                <p class="text-gray-600">{{ company.phone }}</p>
-                <p class="text-gray-600">{{ company.nif }}</p>
-                <p class="text-gray-600">{{ company.email }}</p>
-            </div>
-            <!-- Client Information -->
-            <div class="text-right mt-20">
-                <h2 class="text-xl font-semibold text-gray-800">Informació del client</h2>
-                <p class="text-gray-600">{{ client.name }}</p>
-                <p class="text-gray-600">{{ client.address }}</p>
-                <p class="text-gray-600">{{ client.phone }}</p>
-                <p class="text-gray-600">{{ client.nif }}</p>
-                <p class="text-gray-600">{{ client.email }}</p>
-            </div>
-        </div>
+    <div class="min-h-screen bg-slate-100 py-10 print:bg-white print:py-0">
+        <div
+            id="invoice"
+            class="mx-auto max-w-3xl rounded-3xl border border-slate-200 bg-white px-10 py-12 shadow-2xl print:rounded-none print:border-0 print:px-8 print:py-10 print:shadow-none"
+        >
+            <header class="text-center">
+                <h1 class="text-3xl font-semibold tracking-tight text-slate-800">
+                    Factura #{{ invoice.id }}
+                </h1>
+                <p class="mt-2 text-sm text-slate-500">
+                    <span class="font-semibold text-slate-600">Data:</span>
+                    {{ formatDate(invoice.date) }}
+                </p>
+                <p v-if="invoice.due_date" class="text-sm text-slate-500">
+                    <span class="font-semibold text-slate-600">Venciment:</span>
+                    {{ formatDate(invoice.due_date) }}
+                </p>
+                <p v-if="invoice.name" class="text-sm text-slate-500">
+                    <span class="font-semibold text-slate-600">Núm. de factura:</span>
+                    {{ invoice.name }}
+                </p>
+            </header>
 
-        <!-- Invoice Details -->
-        <div class="mb-8">
-            <h2 class="text-lg font-semibold text-gray-800 border-b border-gray-300 pb-2">Detalls de la Factura</h2>
-            <div class="mt-4 text-gray-600">
+            <section class="mt-10 grid gap-6 md:grid-cols-2">
+                <article class="rounded-2xl border border-slate-200 px-6 py-5 shadow-sm">
+                    <p class="text-xs font-semibold uppercase tracking-[0.28em] text-blue-600">Detalls de l'empresa</p>
+                    <div class="mt-3 space-y-1 text-sm text-slate-600">
+                        <p class="text-base font-semibold text-slate-800">{{ company.name }}</p>
+                        <p v-if="company.address">{{ company.address }}</p>
+                        <p v-if="company.phone">Tel. {{ company.phone }}</p>
+                        <p v-if="company.email">{{ company.email }}</p>
+                        <p v-if="company.nif">ID: {{ company.nif }}</p>
+                    </div>
+                </article>
+                <article class="rounded-2xl border border-slate-200 px-6 py-5 shadow-sm">
+                    <p class="text-xs font-semibold uppercase tracking-[0.28em] text-blue-600">Detalls del client</p>
+                    <div class="mt-3 space-y-1 text-sm text-slate-600">
+                        <p class="text-base font-semibold text-slate-800">{{ client.name }}</p>
+                        <p v-if="client.address">{{ client.address }}</p>
+                        <p v-if="client.phone">Tel. {{ client.phone }}</p>
+                        <p v-if="client.email">{{ client.email }}</p>
+                        <p v-if="client.nif">ID: {{ client.nif }}</p>
+                    </div>
+                </article>
+            </section>
 
-                <p><strong>Data:</strong> {{ invoice.date }}</p>
-                <p><strong>Nº Factura:</strong> {{ invoice.name }}</p>
-<!--                <p><strong>ID:</strong> F{{ invoice.id }}</p>-->
-            </div>
-        </div>
-
-        <!-- Invoice Items Table -->
-        <div>
-            <table class="w-full table-auto border-collapse border border-gray-300 text-sm">
-                <thead>
-                <tr class="bg-blue-50 text-blue-600">
-                    <th class="py-2 px-4 border border-gray-300 text-left">Producte</th>
-                    <th class="py-2 px-4 border border-gray-300 text-center">Quantitat</th>
-                    <th class="py-2 px-4 border border-gray-300 text-center">Preu Unitari</th>
-                    <th class="py-2 px-4 border border-gray-300 text-center">Descompte</th>
-                    <th class="py-2 px-4 border border-gray-300 text-center">Total</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr v-for="item in invoiceItems" :key="item.id" class="border-b hover:bg-gray-50">
-                    <template v-for="product in products">
-                        <td v-if="item.product_id === product.id" class="py-2 px-4 text-gray-700">{{ product.name }}</td>
-                    </template>
-                    <td class="py-2 px-4 text-center text-gray-700">{{ item.quantity }}</td>
-                    <td class="py-2 px-4 text-center text-gray-700">{{ item.unit_price }}€</td>
-                    <td v-if="item.discount != 0" class="py-2 px-4 text-center text-gray-700">{{ item.discount }}%</td>
-                    <td v-else class="py-2 px-4 text-center text-gray-500">-</td>
-                    <td class="py-2 px-4 text-center text-gray-700">{{ item.total }}€</td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Invoice Totals -->
-        <div class="flex justify-end mt-8 text-gray-800">
-            <div class="text-right space-y-2">
-                <p class="mb-2"><strong>Base Imponible:</strong> {{ formatEuro(invoice.base_imponible) }}</p>
-                <div>
-                    <p class="text-sm font-semibold text-gray-700">IVA desglossat:</p>
-                    <ul v-if="taxBreakdown.length" class="mt-1 space-y-1 text-sm">
-                        <li v-for="tier in taxBreakdown" :key="tier.rate" class="leading-tight">
-                            <span class="font-semibold text-gray-800">{{ formatRate(tier.rate) }}</span>
-                            <span class="ml-2">{{ formatEuro(tier.tax) }}</span>
-                            <span class="block text-xs text-gray-500">Base: {{ formatEuro(tier.base) }}</span>
-                        </li>
-                    </ul>
-                    <p v-else class="text-xs text-gray-500">Sense IVA aplicat a les línies actuals.</p>
+            <section class="mt-12">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">Detall de línies</h2>
+                    <span class="text-xs font-medium uppercase tracking-[0.2em] text-slate-400">
+                        {{ items.length }} productes
+                    </span>
                 </div>
-                <p class="mb-2"><strong>Retenció IRPF (15%):</strong> −{{ formatEuro(retencionIrpf) }}</p>
-                <p class="text-lg font-bold mt-2"><strong>Total a pagar:</strong> {{ formatEuro(totalFinal) }}</p>
-            </div>
-        </div>
+                <div class="mt-4 overflow-hidden rounded-2xl border border-slate-200">
+                    <table class="w-full border-collapse text-sm">
+                        <thead>
+                            <tr class="bg-slate-50 text-xs uppercase tracking-[0.2em] text-blue-600">
+                                <th class="px-4 py-3 text-left">#</th>
+                                <th class="px-4 py-3 text-left">Producte</th>
+                                <th class="px-4 py-3 text-center">Quantitat</th>
+                                <th class="px-4 py-3 text-center">Preu unitari</th>
+                                <th class="px-4 py-3 text-center">Descompte</th>
+                                <th class="px-4 py-3 text-right">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="item in items" :key="item.id" class="border-t border-slate-200 text-slate-600">
+                                <td class="px-4 py-3 text-left font-medium text-slate-500">{{ item.index }}</td>
+                                <td class="px-4 py-3 text-left text-slate-700">{{ item.productName }}</td>
+                                <td class="px-4 py-3 text-center">{{ item.quantity }}</td>
+                                <td class="px-4 py-3 text-center">{{ formatCurrency(item.unit_price) }}</td>
+                                <td class="px-4 py-3 text-center">
+                                    <span v-if="item.hasDiscount">{{ formatRate(item.discount) }}</span>
+                                    <span v-else class="text-slate-400">—</span>
+                                </td>
+                                <td class="px-4 py-3 text-right font-medium text-slate-700">{{ formatCurrency(item.total) }}</td>
+                            </tr>
+                            <tr v-if="items.length === 0">
+                                <td colspan="6" class="px-4 py-6 text-center text-sm text-slate-400">
+                                    Encara no hi ha línies associades a aquesta factura.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
 
-        <!-- Print Button -->
-        <div class="mt-6 flex justify-end">
-            <button
-                id="print-button"
-                class="flex items-center space-x-2 bg-blue-500 text-white py-2 px-4 rounded-md shadow-md hover:bg-blue-600 transition"
-                @click="printBudget"
-            >
-                <span>Imprimir</span>
-                <PrintIcon class="w-5 h-5 fill-current" />
-            </button>
+            <section class="mt-10 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                <div class="rounded-2xl border border-slate-200 px-6 py-5 shadow-sm md:w-1/2">
+                    <h2 class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">Resum econòmic</h2>
+                    <dl class="mt-4 space-y-3 text-sm text-slate-600">
+                        <div class="flex items-center justify-between">
+                            <dt>Base imposable</dt>
+                            <dd class="font-medium text-slate-800">{{ formatCurrency(invoice.base_imponible) }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">IVA desglossat</dt>
+                            <div v-if="taxBreakdown.length" class="mt-2 space-y-2">
+                                <div v-for="tier in taxBreakdown" :key="tier.rate" class="rounded-xl border border-slate-100 bg-slate-50 px-3 py-2">
+                                    <p class="flex items-center justify-between text-sm text-slate-700">
+                                        <span class="font-medium text-slate-800">IVA {{ formatRate(tier.rate) }}</span>
+                                        <span>{{ formatCurrency(tier.tax) }}</span>
+                                    </p>
+                                    <p class="text-xs text-slate-500">Base: {{ formatCurrency(tier.base) }}</p>
+                                </div>
+                            </div>
+                            <p v-else class="mt-2 text-xs text-slate-400">Sense IVA aplicat a les línies actuals.</p>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <dt>Retenció IRPF (15%)</dt>
+                            <dd class="font-medium text-rose-600">− {{ formatCurrency(retencionIrpf) }}</dd>
+                        </div>
+                        <div class="flex items-center justify-between text-base font-semibold text-slate-900">
+                            <dt>Total a pagar</dt>
+                            <dd>{{ formatCurrency(totalFinal) }}</dd>
+                        </div>
+                    </dl>
+                </div>
+                <div class="flex-1 rounded-2xl border border-dashed border-slate-200 px-6 py-5 text-sm text-slate-500 shadow-sm">
+                    <p class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Observacions</p>
+                    <p class="mt-3 leading-relaxed" v-if="invoice.notes">{{ invoice.notes }}</p>
+                    <p v-else class="mt-3 text-slate-400">No hi ha observacions addicionals per a aquesta factura.</p>
+                </div>
+            </section>
+
+            <footer class="mt-12 border-t border-slate-200 pt-6 text-center text-xs text-slate-400">
+                <p>Gràcies per confiar en nosaltres.</p>
+                <p>© {{ new Date().getFullYear() }} {{ company.name }}</p>
+            </footer>
+
+            <div class="mt-8 flex justify-end print:hidden">
+                <button
+                    id="print-button"
+                    class="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-blue-700"
+                    @click="downloadInvoice"
+                >
+                    <span>Descarregar PDF</span>
+                    <PrintIcon class="h-5 w-5" />
+                </button>
+            </div>
         </div>
     </div>
 </template>
@@ -99,80 +148,119 @@ import html2pdf from "html2pdf.js";
 import PrintIcon from "@/Components/Icons/PrintIcon.vue";
 
 const props = defineProps({
-    company: Object,
-    client: Object,
-    invoice: Object,
-    invoiceItems: Array,
-    products: Array,
+    company: { type: Object, default: () => ({}) },
+    client: { type: Object, default: () => ({}) },
+    invoice: { type: Object, default: () => ({}) },
+    invoiceItems: { type: Array, default: () => [] },
+    products: { type: Array, default: () => [] },
 });
 
-const toNumber = (value, fallback = 0) => {
-    const number = typeof value === "number" ? value : parseFloat(value);
-    return Number.isFinite(number) ? number : fallback;
+const numberFrom = (value, fallback = 0) => {
+    const parsed = typeof value === "number" ? value : parseFloat(value);
+    return Number.isFinite(parsed) ? parsed : fallback;
 };
 
-const formatEuro = (value) => `${toNumber(value).toFixed(2)}€`;
-const formatRate = (value) => `${toNumber(value).toFixed(2)}%`;
+const currencyFormatter = new Intl.NumberFormat("ca-ES", {
+    style: "currency",
+    currency: "EUR",
+    minimumFractionDigits: 2,
+});
 
-// Format price fields
-const invoiceItems = props.invoiceItems.map((item) => {
+const percentageFormatter = new Intl.NumberFormat("ca-ES", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+});
+
+const dateFormatter = new Intl.DateTimeFormat("ca-ES", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+});
+
+const formatCurrency = (value) => currencyFormatter.format(numberFrom(value));
+const formatRate = (value) => `${percentageFormatter.format(numberFrom(value))}%`;
+const formatDate = (value) => {
+    if (!value) {
+        return "—";
+    }
+
+    const date = new Date(value);
+
+    return Number.isNaN(date.getTime()) ? value : dateFormatter.format(date);
+};
+
+const invoice = {
+    ...props.invoice,
+    base_imponible: numberFrom(props.invoice.base_imponible),
+    monto_iva: numberFrom(props.invoice.monto_iva),
+    total: numberFrom(props.invoice.total),
+};
+
+const productMap = new Map(props.products.map((product) => [product.id, product.name]));
+
+const items = props.invoiceItems.map((item, index) => {
+    const discount = numberFrom(item.discount);
+
     return {
         ...item,
-        unit_price: toNumber(item.unit_price).toFixed(2),
-        total: toNumber(item.total).toFixed(2),
+        index: index + 1,
+        productName: productMap.get(item.product_id) ?? "—",
+        quantity: numberFrom(item.quantity),
+        unit_price: numberFrom(item.unit_price),
+        discount,
+        hasDiscount: discount > 0,
+        total: numberFrom(item.total),
+        iva: numberFrom(item.iva),
     };
 });
 
-// Calcular IRPF
 const irpfRate = 0.15;
-const baseImponible = toNumber(props.invoice.base_imponible);
-const montoIva = toNumber(props.invoice.monto_iva);
-const retencionIrpf = +(baseImponible * irpfRate).toFixed(2);
-const totalFinal = +(baseImponible + montoIva - retencionIrpf).toFixed(2);
+const retencionIrpf = +(invoice.base_imponible * irpfRate).toFixed(2);
+const totalFinal = +(invoice.base_imponible + invoice.monto_iva - retencionIrpf).toFixed(2);
 
-// Format invoice fields
-const invoice = {
-    ...props.invoice,
-    base_imponible: baseImponible.toFixed(2),
-    monto_iva: montoIva.toFixed(2),
-    total: toNumber(props.invoice.total).toFixed(2),
-};
-
-const buildTaxBreakdown = (items) => {
+const buildTaxBreakdown = (lineItems) => {
     const map = new Map();
 
-    items.forEach((item) => {
-        const lineBase = toNumber(item.total);
-        if (lineBase <= 0) {
+    lineItems.forEach((item) => {
+        const base = numberFrom(item.total);
+
+        if (base <= 0) {
             return;
         }
 
-        const rate = toNumber(item.iva);
-        const lineTax = +((lineBase * rate) / 100).toFixed(2);
+        const rate = numberFrom(item.iva);
+        const tax = +((base * rate) / 100).toFixed(2);
         const key = rate.toFixed(2);
 
         if (!map.has(key)) {
-            map.set(key, { rate: Number(key), base: 0, tax: 0 });
+            map.set(key, { rate: rate, base: 0, tax: 0 });
         }
 
         const entry = map.get(key);
-        entry.base = +(entry.base + lineBase).toFixed(2);
-        entry.tax = +(entry.tax + lineTax).toFixed(2);
+        entry.base = +(entry.base + base).toFixed(2);
+        entry.tax = +(entry.tax + tax).toFixed(2);
     });
 
     return Array.from(map.values()).sort((a, b) => a.rate - b.rate);
 };
 
-const taxBreakdown = buildTaxBreakdown(invoiceItems);
+const taxBreakdown = buildTaxBreakdown(items);
 
-const printBudget = () => {
+const downloadInvoice = () => {
     const element = document.getElementById("invoice");
-    const printButton = document.getElementById("print-button");
-    printButton.style.display = "none";
+    const button = document.getElementById("print-button");
+
+    if (!element) {
+        return;
+    }
+
+    if (button) {
+        button.style.display = "none";
+    }
 
     const options = {
-        margin: 10,
-        filename: `Factura${props.invoice.id}_${props.client.name}.pdf`,
+        margin: 12,
+        filename: `Factura_${props.invoice.id}_${props.client.name}.pdf`,
         image: { type: "jpeg", quality: 0.98 },
         html2canvas: { scale: 2 },
         jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
@@ -183,7 +271,9 @@ const printBudget = () => {
         .from(element)
         .save()
         .finally(() => {
-            printButton.style.display = "block";
+            if (button) {
+                button.style.display = "inline-flex";
+            }
         });
 };
 </script>
