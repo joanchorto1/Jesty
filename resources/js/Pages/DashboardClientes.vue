@@ -216,8 +216,18 @@ const churnRate = computed(() => props.clients.length ? Math.round((inactiveClie
 
 const paidInvoices = computed(() => props.invoices.filter(invoice => invoice.state === 'paid').length);
 const paidInvoicesPercentage = computed(() => props.invoices.length ? Math.round((paidInvoices.value / props.invoices.length) * 100) : 0);
-const totalBilled = computed(() => props.invoices.reduce((acc, invoice) => acc + (invoice.total ?? 0), 0).toFixed(2));
-const averageInvoice = computed(() => props.invoices.length ? (props.invoices.reduce((acc, invoice) => acc + (invoice.total ?? 0), 0) / props.invoices.length).toFixed(2) : '0.00');
+const normalisedInvoiceTotal = total => {
+    if (total === null || total === undefined) {
+        return 0;
+    }
+
+    const numericTotal = typeof total === 'number' ? total : parseFloat(total);
+
+    return Number.isFinite(numericTotal) ? numericTotal : 0;
+};
+
+const totalBilled = computed(() => props.invoices.reduce((acc, invoice) => acc + normalisedInvoiceTotal(invoice.total), 0).toFixed(2));
+const averageInvoice = computed(() => props.invoices.length ? (props.invoices.reduce((acc, invoice) => acc + normalisedInvoiceTotal(invoice.total), 0) / props.invoices.length).toFixed(2) : '0.00');
 
 const clientStatusChart = computed(() => {
     const data = {
@@ -240,7 +250,7 @@ const clientStatusChart = computed(() => {
 const revenueByClientChart = computed(() => {
     const totals = props.invoices.reduce((acc, invoice) => {
         const clientId = invoice.client_id;
-        acc[clientId] = (acc[clientId] || 0) + (invoice.total ?? 0);
+        acc[clientId] = (acc[clientId] || 0) + normalisedInvoiceTotal(invoice.total);
         return acc;
     }, {});
 
