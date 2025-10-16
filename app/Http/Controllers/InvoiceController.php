@@ -14,6 +14,7 @@ use App\Models\InvoiceItem;
 use App\Models\Client;
 use App\Models\Company;
 use App\Models\Product;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -26,6 +27,8 @@ use phpseclib3\Crypt\RSA;
 use setasign\Fpdi\Fpdi;
 use setasign\Fpdi\PdfParser\StreamReader;
 use phpseclib3\Crypt\PublicKeyLoader;
+
+use App\Services\DocumentNumberGenerator;
 
 // Importa la clase RSA
 
@@ -50,11 +53,21 @@ class InvoiceController extends Controller
             ->where('disabled', false)
             ->with('category')
             ->get();
+
+        $nextInvoiceNumber = DocumentNumberGenerator::generate(
+            Invoice::class,
+            'name',
+            'FA',
+            Auth::user()->company_id,
+            Carbon::now()
+        );
+
         return Inertia::render('Invoices/Create', [
             'clients' => $clients,
             'companies' => $companies,
             'products' => $products,
             'categories' => Category::where('company_id', Auth::user()->company_id)->get(),
+            'nextInvoiceNumber' => $nextInvoiceNumber,
         ]);
     }
 
@@ -66,12 +79,19 @@ class InvoiceController extends Controller
                 'date' => 'required|date',
                 'base_imponible' => 'required|numeric|min:0',
                 'iva' => 'nullable|numeric',
-                'name' => 'required|string|max:255',
                 'state' => 'required|string|in:pagado,no_pagado',
             ]);
 
-            $data = $request->all();
+            $issueDate = Carbon::parse($request->input('date'));
+            $data = $request->except('name');
             $data['company_id'] = Auth::user()->company_id;
+            $data['name'] = DocumentNumberGenerator::generate(
+                Invoice::class,
+                'name',
+                'FA',
+                Auth::user()->company_id,
+                $issueDate
+            );
 
             Invoice::create($data);
 
@@ -86,7 +106,6 @@ class InvoiceController extends Controller
 
         $validated = $request->validate([
             'date' => 'required|date',
-            'name' => 'required|string',
             'base_imponible' => 'required|numeric',
             'state' => 'required|string',
             'client_id' => 'required|exists:clients,id',
@@ -101,8 +120,16 @@ class InvoiceController extends Controller
             'invoiceItems.*.total' => 'required|numeric',
         ]);
 
-        $data = $request->only('date', 'name', 'base_imponible', 'state', 'client_id', 'total', 'iva', 'monto_iva');
+        $issueDate = Carbon::parse($validated['date']);
+        $data = $request->only('date', 'base_imponible', 'state', 'client_id', 'total', 'iva', 'monto_iva');
         $data['company_id'] = Auth::user()->company_id;
+        $data['name'] = DocumentNumberGenerator::generate(
+            Invoice::class,
+            'name',
+            'FA',
+            Auth::user()->company_id,
+            $issueDate
+        );
         $invoice = Invoice::create($data);
 
         foreach ($validated['invoiceItems'] as $item) {
@@ -242,16 +269,23 @@ class InvoiceController extends Controller
             $budget['state'] = 'accepted';
             $budget->save();
             // Crear la factura con los datos del presupuesto
+            $issueDate = Carbon::now();
             $invoice = Invoice::create([
                 'company_id' => $budget->company_id,
                 'client_id' => $budget->client_id,
-                'date' => now(), // O puedes usar $budget->date si quieres mantener la misma fecha
+                'date' => $issueDate,
                 'total' => $budget->total,
                 'state' => 'pending',
                 'monto_iva' => $budget->monto_iva,
                 'base_imponible' => $budget->base_imponible,
                 'iva' => $budget->iva,
-                'name' => $budget->name,
+                'name' => DocumentNumberGenerator::generate(
+                    Invoice::class,
+                    'name',
+                    'FA',
+                    $budget->company_id,
+                    $issueDate
+                ),
             ]);
 
             // Copiar los ítems del presupuesto a los ítems de la factura
@@ -282,8 +316,15 @@ class InvoiceController extends Controller
     public function copy(Invoice $invoice)
     {
         //crear nueva factura a partir de la que recivimos
+        $copyDate = Carbon::parse($invoice->date);
         $newInvoice= Invoice::create([
-                'name'=>$invoice->name."(copy)",
+                'name' => DocumentNumberGenerator::generate(
+                    Invoice::class,
+                    'name',
+                    'FA',
+                    $invoice->company_id,
+                    $copyDate
+                ),
                 'client_id'=>$invoice->client_id,
                 'date'=>$invoice->date,
                 'base_imponible'=>$invoice->base_imponible,

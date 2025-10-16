@@ -60,15 +60,13 @@
                                 <TextInput id="budget-date" v-model="budget.date" type="date" class="mt-2 block w-full" />
                             </div>
                             <div class="space-y-2">
-                                <InputLabel for="budget-name" value="Nombre interno" />
-                                <TextInput
-                                    id="budget-name"
-                                    v-model="budget.name"
-                                    type="text"
-                                    class="mt-2 block w-full"
-                                    placeholder="Propuesta comercial"
-                                    autocomplete="off"
-                                />
+                                <InputLabel value="Número de pressupost" />
+                                <div class="mt-2 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium text-slate-700">
+                                    {{ budgetNumberPreview }}
+                                </div>
+                                <p class="text-xs text-slate-500">
+                                    S'assigna automàticament mantenint la numeració correlativa per any fiscal.
+                                </p>
                             </div>
                             <div class="space-y-2">
                                 <InputLabel for="client-search" value="Buscar cliente" />
@@ -331,11 +329,15 @@ const props = defineProps({
         type: Array,
         default: () => [],
     },
+    nextBudgetNumber: {
+        type: String,
+        default: '',
+    },
 });
 
 const budget = ref({
     date: new Date().toISOString().split('T')[0],
-    name: '',
+    name: props.nextBudgetNumber || '',
     state: 'in_process',
     client_id: '',
     total: 0,
@@ -369,6 +371,18 @@ const filteredProducts = computed(() => {
             : true;
         return matchesName && matchesCategory;
     });
+});
+
+const budgetNumberPreview = computed(() => {
+    if (budget.value.name) {
+        return budget.value.name;
+    }
+
+    if (props.nextBudgetNumber) {
+        return props.nextBudgetNumber;
+    }
+
+    return 'Es generarà automàticament en guardar';
 });
 
 const formatCurrency = (value) =>

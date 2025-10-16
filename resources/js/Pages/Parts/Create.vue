@@ -23,14 +23,13 @@
 
                         <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                             <div class="space-y-2">
-                                <InputLabel for="part-reference" value="Referència" />
-                                <TextInput
-                                    id="part-reference"
-                                    v-model="form.reference"
-                                    type="text"
-                                    class="mt-2 block w-full"
-                                    placeholder="Parte instal·lació març"
-                                />
+                                <InputLabel value="Número de parte" />
+                                <div class="mt-2 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium text-slate-700">
+                                    {{ partReferencePreview }}
+                                </div>
+                                <p class="text-xs text-slate-500">
+                                    Assignem el codi automàticament seguint la seqüència correlativa anual.
+                                </p>
                                 <InputError :message="form.errors.reference" />
                             </div>
                             <div class="space-y-2">
@@ -254,10 +253,11 @@ import AddProductIcon from '@/Components/Icons/AddProductIcon.vue';
 const props = defineProps({
     clients: { type: Array, default: () => [] },
     products: { type: Array, default: () => [] },
+    nextPartReference: { type: String, default: '' },
 });
 
 const form = useForm({
-    reference: '',
+    reference: props.nextPartReference || '',
     date: new Date().toISOString().split('T')[0],
     client_id: '',
     notes: '',
@@ -282,6 +282,18 @@ const availableCategories = computed(() => {
         .filter((category) => Boolean(category));
 
     return Array.from(new Set(categories)).sort((a, b) => a.localeCompare(b, 'ca')); // alphabetical order
+});
+
+const partReferencePreview = computed(() => {
+    if (form.reference) {
+        return form.reference;
+    }
+
+    if (props.nextPartReference) {
+        return props.nextPartReference;
+    }
+
+    return 'Es generarà automàticament en guardar';
 });
 
 const filteredProducts = computed(() => {

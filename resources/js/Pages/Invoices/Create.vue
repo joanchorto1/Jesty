@@ -65,15 +65,13 @@
                                 />
                             </div>
                             <div class="space-y-2">
-                                <InputLabel for="invoice-name" value="Nombre interno" />
-                                <TextInput
-                                    id="invoice-name"
-                                    v-model="invoice.name"
-                                    type="text"
-                                    class="mt-2 block w-full"
-                                    placeholder="Factura proforma abril"
-                                    autocomplete="off"
-                                />
+                                <InputLabel value="Número de factura" />
+                                <div class="mt-2 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium text-slate-700">
+                                    {{ invoiceNumberPreview }}
+                                </div>
+                                <p class="text-xs text-slate-500">
+                                    El codi es genera de manera automàtica i correlativa segons l'any de la data seleccionada.
+                                </p>
                             </div>
                             <div class="space-y-2">
                                 <InputLabel for="client-search" value="Buscar cliente" />
@@ -366,11 +364,15 @@ const props = defineProps({
         type: Array,
         default: () => [],
     },
+    nextInvoiceNumber: {
+        type: String,
+        default: '',
+    },
 });
 
 const invoice = ref({
     date: new Date().toISOString().split('T')[0],
-    name: '',
+    name: props.nextInvoiceNumber || '',
     state: 'pending',
     client_id: '',
     total: 0,
@@ -404,6 +406,18 @@ const filteredProducts = computed(() => {
             : true;
         return matchesName && matchesCategory;
     });
+});
+
+const invoiceNumberPreview = computed(() => {
+    if (invoice.value.name) {
+        return invoice.value.name;
+    }
+
+    if (props.nextInvoiceNumber) {
+        return props.nextInvoiceNumber;
+    }
+
+    return 'Es generarà automàticament en guardar';
 });
 
 const formatCurrency = (value) =>

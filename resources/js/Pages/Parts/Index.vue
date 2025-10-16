@@ -208,8 +208,13 @@
                     </div>
                     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <div class="space-y-2">
-                            <InputLabel value="Nom intern" />
-                            <TextInput v-model="invoiceForm.name" type="text" class="mt-1 block w-full" placeholder="Factura mensual" />
+                            <InputLabel value="Número de factura" />
+                            <div class="mt-2 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium text-slate-700">
+                                {{ invoiceNumberPreview }}
+                            </div>
+                            <p class="text-xs text-slate-500">
+                                El sistema generarà el codi correlatiu segons l'any de la data indicada.
+                            </p>
                         </div>
                         <div class="space-y-2">
                             <InputLabel value="Data" />
@@ -268,6 +273,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 const props = defineProps({
     parts: { type: Array, default: () => [] },
     clients: { type: Array, default: () => [] },
+    nextInvoiceNumber: { type: String, default: '' },
 });
 
 const filters = reactive({
@@ -280,10 +286,22 @@ const filters = reactive({
 const selectedParts = ref([]);
 const invoiceModalOpen = ref(false);
 const invoiceForm = reactive({
-    name: '',
+    name: props.nextInvoiceNumber || '',
     date: new Date().toISOString().split('T')[0],
     state: 'pending',
     iva: 21,
+});
+
+const invoiceNumberPreview = computed(() => {
+    if (invoiceForm.name) {
+        return invoiceForm.name;
+    }
+
+    if (props.nextInvoiceNumber) {
+        return props.nextInvoiceNumber;
+    }
+
+    return 'Es generarà automàticament en guardar';
 });
 
 const formatCurrency = (value) =>
@@ -369,12 +387,12 @@ const openInvoiceModal = () => {
 
     invoiceModalOpen.value = true;
     if (!invoiceForm.name) {
-        invoiceForm.name = `Factura ${new Date().toLocaleDateString('ca-ES')}`;
+        invoiceForm.name = props.nextInvoiceNumber || '';
     }
 };
 
 const resetInvoiceForm = () => {
-    invoiceForm.name = '';
+    invoiceForm.name = props.nextInvoiceNumber || '';
     invoiceForm.date = new Date().toISOString().split('T')[0];
     invoiceForm.state = 'pending';
     invoiceForm.iva = 21;
