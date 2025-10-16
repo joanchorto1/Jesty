@@ -29,6 +29,7 @@ use setasign\Fpdi\PdfParser\StreamReader;
 use phpseclib3\Crypt\PublicKeyLoader;
 
 use App\Services\DocumentNumberGenerator;
+use App\Services\DocumentTotalsCalculator;
 
 // Importa la clase RSA
 
@@ -106,22 +107,28 @@ class InvoiceController extends Controller
 
         $validated = $request->validate([
             'date' => 'required|date',
-            'base_imponible' => 'required|numeric',
             'state' => 'required|string',
             'client_id' => 'required|exists:clients,id',
-            'total' => 'required|numeric',
-            'iva' => 'required|numeric',
-            'monto_iva' => 'required|numeric',
             'invoiceItems' => 'required|array',
             'invoiceItems.*.product_id' => 'required|exists:products,id',
             'invoiceItems.*.quantity' => 'required|integer',
             'invoiceItems.*.discount' => 'required|numeric',
             'invoiceItems.*.unit_price' => 'required|numeric',
-            'invoiceItems.*.total' => 'required|numeric',
+            'invoiceItems.*.iva' => 'nullable|numeric',
         ]);
 
         $issueDate = Carbon::parse($validated['date']);
-        $data = $request->only('date', 'base_imponible', 'state', 'client_id', 'total', 'iva', 'monto_iva');
+        $totals = DocumentTotalsCalculator::calculate($validated['invoiceItems']);
+
+        $data = [
+            'date' => $validated['date'],
+            'state' => $validated['state'],
+            'client_id' => $validated['client_id'],
+            'base_imponible' => $totals['base'],
+            'monto_iva' => $totals['tax'],
+            'total' => $totals['total'],
+            'iva' => $totals['effectiveRate'],
+        ];
         $data['company_id'] = Auth::user()->company_id;
         $data['name'] = DocumentNumberGenerator::generate(
             Invoice::class,
@@ -133,13 +140,20 @@ class InvoiceController extends Controller
         $invoice = Invoice::create($data);
 
         foreach ($validated['invoiceItems'] as $item) {
+            $lineBase = $item['quantity'] * $item['unit_price'];
+            if ($item['discount'] > 0) {
+                $lineBase -= ($lineBase * $item['discount']) / 100;
+            }
+            $lineBase = round($lineBase, 2);
+
             InvoiceItem::create([
                 'invoice_id' => $invoice->id,
                 'product_id' => $item['product_id'],
                 'quantity' => $item['quantity'],
                 'unit_price' => $item['unit_price'],
                 'discount' => $item['discount'],
-                'total' => $item['total'],
+                'total' => $lineBase,
+                'iva' => $item['iva'] ?? 0,
             ]);
             $this->updateStockProduct($item['product_id'], $item['quantity']);
         }
@@ -168,13 +182,9 @@ class InvoiceController extends Controller
 
     public function update(Request $request, $id)
     {
-        $request->validate([
+        $validated = $request->validate([
             'client_id' => 'required',
             'date' => 'required|date',
-            'base_imponible' => 'required|numeric|min:0',
-            'iva' => 'nullable|numeric',
-            'total' => 'required|numeric',
-            'monto_iva' => 'required|numeric',
             'name' => 'required|string|max:255',
             'state' => 'required|string|in:paid,cancelled,pending',
             'items' => 'required|array',
@@ -182,25 +192,42 @@ class InvoiceController extends Controller
             'items.*.quantity' => 'required|integer|min:1',
             'items.*.unit_price' => 'required|numeric|min:0',
             'items.*.discount' => 'required|numeric|min:0',
-            'items.*.total' => 'required|numeric|min:0',
+            'items.*.iva' => 'nullable|numeric',
         ]);
 
         $invoice = Invoice::findOrFail($id);
 
-        $data = $request->only(['client_id', 'date', 'base_imponible', 'iva', 'name', 'state', 'total', 'monto_iva']);
-        $invoice->update($data);
+        $totals = DocumentTotalsCalculator::calculate($validated['items']);
+
+        $invoice->update([
+            'client_id' => $validated['client_id'],
+            'date' => $validated['date'],
+            'name' => $validated['name'],
+            'state' => $validated['state'],
+            'base_imponible' => $totals['base'],
+            'monto_iva' => $totals['tax'],
+            'total' => $totals['total'],
+            'iva' => $totals['effectiveRate'],
+        ]);
 
         $oldItems = InvoiceItem::where('invoice_id', $id)->get();
         InvoiceItem::where('invoice_id', $id)->delete();
 
-        foreach ($request->items as $item) {
+        foreach ($validated['items'] as $item) {
+            $lineBase = $item['quantity'] * $item['unit_price'];
+            if ($item['discount'] > 0) {
+                $lineBase -= ($lineBase * $item['discount']) / 100;
+            }
+            $lineBase = round($lineBase, 2);
+
             InvoiceItem::create([
                 'invoice_id' => $id,
                 'product_id' => $item['product_id'],
                 'quantity' => $item['quantity'],
                 'discount' => $item['discount'],
                 'unit_price' => $item['unit_price'],
-                'total' => $item['total'],
+                'total' => $lineBase,
+                'iva' => $item['iva'] ?? 0,
             ]);
             $this->updateStrockProductFromOldItems($item['product_id'], $item['quantity'],$oldItems);
 

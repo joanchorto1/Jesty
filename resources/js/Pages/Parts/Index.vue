@@ -204,7 +204,12 @@
                     <div class="rounded-2xl bg-slate-100 px-4 py-3 text-sm text-slate-600">
                         <p class="font-semibold text-slate-700">Client</p>
                         <p>{{ selectedClientName }}</p>
-                        <p class="mt-2 text-xs text-slate-500">S'inclouran {{ selectedParts.length }} parts amb un import base de {{ formatCurrency(selectedPartsTotal) }}.</p>
+                        <p class="mt-2 text-xs text-slate-500">
+                            S'inclouran {{ selectedParts.length }} parts amb un import base de {{ formatCurrency(selectedPartsBase) }}.
+                        </p>
+                        <p class="text-xs text-slate-500">
+                            IVA estimat: {{ formatCurrency(selectedPartsTax) }} · Total: {{ formatCurrency(selectedPartsTotalWithTax) }}.
+                        </p>
                     </div>
                     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <div class="space-y-2">
@@ -227,10 +232,6 @@
                                 <option value="paid">Pagada</option>
                                 <option value="cancelled">Cancel·lada</option>
                             </SelectInput>
-                        </div>
-                        <div class="space-y-2">
-                            <InputLabel value="IVA (%)" />
-                            <TextInput v-model="invoiceForm.iva" type="number" min="0" step="0.01" class="mt-1 block w-full" />
                         </div>
                     </div>
                 </div>
@@ -289,7 +290,6 @@ const invoiceForm = reactive({
     name: props.nextInvoiceNumber || '',
     date: new Date().toISOString().split('T')[0],
     state: 'pending',
-    iva: 21,
 });
 
 const invoiceNumberPreview = computed(() => {
@@ -374,7 +374,26 @@ const selectedClientName = computed(() => {
     return client ? client.name : '—';
 });
 
-const selectedPartsTotal = computed(() => selectedPartDetails.value.reduce((total, part) => total + Number(part.total || 0), 0));
+const selectedPartsBase = computed(() =>
+    selectedPartDetails.value.reduce((total, part) => {
+        const partBase = part.items?.reduce((sum, item) => sum + Number(item.total || 0), 0) ?? Number(part.total || 0);
+        return total + partBase;
+    }, 0)
+);
+
+const selectedPartsTax = computed(() =>
+    selectedPartDetails.value.reduce((total, part) => {
+        const partTax = part.items?.reduce((sum, item) => {
+            const base = Number(item.total || 0);
+            const ivaRate = Number(item.iva ?? item.product?.iva ?? 0);
+            return sum + (base * ivaRate) / 100;
+        }, 0) ?? 0;
+
+        return total + partTax;
+    }, 0)
+);
+
+const selectedPartsTotalWithTax = computed(() => selectedPartsBase.value + selectedPartsTax.value);
 
 const closeInvoiceModal = () => {
     invoiceModalOpen.value = false;
@@ -395,7 +414,6 @@ const resetInvoiceForm = () => {
     invoiceForm.name = props.nextInvoiceNumber || '';
     invoiceForm.date = new Date().toISOString().split('T')[0];
     invoiceForm.state = 'pending';
-    invoiceForm.iva = 21;
 };
 
 const createInvoice = () => {
@@ -411,7 +429,6 @@ const createInvoice = () => {
                 name: invoiceForm.name,
                 date: invoiceForm.date,
                 state: invoiceForm.state,
-                iva: Number(invoiceForm.iva) || 0,
             },
         },
         {

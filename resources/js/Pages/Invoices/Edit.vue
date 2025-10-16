@@ -94,16 +94,8 @@
                                 </SelectInput>
                             </div>
                             <div class="space-y-2">
-                                <InputLabel for="invoice-iva" value="IVA (%)" />
-                                <TextInput
-                                    id="invoice-iva"
-                                    v-model="form.iva"
-                                    type="number"
-                                    min="0"
-                                    step="0.01"
-                                    class="mt-2 block w-full"
-                                    @input="updateInvoiceTotal"
-                                />
+                                <InputLabel value="IVA medio (%)" />
+                                <TextInput :value="formatPercentage(effectiveIva)" disabled class="mt-2 block w-full text-slate-600" />
                             </div>
                         </div>
 
@@ -146,10 +138,11 @@
 
                         <div v-else class="space-y-4">
                             <div class="hidden grid-cols-12 gap-3 rounded-2xl border border-slate-200 bg-slate-100/60 px-4 py-3 text-sm font-semibold text-slate-500 md:grid">
-                                <span class="md:col-span-4">Producto</span>
+                                <span class="md:col-span-3">Producto</span>
                                 <span class="md:col-span-2">Cantidad</span>
                                 <span class="md:col-span-2">Precio unitario</span>
                                 <span class="md:col-span-2">Descuento (%)</span>
+                                <span class="md:col-span-1">IVA (%)</span>
                                 <span class="md:col-span-2">Importe</span>
                             </div>
 
@@ -158,7 +151,7 @@
                                 :key="index"
                                 class="grid grid-cols-1 gap-4 rounded-3xl border border-slate-200/80 bg-white/80 p-4 shadow-sm md:grid-cols-12 md:items-end"
                             >
-                                <div class="space-y-2 md:col-span-4">
+                                <div class="space-y-2 md:col-span-3">
                                     <InputLabel :for="`product-${index}`" value="Producto" />
                                     <SelectInput
                                         :id="`product-${index}`"
@@ -206,6 +199,18 @@
                                         step="0.01"
                                         class="mt-2 block w-full"
                                         @input="updateItemTotal(index)"
+                                    />
+                                </div>
+                                <div class="space-y-2 md:col-span-1">
+                                    <InputLabel :for="`iva-${index}`" value="IVA (%)" />
+                                    <TextInput
+                                        :id="`iva-${index}`"
+                                        v-model="item.iva"
+                                        type="number"
+                                        min="0"
+                                        step="0.01"
+                                        class="mt-2 block w-full"
+                                        @input="updateItemIva(index)"
                                     />
                                 </div>
                                 <div class="space-y-2 md:col-span-2">
@@ -363,6 +368,7 @@ const form = ref({
         discount: item.discount,
         unit_price: item.unit_price,
         total: item.total,
+        iva: item.iva ?? 0,
     })),
 });
 
@@ -400,15 +406,31 @@ const formatCurrency = (value) =>
         currency: 'EUR',
     }).format(Number(value) || 0);
 
+const formatPercentage = (value) => `${Number(value || 0).toFixed(2)}%`;
+
 const sanitizeNumber = (value) => Number(value) || 0;
 
-const updateInvoiceTotal = () => {
-    const baseImponible = form.value.items.reduce((acc, item) => acc + sanitizeNumber(item.total), 0);
-    form.value.base_imponible = baseImponible;
-    const iva = sanitizeNumber(form.value.iva);
-    form.value.monto_iva = (baseImponible * iva) / 100;
-    form.value.total = baseImponible + form.value.monto_iva;
+const recalculateTotals = () => {
+    let base = 0;
+    let tax = 0;
+
+    form.value.items.forEach((item) => {
+        const lineBase = sanitizeNumber(item.total);
+        const iva = sanitizeNumber(item.iva);
+
+        base += lineBase;
+        tax += (lineBase * iva) / 100;
+    });
+
+    form.value.base_imponible = Number(base.toFixed(2));
+    form.value.monto_iva = Number(tax.toFixed(2));
+    form.value.total = Number((form.value.base_imponible + form.value.monto_iva).toFixed(2));
+    form.value.iva = form.value.base_imponible === 0
+        ? 0
+        : Number(((form.value.monto_iva / form.value.base_imponible) * 100).toFixed(2));
 };
+
+const effectiveIva = computed(() => form.value.iva || 0);
 
 const updateItemTotal = (index) => {
     const item = form.value.items[index];
@@ -420,8 +442,18 @@ const updateItemTotal = (index) => {
     if (discount > 0) {
         item.total -= (item.total * discount) / 100;
     }
+    item.total = Number(item.total.toFixed(2));
+    recalculateTotals();
+};
 
-    updateInvoiceTotal();
+const updateItemIva = (index) => {
+    const item = form.value.items[index];
+    if (!item) {
+        return;
+    }
+
+    item.iva = sanitizeNumber(item.iva);
+    recalculateTotals();
 };
 
 const ensureStock = (index) => {
@@ -468,6 +500,7 @@ const onProductSelected = (index) => {
         item.quantity = 1;
     }
 
+    item.iva = sanitizeNumber(product.iva);
     updateItemTotal(index);
 };
 
@@ -482,21 +515,22 @@ const selectProduct = (product) => {
         quantity: 1,
         discount: 0,
         unit_price: product.price,
-        total: product.price,
+        total: Number(product.price) || 0,
+        iva: sanitizeNumber(product.iva),
     });
 
-    updateInvoiceTotal();
+    recalculateTotals();
     showProductModal.value = false;
 };
 
 const removeItem = (index) => {
     form.value.items.splice(index, 1);
-    updateInvoiceTotal();
+    recalculateTotals();
 };
 
 const submitForm = () => {
     Inertia.put(route('invoices.update', props.invoice.id), form.value);
 };
 
-updateInvoiceTotal();
+recalculateTotals();
 </script>
