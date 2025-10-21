@@ -4,10 +4,8 @@
             id="invoice"
             class="mx-auto w-full max-w-3xl rounded-3xl border border-slate-200 bg-white px-10 py-12 shadow-2xl print:max-w-[190mm] print:rounded-none print:border-0 print:px-6 print:py-8 print:shadow-none"
         >
-            <header class="text-center">
-                <h1 class="text-3xl font-semibold tracking-tight text-slate-800">
-                    Factura #{{ invoice.id }}
-                </h1>
+            <header class="border-b border-slate-200 pb-6">
+                
                 <p class="mt-2 text-sm text-slate-500">
                     <span class="font-semibold text-slate-600">Data:</span>
                     {{ formatDate(invoice.date) }}
@@ -56,7 +54,6 @@
                     <table class="w-full border-collapse text-xs leading-5 text-slate-600 print:text-[11px]">
                         <thead>
                             <tr class="bg-slate-50 text-[11px] uppercase tracking-[0.2em] text-blue-600">
-                                <th class="px-3 py-3 text-left">#</th>
                                 <th class="px-3 py-3 text-left">Producte</th>
                                 <th class="px-3 py-3 text-center">Quantitat</th>
                                 <th class="px-3 py-3 text-center">Preu unitari</th>
@@ -67,7 +64,6 @@
                         </thead>
                         <tbody>
                             <tr v-for="item in items" :key="item.id" class="border-t border-slate-200">
-                                <td class="px-3 py-3 text-left font-medium text-slate-500">{{ item.index }}</td>
                                 <td class="px-3 py-3 text-left text-slate-700">
                                     <span class="block font-medium text-slate-800">{{ item.productName }}</span>
                                     <span v-if="item.description" class="mt-1 block text-[11px] text-slate-500 print:text-[10px]">
