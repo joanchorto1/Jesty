@@ -28,7 +28,7 @@
                         <p v-if="company.address">{{ company.address }}</p>
                         <p v-if="company.phone">Tel. {{ company.phone }}</p>
                         <p v-if="company.email">{{ company.email }}</p>
-                        <p v-if="company.nif">ID: {{ company.nif }}</p>
+                        <p v-if="company.nif">NIF: {{ company.nif }}</p>
                     </div>
                 </article>
                 <article class="rounded-2xl border border-slate-200 px-6 py-5 shadow-sm">
@@ -38,7 +38,7 @@
                         <p v-if="client.address">{{ client.address }}</p>
                         <p v-if="client.phone">Tel. {{ client.phone }}</p>
                         <p v-if="client.email">{{ client.email }}</p>
-                        <p v-if="client.nif">ID: {{ client.nif }}</p>
+                        <p v-if="client.nif">NIF: {{ client.nif }}</p>
                     </div>
                 </article>
             </section>
