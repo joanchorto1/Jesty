@@ -52,7 +52,7 @@
                         {{ items.length }} productes
                     </span>
                 </div>
-                <div class="mt-4 overflow-hidden rounded-2xl border border-slate-200 print:rounded-xl">
+                <div class="mt-4 overflow-hidden rounded-2xl border border-slate-200 print:rounded-xl print:overflow-visible">
                     <table class="w-full border-collapse text-xs leading-5 text-slate-600 print:text-[11px]">
                         <thead>
                             <tr class="bg-slate-50 text-[11px] uppercase tracking-[0.2em] text-blue-600">
@@ -61,7 +61,7 @@
                                 <th class="px-3 py-3 text-center">Preu unitari</th>
                                 <th class="px-3 py-3 text-center">Descompte</th>
                                 <th class="px-3 py-3 text-center">IVA</th>
-                                <th class="px-3 py-3 text-right">Subtotal</th>
+                                <th class="px-3 py-3 text-right pr-print-edge">Subtotal</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -82,7 +82,7 @@
                                     <span class="block font-medium text-slate-700">{{ formatRate(item.iva) }}</span>
                                     <span class="block text-[11px] text-slate-500 print:text-[10px]">{{ formatCurrency(item.ivaAmount) }}</span>
                                 </td>
-                                <td class="px-3 py-3 text-right font-medium text-slate-700 whitespace-nowrap">
+                                <td class="px-3 py-3 text-right font-medium text-slate-700 whitespace-nowrap pr-print-edge">
                                     {{ formatCurrency(item.total) }}
                                 </td>
                             </tr>
@@ -96,8 +96,8 @@
                 </div>
             </section>
 
-            <section class="mt-10 flex flex-col gap-4 md:flex-row md:items-start md:justify-between print:mt-8">
-                <div class="rounded-2xl border border-slate-200 px-6 py-5 shadow-sm md:w-1/2">
+            <section id="totals-section" class="mt-10 flex flex-col gap-4 md:flex-row md:items-start md:justify-between print:mt-8 no-break-inside">
+                <div class="rounded-2xl border border-slate-200 px-6 py-5 shadow-sm md:w-1/2 no-break-inside">
                     <h2 class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">Resum econòmic</h2>
                     <dl class="mt-4 space-y-3 text-sm text-slate-600">
                         <div class="flex items-center justify-between">
@@ -127,7 +127,7 @@
                         </div>
                     </dl>
                 </div>
-                <div class="flex-1 rounded-2xl border border-dashed border-slate-200 px-6 py-5 text-sm text-slate-500 shadow-sm">
+                <div class="flex-1 rounded-2xl border border-dashed border-slate-200 px-6 py-5 text-sm text-slate-500 shadow-sm no-break-inside">
                     <p class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Observacions</p>
                     <p class="mt-3 leading-relaxed" v-if="invoice.notes">{{ invoice.notes }}</p>
                     <p v-else class="mt-3 text-slate-400">No hi ha observacions addicionals per a aquesta factura.</p>
@@ -276,6 +276,7 @@ const downloadInvoice = () => {
         image: { type: "jpeg", quality: 0.98 },
         html2canvas: { scale: 2 },
         jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+        pagebreak: { mode: ["css", "avoid-all"] },
     };
 
     html2pdf()
@@ -291,5 +292,20 @@ const downloadInvoice = () => {
 </script>
 
 <style scoped>
+.no-break-inside {
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
+
+@media print {
+    .pr-print-edge {
+        padding-right: 18px;
+    }
+
+    .no-break-inside {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+}
 </style>
 
