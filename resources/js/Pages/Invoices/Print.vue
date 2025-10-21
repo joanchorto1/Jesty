@@ -5,6 +5,8 @@
             class="mx-auto w-full max-w-3xl rounded-3xl border border-slate-200 bg-white px-10 py-12 shadow-2xl print:max-w-[190mm] print:rounded-none print:border-0 print:px-6 print:py-8 print:shadow-none"
         >
             <header class="border-b border-slate-200 pb-6">
+
+                <h1 class="text-2xl font-semibold text-slate-900">Factura</h1>
                 
                 <p class="mt-2 text-sm text-slate-500">
                     <span class="font-semibold text-slate-600">Data:</span>
