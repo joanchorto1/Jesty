@@ -9,6 +9,7 @@ use App\Http\Controllers\BudgetController;
 use App\Http\Controllers\BudgetItemController;
 use App\Http\Controllers\CreditNoteController;
 use App\Http\Controllers\PartController;
+use App\Http\Controllers\RecurringInvoiceController;
 
 
 
@@ -39,6 +40,14 @@ Route::middleware(['route.features.access:1'])->group(function() {
     Route::post('/invoices/store-with-items', [InvoiceController::class, 'storeWithItems'])->name('invoices.storeWithItems');
     Route::get('/invoices/{invoice}/print', [InvoiceController::class, 'print'])->name('invoices.print');
     Route::get('/invoices/copy/{invoice}', [InvoiceController::class, 'copy'])->name('invoices.copy');
+
+    Route::prefix('recurring-invoices')->name('recurring-invoices.')->group(function () {
+        Route::get('/', [RecurringInvoiceController::class, 'index'])->name('index');
+        Route::post('/', [RecurringInvoiceController::class, 'store'])->name('store');
+        Route::put('/{recurringInvoice}', [RecurringInvoiceController::class, 'update'])->name('update');
+        Route::delete('/{recurringInvoice}', [RecurringInvoiceController::class, 'destroy'])->name('destroy');
+        Route::patch('/{recurringInvoice}/status', [RecurringInvoiceController::class, 'status'])->name('status');
+    });
 
 // Routes for Invoice Items
     Route::resource('invoiceItems', InvoiceItemController::class)

@@ -92,6 +92,20 @@ Si deseas contribuir a este proyecto, por favor sigue estos pasos:
 4. Sube tus cambios a tu fork (`git push origin feature/nueva-funcionalidad`).
 5. Abre un Pull Request con una descripción clara de lo que hace tu contribución.
 
+## Tareas programadas
+
+El comando `php artisan recurring-invoices:generate` revisa las plantillas activas y crea nuevas facturas según su programación. El planificador de Laravel lo ejecuta diariamente a las 03:00 (hora del servidor) mediante la siguiente entrada en `app/Console/Kernel.php`:
+
+```
+$schedule->command('recurring-invoices:generate')->dailyAt('03:00');
+```
+
+Si utilizas un cron del sistema recuerda añadir la tarea estándar de Laravel:
+
+```
+* * * * * php /ruta/a/tu/proyecto/artisan schedule:run >> /dev/null 2>&1
+```
+
 ## Licencia
 
 Este proyecto está bajo la licencia MIT. Consulta el archivo [LICENSE](LICENSE) para más detalles.
