@@ -88,6 +88,14 @@
                             <InputError :message="form.errors.description" class="mt-2" />
                         </div>
 
+                        <div class="sm:col-span-2">
+                            <RecurringSchedulerForm
+                                v-model="form.recurring"
+                                :frequency-options="frequencyOptions"
+                                :errors="form.errors"
+                            />
+                        </div>
+
                         <div class="sm:col-span-2 space-y-3">
                             <InputLabel for="file" value="Documento adjunto" />
                             <div v-if="currentFileUrl" class="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
@@ -135,6 +143,7 @@ import SelectInput from '@/Components/SelectInput.vue';
 import InputError from '@/Components/InputError.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import NavLink from '@/Components/NavLink.vue';
+import RecurringSchedulerForm from '@/Components/RecurringSchedulerForm.vue';
 
 const props = defineProps({
     categories: {
@@ -149,6 +158,14 @@ const props = defineProps({
         type: Object,
         required: true,
     },
+    frequencyOptions: {
+        type: Array,
+        default: () => [],
+    },
+    recurring: {
+        type: Object,
+        default: () => ({ enabled: false }),
+    },
 });
 
 const form = useForm({
@@ -160,6 +177,15 @@ const form = useForm({
     payment_method_id: props.expense.payment_method_id ?? '',
     expense_category_id: props.expense.expense_category_id ?? '',
     file: null,
+    recurring: {
+        enabled: props.recurring?.enabled ?? false,
+        frequency_type: props.recurring?.frequency_type ?? 'monthly',
+        frequency_interval: props.recurring?.frequency_interval ?? 1,
+        next_run_at: props.recurring?.next_run_at || new Date().toISOString().split('T')[0],
+        ends_at: props.recurring?.ends_at || '',
+        status: props.recurring?.status ?? 'active',
+        id: props.recurring?.id ?? null,
+    },
 });
 
 const fileName = ref('');

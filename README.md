@@ -65,6 +65,10 @@ php artisan serve
 
 ```
 
+### Tareas programadas
+
+- `php artisan expenses:generate-recurring`: genera automáticamente los gastos asociados a plantillas recurrentes. La tarea se ejecuta cada día a las 02:00 mediante el programador de Laravel configurado en `app/Console/Kernel.php`.
+
 ## Estructura del proyecto
 
 ### Backend (Laravel)

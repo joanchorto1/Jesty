@@ -46,7 +46,7 @@
                             Limpiar filtros
                         </button>
                     </header>
-                    <div class="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+                    <div class="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">
                         <label class="flex flex-col text-sm font-medium text-slate-600">
                             Método de pago
                             <select
@@ -97,6 +97,15 @@
                                     {{ category.name }}
                                 </option>
                             </select>
+                        </label>
+
+                        <label class="flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-600">
+                            <input
+                                type="checkbox"
+                                v-model="showRecurringOnly"
+                                class="h-5 w-5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                            />
+                            Solo recurrentes
                         </label>
                     </div>
                 </section>
@@ -162,7 +171,25 @@
                                     class="bg-white/60 transition hover:bg-rose-50/60"
                                 >
                                     <td class="px-4 py-3 font-medium text-slate-700">{{ expense.id }}</td>
-                                    <td class="px-4 py-3">{{ expense.name }}</td>
+                                    <td class="px-4 py-3">
+                                        <div class="flex flex-col gap-1">
+                                            <div class="flex items-center gap-2">
+                                                <span>{{ expense.name }}</span>
+                                                <span
+                                                    v-if="expense.is_recurring"
+                                                    class="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-700"
+                                                >
+                                                    Recurrente
+                                                </span>
+                                            </div>
+                                            <p
+                                                v-if="expense.is_recurring && expense.next_run_at"
+                                                class="text-xs text-slate-500"
+                                            >
+                                                Próxima ejecución: {{ formatDate(expense.next_run_at) }} · {{ recurringStatusLabel(expense.recurring_status) }}
+                                            </p>
+                                        </div>
+                                    </td>
                                     <td class="px-4 py-3 max-w-xs truncate" :title="expense.description">{{ expense.description || '—' }}</td>
                                     <td class="px-4 py-3 text-right">{{ formatCurrency(expense.amount ?? 0) }}</td>
                                     <td class="px-4 py-3 text-right">{{ formatCurrency(taxAmount(expense)) }}</td>
@@ -244,6 +271,7 @@ const selectedPaymentMethod = ref('');
 const startDate = ref('');
 const endDate = ref('');
 const selectedCategory = ref('');
+const showRecurringOnly = ref(false);
 
 const formatCurrency = (value) => {
     return new Intl.NumberFormat('es-ES', {
@@ -308,7 +336,9 @@ const visibleExpenses = computed(() => {
             ? String(expense.expense_category_id) === selectedCategory.value
             : true;
 
-        return matchesPaymentMethod && matchesCategory && matchesDate(expense);
+        const matchesRecurring = showRecurringOnly.value ? Boolean(expense.is_recurring) : true;
+
+        return matchesPaymentMethod && matchesCategory && matchesDate(expense) && matchesRecurring;
     });
 });
 
@@ -367,6 +397,18 @@ const highestExpenseDescriptor = computed(() => {
 
     return `${categoryNameValue} · ${methodNameValue}`;
 });
+
+const recurringStatusLabel = (status) => {
+    switch (status) {
+        case 'paused':
+            return 'en pausa';
+        case 'inactive':
+            return 'inactiva';
+        case 'active':
+        default:
+            return 'activa';
+    }
+};
 
 const monthlyExpensesData = computed(() => {
     const totals = Array(12).fill(0);
