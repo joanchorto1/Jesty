@@ -4,6 +4,7 @@ use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\ExpenseCategoryController;
 use App\Http\Controllers\IncomeController;
 use App\Http\Controllers\PaymentMethodController;
+use App\Http\Controllers\RecurringExpenseController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -24,6 +25,8 @@ Route::get('/dashboard/accounting', function () {
 
 Route::resource('expenses', ExpenseController::class);
 Route::post('/expenses/{expense}/update', [ExpenseController::class, 'update'])->name('expenses.update2');
+Route::patch('recurring-expenses/{recurringExpense}/status', [RecurringExpenseController::class, 'updateStatus'])->name('recurring-expenses.status');
+Route::delete('recurring-expenses/{recurringExpense}', [RecurringExpenseController::class, 'destroy'])->name('recurring-expenses.destroy');
 //Rote for expenses report
 Route::get('report', [ExpenseController::class, 'report'])->name('expenses.report');
 //Rote for expenses reportPrint
