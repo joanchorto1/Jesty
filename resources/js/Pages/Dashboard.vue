@@ -167,7 +167,7 @@
 import { computed } from 'vue';
 import Calendar from '@/Components/Calendar.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import NavLink from "../../../vendor/laravel/jetstream/stubs/inertia/resources/js/Components/NavLink.vue";
+import NavLink from "../Components/NavLink.vue";
 import { Inertia } from "@inertiajs/inertia";
 import InfoIcon from "@/Components/Icons/InfoIcon.vue";
 import EditIcon from "@/Components/Icons/EditIcon.vue";

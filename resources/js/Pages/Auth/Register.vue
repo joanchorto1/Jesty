@@ -106,7 +106,7 @@
 <script setup>
 import {reactive, ref, onMounted} from 'vue';
 import { loadStripe } from '@stripe/stripe-js';
-import NavLink from "../../../../vendor/laravel/jetstream/stubs/inertia/resources/js/Components/NavLink.vue";
+import NavLink from "../../Components/NavLink.vue";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 

@@ -6,20 +6,25 @@
 
 <script setup>
 import { onMounted, ref, watch } from 'vue';
-import { Chart } from 'chart.js';
-
-// Importamos los elementos necesarios de Chart.js
-import { Radar } from 'chart.js';
-import { Chart as ChartJS } from 'chart.js';
-import { Title, Tooltip, Legend, RadialLinearScale, PointElement, LineElement } from 'chart.js';
+import {
+    Chart as ChartJS,
+    Title,
+    Tooltip,
+    Legend,
+    RadialLinearScale,
+    PointElement,
+    LineElement,
+    Filler,
+} from 'chart.js';
 
 ChartJS.register(
-    RadialLinearScale,   // Escala radial para el gráfico de radar
-    PointElement,        // Elemento para los puntos
-    LineElement,         // Elemento para las líneas
-    Title,               // Título
-    Tooltip,             // Tooltip
-    Legend               // Leyenda
+    RadialLinearScale, // Escala radial para el gráfico de radar
+    PointElement, // Elemento para los puntos
+    LineElement, // Elemento para las líneas
+    Title, // Título
+    Tooltip, // Tooltip
+    Legend, // Leyenda
+    Filler,
 );
 
 const props = defineProps({
@@ -27,6 +32,7 @@ const props = defineProps({
 });
 
 const radarChart = ref(null);
+const chartInstance = ref(null);
 
 onMounted(() => {
     createChart();
@@ -37,30 +43,36 @@ watch(() => props.data, () => {
 }, { immediate: true });
 
 const createChart = () => {
-    if (radarChart.value) {
-        new Chart(radarChart.value, {
-            type: 'radar',
-            data: props.data,
-            options: {
-                responsive: true,
-                scales: {
-                    r: {
-                        min: 0,
-                        max: 100,
-                        beginAtZero: true,
-                        ticks: {
-                            stepSize: 10,
-                        },
-                    },
-                },
-                elements: {
-                    line: {
-                        borderWidth: 2,
+    if (!radarChart.value) {
+        return;
+    }
+
+    if (chartInstance.value) {
+        chartInstance.value.destroy();
+    }
+
+    chartInstance.value = new ChartJS(radarChart.value, {
+        type: 'radar',
+        data: props.data,
+        options: {
+            responsive: true,
+            scales: {
+                r: {
+                    min: 0,
+                    max: 100,
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 10,
                     },
                 },
             },
-        });
-    }
+            elements: {
+                line: {
+                    borderWidth: 2,
+                },
+            },
+        },
+    });
 };
 </script>
 
