@@ -46,6 +46,9 @@ Route::middleware(['route.features.access:4'])->group(function () {
         Route::get('/leads', [LeadController::class, 'index'])->name('leads.index');
         Route::get('/leads/create', [LeadController::class, 'create'])->name('leads.create');
         Route::post('/leads', [LeadController::class, 'store'])->name('leads.store');
+        Route::post('/leads/import', [LeadController::class, 'import'])->name('leads.import');
+        Route::get('/leads/export/csv', [LeadController::class, 'exportCsv'])->name('leads.export.csv');
+        Route::get('/leads/export/excel', [LeadController::class, 'exportExcel'])->name('leads.export.excel');
         Route::get('/leads/{lead}', [LeadController::class, 'show'])->name('leads.show');
         Route::get('/leads/{lead}/edit', [LeadController::class, 'edit'])->name('leads.edit');
         Route::put('/leads/{lead}', [LeadController::class, 'update'])->name('leads.update');
