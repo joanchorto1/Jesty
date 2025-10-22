@@ -417,7 +417,6 @@ const parseFile = file => {
 
     reader.onload = async e => {
         try {
-            const XLSX = await loadXLSX();
             const data = new Uint8Array(e.target.result);
             const workbook = XLSX.read(data, { type: 'array' });
             const [sheetName] = workbook.SheetNames;
