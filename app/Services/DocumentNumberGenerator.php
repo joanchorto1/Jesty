@@ -12,7 +12,8 @@ class DocumentNumberGenerator
     public static function generate(string $modelClass, string $numberColumn, string $prefix, int $companyId, Carbon $date): string
     {
         $year = $date->year;
-        $pattern = sprintf('%s-%d-', $prefix, $year);
+        $yearSuffix = substr((string) $year, -2);
+        $pattern = sprintf('%s-%s-', $prefix, $yearSuffix);
 
         $latestDocument = $modelClass::where('company_id', $companyId)
             ->whereYear('date', $year)
@@ -30,6 +31,6 @@ class DocumentNumberGenerator
             }
         }
 
-        return sprintf('%s-%d-%04d', $prefix, $year, $nextSequence);
+        return sprintf('%s-%s-%04d', $prefix, $yearSuffix, $nextSequence);
     }
 }
