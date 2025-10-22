@@ -11,11 +11,15 @@ const xlsxEntry = ['xlsx.mjs', 'xlsx.js']
     .map((candidate) => path.resolve(__dirname, `node_modules/xlsx/${candidate}`))
     .find((candidate) => existsSync(candidate));
 
+const aliases = {};
+
+if (xlsxEntry) {
+    aliases.xlsx = xlsxEntry;
+}
+
 export default defineConfig({
     resolve: {
-        alias: {
-            xlsx: xlsxEntry ?? 'xlsx',
-        },
+        alias: aliases,
     },
     plugins: [
         laravel({
