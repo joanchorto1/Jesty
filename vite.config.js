@@ -3,6 +3,11 @@ import laravel from 'laravel-vite-plugin';
 import vue from '@vitejs/plugin-vue';
 
 export default defineConfig({
+    resolve: {
+        alias: {
+            xlsx: 'xlsx/xlsx.mjs',
+        },
+    },
     plugins: [
         laravel({
             input: [
@@ -19,4 +24,7 @@ export default defineConfig({
             },
         }),
     ],
+    optimizeDeps: {
+        include: ['xlsx'],
+    },
 });
