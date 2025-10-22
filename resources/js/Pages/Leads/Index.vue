@@ -223,7 +223,7 @@ let xlsxModulePromise = null;
 
 const loadXLSX = async () => {
     if (!xlsxModulePromise) {
-        xlsxModulePromise = import('xlsx');
+        xlsxModulePromise = import('xlsx/xlsx.mjs').then(module => module.default ?? module);
     }
 
     return xlsxModulePromise;
