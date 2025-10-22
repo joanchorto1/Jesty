@@ -219,15 +219,9 @@ import EmptyState from '@/Components/Crm/EmptyState.vue';
 import Modal from '@/Components/Modal.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
-let xlsxModulePromise = null;
+import * as XLSX from 'xlsx'
 
-const loadXLSX = async () => {
-    if (!xlsxModulePromise) {
-        xlsxModulePromise = import('xlsx/xlsx.mjs').then(module => module.default ?? module);
-    }
 
-    return xlsxModulePromise;
-};
 
 const props = defineProps({
     leads: {
