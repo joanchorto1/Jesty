@@ -219,7 +219,15 @@ import EmptyState from '@/Components/Crm/EmptyState.vue';
 import Modal from '@/Components/Modal.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
-import * as XLSX from 'xlsx';
+let xlsxModulePromise = null;
+
+const loadXLSX = async () => {
+    if (!xlsxModulePromise) {
+        xlsxModulePromise = import('xlsx');
+    }
+
+    return xlsxModulePromise;
+};
 
 const props = defineProps({
     leads: {
@@ -413,8 +421,9 @@ const parseFile = file => {
     parsingError.value = '';
     const reader = new FileReader();
 
-    reader.onload = e => {
+    reader.onload = async e => {
         try {
+            const XLSX = await loadXLSX();
             const data = new Uint8Array(e.target.result);
             const workbook = XLSX.read(data, { type: 'array' });
             const [sheetName] = workbook.SheetNames;
