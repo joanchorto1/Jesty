@@ -26,7 +26,6 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Barryvdh\DomPDF\Facade\Pdf; // Importa DomPDF
-use Illuminate\Validation\Rule;
 use phpseclib3\Crypt\RSA;
 use setasign\Fpdi\Fpdi;
 use setasign\Fpdi\PdfParser\StreamReader;
