@@ -1,5 +1,40 @@
 <template>
     <AppLayout>
+        <transition
+            enter-active-class="duration-300 ease-out"
+            enter-from-class="translate-y-2 opacity-0"
+            enter-to-class="translate-y-0 opacity-100"
+            leave-active-class="duration-200 ease-in"
+            leave-from-class="translate-y-0 opacity-100"
+            leave-to-class="translate-y-2 opacity-0"
+        >
+            <div v-if="toast.show" class="fixed right-6 top-24 z-[60] w-80">
+                <div :class="toastContainerClasses">
+                    <span :class="toastIconClasses">
+                        <svg v-if="toast.variant === 'error'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-5 w-5">
+                            <path fill-rule="evenodd" d="M10.29 3.86a2 2 0 0 1 3.42 0l7.162 12.321c.73 1.257-.174 2.819-1.71 2.819H4.838c-1.536 0-2.44-1.562-1.71-2.819L10.29 3.86Zm1.71 4.64a.75.75 0 0 0-1.5 0v4.5a.75.75 0 0 0 1.5 0v-4.5Zm-.75 8.25a1 1 0 1 0 0 2 1 1 0 0 0 0-2Z" clip-rule="evenodd" />
+                        </svg>
+                        <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-5 w-5">
+                            <path fill-rule="evenodd" d="M2.25 12a9.75 9.75 0 1 1 19.5 0 9.75 9.75 0 0 1-19.5 0Zm14.28-1.53a.75.75 0 0 0-1.06-1.06l-4.72 4.72-1.94-1.94a.75.75 0 1 0-1.06 1.06l2.47 2.47a.75.75 0 0 0 1.06 0l5.25-5.25Z" clip-rule="evenodd" />
+                        </svg>
+                    </span>
+                    <div class="flex-1">
+                        <p class="text-sm font-semibold text-slate-700">{{ toastTitle }}</p>
+                        <p class="mt-1 text-sm text-slate-500">{{ toast.message }}</p>
+                    </div>
+                    <button
+                        type="button"
+                        class="-mr-2 -mt-2 inline-flex h-8 w-8 items-center justify-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
+                        @click="dismissToast"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-4 w-4">
+                            <path fill-rule="evenodd" d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 0 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </transition>
+
         <div class="min-h-screen bg-slate-900">
             <div class="bg-gradient-to-r from-sky-600 via-blue-600 to-slate-900 pb-20">
                 <div class="max-w-7xl mx-auto px-6 pt-12">
@@ -118,7 +153,16 @@
                                     <td class="px-6 py-4">{{ getClientName(invoice.client_id) || '—' }}</td>
                                     <td class="px-6 py-4">{{ formatDate(invoice.date) }}</td>
                                     <td class="px-6 py-4">
-                                        <span :class="statusBadgeClasses(invoice.state)">{{ statusCopy(invoice.state) }}</span>
+                                        <span
+                                            :class="[statusBadgeClasses(invoice.state), 'cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 transition']"
+                                            role="button"
+                                            tabindex="0"
+                                            @click="openInvoiceStatusModal(invoice)"
+                                            @keydown.enter.prevent="openInvoiceStatusModal(invoice)"
+                                            @keydown.space.prevent="openInvoiceStatusModal(invoice)"
+                                        >
+                                            {{ statusCopy(invoice.state) }}
+                                        </span>
                                     </td>
                                     <td class="px-6 py-4 font-semibold text-slate-700">{{ formatCurrency(invoice.total) }}</td>
                                     <td class="px-6 py-4">
@@ -144,23 +188,159 @@
                 </div>
             </div>
         </div>
+
+        <StatusUpdateModal
+            :show="showInvoiceStatusModal"
+            title="Actualitzar estat de la factura"
+            :document-name="selectedInvoice ? selectedInvoice.name : ''"
+            :current-status-label="selectedInvoice ? statusCopy(selectedInvoice.state) : ''"
+            :current-status-class="selectedInvoice ? statusBadgeClasses(selectedInvoice.state) : ''"
+            :options="invoiceStatusOptions"
+            v-model="invoiceStatusForm.state"
+            :loading="invoiceStatusForm.processing"
+            :confirm-disabled="!canSubmitInvoiceStatus"
+            :error="invoiceStatusForm.errors.state"
+            confirm-label="Actualitzar estat"
+            @close="closeInvoiceStatusModal"
+            @confirm="submitInvoiceStatus"
+        />
     </AppLayout>
 </template>
 
 <script setup>
 import { Inertia } from '@inertiajs/inertia';
+import { router, useForm } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import NavLink from "@/Components/NavLink.vue";
 import InfoIcon from "@/Components/Icons/InfoIcon.vue";
 import EditIcon from "@/Components/Icons/EditIcon.vue";
 import DeleteIcon from "@/Components/Icons/DeleteIcon.vue";
 import AddIcon from "@/Components/Icons/AddIcon.vue";
-import { computed, ref } from "vue";
+import StatusUpdateModal from '@/Components/StatusUpdateModal.vue';
+import { computed, reactive, ref } from "vue";
 
 const props = defineProps({
     invoices: Array,
     clients: Array,
 });
+
+const invoiceStatusOptions = [
+    {
+        value: 'paid',
+        label: 'Pagado',
+        badgeClass: 'bg-emerald-100 text-emerald-700 ring-emerald-500/30',
+        description: 'Marca la factura como cobrada y registra el ingreso asociado.',
+    },
+    {
+        value: 'pending',
+        label: 'Pendiente',
+        badgeClass: 'bg-amber-100 text-amber-700 ring-amber-500/30',
+        description: 'Mantén la factura abierta hasta recibir el pago del cliente.',
+    },
+    {
+        value: 'cancelled',
+        label: 'Cancelado',
+        badgeClass: 'bg-rose-100 text-rose-700 ring-rose-500/30',
+        description: 'Anula la factura y deja constancia de que no generará cobro.',
+    },
+];
+
+const showInvoiceStatusModal = ref(false);
+const selectedInvoice = ref(null);
+const invoiceStatusForm = useForm({
+    state: '',
+});
+
+const toast = reactive({
+    show: false,
+    message: '',
+    variant: 'success',
+});
+
+let toastTimeout;
+
+const toastTitle = computed(() => (toast.variant === 'error' ? 'Hi ha hagut un problema' : 'Estat actualitzat'));
+
+const toastContainerClasses = computed(() => {
+    const base = 'flex w-full items-start gap-3 rounded-2xl border px-4 py-4 shadow-xl backdrop-blur bg-white/95';
+    return toast.variant === 'error' ? `${base} border-rose-200` : `${base} border-emerald-200`;
+});
+
+const toastIconClasses = computed(() =>
+    toast.variant === 'error'
+        ? 'flex h-9 w-9 items-center justify-center rounded-xl bg-rose-500/10 text-rose-500'
+        : 'flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-500'
+);
+
+const showToast = (message, variant = 'success') => {
+    toast.message = message;
+    toast.variant = variant;
+    toast.show = true;
+
+    if (toastTimeout) {
+        clearTimeout(toastTimeout);
+    }
+
+    toastTimeout = setTimeout(() => {
+        toast.show = false;
+        toastTimeout = null;
+    }, 3200);
+};
+
+const dismissToast = () => {
+    toast.show = false;
+    if (toastTimeout) {
+        clearTimeout(toastTimeout);
+        toastTimeout = null;
+    }
+};
+
+const openInvoiceStatusModal = (invoice) => {
+    selectedInvoice.value = invoice;
+    invoiceStatusForm.state = invoice.state;
+    invoiceStatusForm.clearErrors();
+    showInvoiceStatusModal.value = true;
+};
+
+const closeInvoiceStatusModal = () => {
+    showInvoiceStatusModal.value = false;
+    invoiceStatusForm.clearErrors();
+    selectedInvoice.value = null;
+};
+
+const canSubmitInvoiceStatus = computed(() => {
+    if (!selectedInvoice.value) {
+        return false;
+    }
+
+    return invoiceStatusForm.state !== '' && invoiceStatusForm.state !== selectedInvoice.value.state;
+});
+
+const submitInvoiceStatus = () => {
+    if (!selectedInvoice.value || !canSubmitInvoiceStatus.value) {
+        return;
+    }
+
+    invoiceStatusForm.patch(route('invoices.updateStatus', selectedInvoice.value.id), {
+        preserveScroll: true,
+        onSuccess: () => {
+            router.reload({
+                only: ['invoices'],
+                preserveScroll: true,
+                onSuccess: () => {
+                    showToast('Estat de la factura actualitzat correctament.');
+                    closeInvoiceStatusModal();
+                },
+                onError: () => {
+                    showToast('No s\'ha pogut refrescar la llista de factures.', 'error');
+                },
+            });
+        },
+        onError: () => {
+            showToast('No s\'ha pogut actualitzar l\'estat de la factura.', 'error');
+        },
+    });
+};
 
 const selectedClient = ref('');
 const selectedStatus = ref('');
@@ -225,15 +405,17 @@ const statusCopy = (state) => {
 };
 
 const statusBadgeClasses = (state) => {
+    const base = 'inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold shadow-sm ring-1 ring-inset';
+
     switch (state) {
         case 'paid':
-            return 'inline-flex items-center rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700';
+            return `${base} bg-emerald-100 text-emerald-700 ring-emerald-500/30`;
         case 'pending':
-            return 'inline-flex items-center rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700';
+            return `${base} bg-amber-100 text-amber-700 ring-amber-500/30`;
         case 'cancelled':
-            return 'inline-flex items-center rounded-full bg-rose-100 px-3 py-1 text-xs font-semibold text-rose-700';
+            return `${base} bg-rose-100 text-rose-700 ring-rose-500/30`;
         default:
-            return 'inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600';
+            return `${base} bg-slate-100 text-slate-600 ring-slate-300/60`;
     }
 };
 

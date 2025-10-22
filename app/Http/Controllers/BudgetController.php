@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 use App\Services\DocumentNumberGenerator;
+use Illuminate\Validation\Rule;
 
 class BudgetController extends Controller
 {
@@ -238,6 +239,46 @@ class BudgetController extends Controller
         }
 
         return Inertia::location(route('budgets.index'));
+    }
+
+    public function updateStatus(Request $request, Budget $budget)
+    {
+        if ($budget->company_id !== Auth::user()->company_id) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'state' => ['required', Rule::in(['accepted', 'in_process', 'rejected'])],
+        ]);
+
+        $previousState = $budget->state;
+
+        if ($previousState !== $validated['state']) {
+            $budget->forceFill(['state' => $validated['state']])->save();
+
+            if ($budget->state === 'accepted') {
+                app(UserNotificationController::class)->createNotification(
+                    'Presupuesto aceptado ID: ' . $budget->id,
+                    'Se ha aceptado un presupuesto.',
+                    'Facturación'
+                );
+            } elseif ($budget->state === 'rejected') {
+                app(UserNotificationController::class)->createNotification(
+                    'Presupuesto rechazado ID: ' . $budget->id,
+                    'Se ha rechazado un presupuesto.',
+                    'Facturación'
+                );
+            }
+        }
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'message' => 'Estado del presupuesto actualizado correctamente.',
+                'budget' => $budget->fresh(),
+            ]);
+        }
+
+        return back()->with('success', 'Estado del presupuesto actualizado correctamente.');
     }
 
     public function destroy(Budget $budget)
