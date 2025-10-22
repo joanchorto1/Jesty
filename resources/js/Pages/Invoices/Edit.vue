@@ -144,6 +144,8 @@
                         </div>
                     </section>
 
+                    <RecurringInvoiceStatusCard :template="props.recurringTemplate" />
+
                     <section class="space-y-6 rounded-3xl border border-slate-200/80 bg-white/70 p-6 shadow-sm">
                         <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                             <div>
@@ -349,6 +351,7 @@ import MenuInvoiceIcon from '@/Components/Icons/MenuInvoiceIcon.vue';
 import MenuClientsIcon from '@/Components/Icons/MenuClientsIcon.vue';
 import MenuProductIcon from '@/Components/Icons/MenuProductIcon.vue';
 import MenuCategoryIcon from '@/Components/Icons/MenuCategoryIcon.vue';
+import RecurringInvoiceStatusCard from '@/Components/RecurringInvoiceStatusCard.vue';
 
 const props = defineProps({
     invoice: {
@@ -379,6 +382,10 @@ const props = defineProps({
     categories: {
         type: Array,
         default: () => [],
+    },
+    recurringTemplate: {
+        type: Object,
+        default: null,
     },
 });
 

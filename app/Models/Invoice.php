@@ -10,7 +10,16 @@ class Invoice extends Model
     use HasFactory;
 
     protected $fillable = [
-        'client_id', 'date', 'name', 'base_imponible', 'iva', 'monto_iva', 'total', 'state', 'company_id'
+        'recurring_invoice_id',
+        'client_id',
+        'date',
+        'name',
+        'base_imponible',
+        'iva',
+        'monto_iva',
+        'total',
+        'state',
+        'company_id',
     ];
 
     public function company()
@@ -21,6 +30,11 @@ class Invoice extends Model
     public function client()
     {
         return $this->belongsTo(Client::class);
+    }
+
+    public function recurringTemplate()
+    {
+        return $this->belongsTo(RecurringInvoice::class, 'recurring_invoice_id');
     }
 
     public function items()

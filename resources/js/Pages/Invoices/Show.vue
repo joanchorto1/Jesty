@@ -46,6 +46,8 @@
             </div>
 
             <div class="max-w-5xl mx-auto px-6 -mt-20 pb-16 space-y-10">
+                <RecurringInvoiceStatusCard :template="props.recurringTemplate" />
+
                 <div class="bg-white rounded-3xl shadow-xl p-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div class="space-y-4">
@@ -181,6 +183,7 @@ import CopyIcon from "@/Components/Icons/CopyIcon.vue";
 import SendIcon from "@/Components/Icons/SendIcon.vue";
 import { ref } from "vue";
 import MenuBillingIcon from "@/Components/Icons/MenuBillingIcon.vue";
+import RecurringInvoiceStatusCard from '@/Components/RecurringInvoiceStatusCard.vue';
 
 const props = defineProps({
     invoice: Object,
@@ -188,6 +191,7 @@ const props = defineProps({
     products: Array,
     clients: Array,
     creditNotes: Array,
+    recurringTemplate: Object,
 });
 
 const popupVisible = ref(false);

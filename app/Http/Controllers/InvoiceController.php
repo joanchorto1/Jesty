@@ -14,6 +14,8 @@ use App\Models\InvoiceItem;
 use App\Models\Client;
 use App\Models\Company;
 use App\Models\Product;
+use App\Models\RecurringInvoice;
+use App\Models\RecurringInvoiceItem;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
@@ -21,6 +23,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Barryvdh\DomPDF\Facade\Pdf; // Importa DomPDF
 use Illuminate\Validation\Rule;
@@ -31,6 +34,7 @@ use phpseclib3\Crypt\PublicKeyLoader;
 
 use App\Services\DocumentNumberGenerator;
 use App\Services\DocumentTotalsCalculator;
+use App\Services\RecurringInvoiceGenerator;
 
 // Importa la clase RSA
 
@@ -103,72 +107,155 @@ class InvoiceController extends Controller
         }
     }
 
-    public function storeWithItems(Request $request)
+    public function storeWithItems(Request $request, RecurringInvoiceGenerator $generator)
     {
-
         $validated = $request->validate([
             'date' => 'required|date',
-            'state' => 'required|string',
+            'state' => ['required', 'string', Rule::in(['pending', 'paid', 'cancelled'])],
             'client_id' => 'required|exists:clients,id',
-            'invoiceItems' => 'required|array',
+            'invoiceItems' => 'required|array|min:1',
             'invoiceItems.*.product_id' => 'required|exists:products,id',
-            'invoiceItems.*.quantity' => 'required|integer',
-            'invoiceItems.*.discount' => 'required|numeric',
-            'invoiceItems.*.unit_price' => 'required|numeric',
-            'invoiceItems.*.iva' => 'nullable|numeric',
+            'invoiceItems.*.quantity' => 'required|integer|min:1',
+            'invoiceItems.*.discount' => 'required|numeric|min:0',
+            'invoiceItems.*.unit_price' => 'required|numeric|min:0',
+            'invoiceItems.*.iva' => 'nullable|numeric|min:0',
+            'is_recurring' => 'sometimes|boolean',
+            'frequency_unit' => 'required_if:is_recurring,true|in:day,week,month,year',
+            'frequency_interval' => 'required_if:is_recurring,true|integer|min:1',
+            'first_issue_on' => 'required_if:is_recurring,true|date',
+            'ends_at' => 'nullable|date|after_or_equal:first_issue_on',
+            'recurring_status' => 'nullable|string|in:draft,active,paused,completed',
+            'generate_first_invoice' => 'sometimes|boolean',
+            'recurring_invoice_state' => 'nullable|string|in:pending,paid,cancelled',
         ]);
 
+        $companyId = Auth::user()->company_id;
         $issueDate = Carbon::parse($validated['date']);
-        $totals = DocumentTotalsCalculator::calculate($validated['invoiceItems']);
-
-        $data = [
-            'date' => $validated['date'],
-            'state' => $validated['state'],
-            'client_id' => $validated['client_id'],
-            'base_imponible' => $totals['base'],
-            'monto_iva' => $totals['tax'],
-            'total' => $totals['total'],
-            'iva' => $totals['effectiveRate'],
-        ];
-        $data['company_id'] = Auth::user()->company_id;
-        $data['name'] = DocumentNumberGenerator::generate(
-            Invoice::class,
-            'name',
-            'FA',
-            Auth::user()->company_id,
-            $issueDate
-        );
-        $invoice = Invoice::create($data);
-
-        foreach ($validated['invoiceItems'] as $item) {
-            $lineBase = $item['quantity'] * $item['unit_price'];
-            if ($item['discount'] > 0) {
-                $lineBase -= ($lineBase * $item['discount']) / 100;
-            }
-            $lineBase = round($lineBase, 2);
-
-            InvoiceItem::create([
-                'invoice_id' => $invoice->id,
+        $itemsPayload = collect($validated['invoiceItems'])->map(function (array $item) {
+            return [
                 'product_id' => $item['product_id'],
+                'quantity' => (int) $item['quantity'],
+                'unit_price' => (float) $item['unit_price'],
+                'discount' => (float) ($item['discount'] ?? 0),
+                'iva' => (float) ($item['iva'] ?? 0),
+            ];
+        })->all();
+
+        $totals = DocumentTotalsCalculator::calculate(array_map(function ($item) {
+            return [
                 'quantity' => $item['quantity'],
                 'unit_price' => $item['unit_price'],
                 'discount' => $item['discount'],
-                'total' => $lineBase,
-                'iva' => $item['iva'] ?? 0,
+                'iva' => $item['iva'],
+            ];
+        }, $itemsPayload));
+
+        $invoice = null;
+        $template = null;
+        $isRecurring = $request->boolean('is_recurring');
+
+        if ($isRecurring) {
+            $firstIssueOn = Carbon::parse($request->input('first_issue_on', $validated['date']));
+            $endsAt = $request->filled('ends_at') ? Carbon::parse($request->input('ends_at')) : null;
+            $status = $request->input('recurring_status', 'active');
+            $template = RecurringInvoice::create([
+                'company_id' => $companyId,
+                'client_id' => $validated['client_id'],
+                'status' => $status,
+                'invoice_state' => $request->input('recurring_invoice_state', $validated['state']),
+                'frequency_unit' => $request->input('frequency_unit'),
+                'frequency_interval' => (int) $request->input('frequency_interval', 1),
+                'first_issue_on' => $firstIssueOn->toDateString(),
+                'next_run_at' => $firstIssueOn->copy()->startOfDay(),
+                'ends_at' => $endsAt,
+                'expected_total' => $totals['total'],
+                'active' => $status === 'active',
             ]);
-            $this->updateStockProduct($item['product_id'], $item['quantity']);
-        }
-        if ($invoice->state == 'paid') {
-            $this->createIncomeFromInvoice($invoice);
+
+            foreach ($itemsPayload as $item) {
+                RecurringInvoiceItem::create([
+                    'recurring_invoice_id' => $template->id,
+                    'product_id' => $item['product_id'],
+                    'quantity' => $item['quantity'],
+                    'unit_price' => $item['unit_price'],
+                    'discount' => $item['discount'],
+                    'iva' => $item['iva'],
+                ]);
+            }
+
+            if ($request->boolean('generate_first_invoice') && $template->status === 'active') {
+                $invoice = $generator->generate($template, $firstIssueOn);
+            }
+        } else {
+            $invoiceData = [
+                'recurring_invoice_id' => null,
+                'company_id' => $companyId,
+                'client_id' => $validated['client_id'],
+                'date' => $issueDate->toDateString(),
+                'state' => $validated['state'],
+                'base_imponible' => $totals['base'],
+                'monto_iva' => $totals['tax'],
+                'total' => $totals['total'],
+                'iva' => $totals['effectiveRate'],
+                'name' => DocumentNumberGenerator::generate(
+                    Invoice::class,
+                    'name',
+                    'FA',
+                    $companyId,
+                    $issueDate
+                ),
+            ];
+
+            $invoice = Invoice::create($invoiceData);
+
+            foreach ($itemsPayload as $item) {
+                $lineBase = $item['quantity'] * $item['unit_price'];
+                if ($item['discount'] > 0) {
+                    $lineBase -= ($lineBase * $item['discount']) / 100;
+                }
+                $lineBase = round($lineBase, 2);
+
+                InvoiceItem::create([
+                    'invoice_id' => $invoice->id,
+                    'product_id' => $item['product_id'],
+                    'quantity' => $item['quantity'],
+                    'unit_price' => $item['unit_price'],
+                    'discount' => $item['discount'],
+                    'total' => $lineBase,
+                    'iva' => $item['iva'],
+                ]);
+            }
         }
 
-        app('App\Http\Controllers\UserNotificationController')->createNotification('Nueva factura', 'Se ha creado una nueva factura', 'Facturación');
+        if ($invoice) {
+            $invoice->load('items');
+            foreach ($invoice->items as $item) {
+                if ($item->product_id) {
+                    $this->updateStockProduct($item->product_id, $item->quantity);
+                }
+            }
+
+            if ($invoice->state === 'paid') {
+                $this->createIncomeFromInvoice($invoice);
+            }
+
+            app('App\\Http\\Controllers\\UserNotificationController')->createNotification('Nueva factura', 'Se ha creado una nueva factura', 'Facturación');
+
+            return Inertia::location(route('invoices.index'));
+        }
+
+        if ($template) {
+            app('App\\Http\\Controllers\\UserNotificationController')->createNotification('Nueva factura recurrente', 'Se ha creado una plantilla de facturación recurrente', 'Facturación');
+
+            return Inertia::location(route('recurring-invoices.index'));
+        }
 
         return Inertia::location(route('invoices.index'));
     }
 
     public function edit(Invoice $invoice)
     {
+        $invoice->load('recurringTemplate.items');
         $invoiceItems = InvoiceItem::where('invoice_id', $invoice->id)->get();
         return Inertia::render('Invoices/Edit', [
             'invoice' => $invoice,
@@ -178,6 +265,7 @@ class InvoiceController extends Controller
                 ->get(),
             'clients' => Client::where('company_id', Auth::user()->company_id)->get(),
             'categories' => Category::where('company_id', Auth::user()->company_id)->get(),
+            'recurringTemplate' => $invoice->recurringTemplate,
         ]);
     }
 
@@ -304,6 +392,7 @@ class InvoiceController extends Controller
 
     public function show(Invoice $invoice)
     {
+        $invoice->load('recurringTemplate');
         $invoiceItems = InvoiceItem::where('invoice_id', $invoice->id)->get();
         $creditNotes = CreditNote::where('invoice_id', $invoice->id)->get();
 
@@ -312,7 +401,8 @@ class InvoiceController extends Controller
             'invoiceItems' => $invoiceItems,
             'products' => Product::where('company_id', Auth::user()->company_id)->get(),
             'clients' => Client::where('company_id', Auth::user()->company_id)->get(),
-            'creditNotes' => $creditNotes
+            'creditNotes' => $creditNotes,
+            'recurringTemplate' => $invoice->recurringTemplate,
         ]);
     }
 

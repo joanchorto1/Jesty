@@ -42,11 +42,11 @@
                 </div>
 
                 <form @submit.prevent="submitForm" class="space-y-10">
-                    <section class="space-y-6 rounded-3xl border border-slate-200/80 bg-white/70 p-6 shadow-sm">
-                        <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-                            <div>
-                                <h2 class="text-lg font-semibold text-slate-800">Datos de la factura</h2>
-                                <p class="text-sm text-slate-500">Define el cliente, el estado de cobro y los parámetros fiscales.</p>
+                <section class="space-y-6 rounded-3xl border border-slate-200/80 bg-white/70 p-6 shadow-sm">
+                    <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                        <div>
+                            <h2 class="text-lg font-semibold text-slate-800">Datos de la factura</h2>
+                            <p class="text-sm text-slate-500">Define el cliente, el estado de cobro y los parámetros fiscales.</p>
                             </div>
                             <div class="inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm">
                                 <span>Total estimado</span>
@@ -162,6 +162,8 @@
                             </p>
                         </div>
                     </section>
+
+                    <RecurringInvoiceForm v-model="recurring" :initial-date="invoice.date" />
 
                     <section class="space-y-6 rounded-3xl border border-slate-200/80 bg-white/70 p-6 shadow-sm">
                         <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -368,7 +370,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { Inertia } from '@inertiajs/inertia';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import CrudPageHeader from '@/Components/Crud/CrudPageHeader.vue';
@@ -384,6 +386,7 @@ import MenuInvoiceIcon from '@/Components/Icons/MenuInvoiceIcon.vue';
 import MenuClientsIcon from '@/Components/Icons/MenuClientsIcon.vue';
 import MenuProductIcon from '@/Components/Icons/MenuProductIcon.vue';
 import MenuCategoryIcon from '@/Components/Icons/MenuCategoryIcon.vue';
+import RecurringInvoiceForm from '@/Components/RecurringInvoiceForm.vue';
 
 const props = defineProps({
     clients: {
@@ -412,6 +415,17 @@ const invoice = ref({
     total: 0,
 });
 
+const recurring = ref({
+    is_recurring: false,
+    recurring_status: 'active',
+    recurring_invoice_state: 'pending',
+    frequency_unit: 'month',
+    frequency_interval: 1,
+    first_issue_on: new Date().toISOString().split('T')[0],
+    ends_at: '',
+    generate_first_invoice: true,
+});
+
 const invoiceItems = ref([]);
 const showProductModal = ref(false);
 const searchTerm = ref('');
@@ -420,6 +434,15 @@ const baseImponible = ref(0);
 const montoIva = ref(0);
 const taxBreakdown = ref([]);
 const clientSearchTerm = ref('');
+
+watch(
+    () => invoice.value.date,
+    (date, previous) => {
+        if (!recurring.value.first_issue_on || recurring.value.first_issue_on === previous) {
+            recurring.value.first_issue_on = date;
+        }
+    }
+);
 
 const totalClients = computed(() => props.clients.length);
 const totalProducts = computed(() => props.products.length);
@@ -625,6 +648,7 @@ const submitForm = () => {
         iva: effectiveIva.value,
         monto_iva: montoIva.value,
         base_imponible: baseImponible.value,
+        ...recurring.value,
     });
 };
 
