@@ -15,6 +15,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('recurring-invoices:generate')
             ->dailyAt('03:00')
             ->description('Genera facturas pendientes de plantillas recurrentes.');
+
     }
 
     /**

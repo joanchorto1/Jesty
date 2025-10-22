@@ -17,6 +17,7 @@ class Expense extends Model
         'date',
         'payment_method_id',
         'expense_category_id',
+        'recurring_expense_id',
         'company_id',
         'external_id',
         'file',
@@ -35,5 +36,15 @@ class Expense extends Model
     public function company()
     {
         return $this->belongsTo(Company::class);
+    }
+
+    public function recurringTemplate()
+    {
+        return $this->belongsTo(RecurringExpense::class, 'recurring_expense_id');
+    }
+
+    public function template()
+    {
+        return $this->hasOne(RecurringExpense::class, 'id', 'recurring_expense_id');
     }
 }

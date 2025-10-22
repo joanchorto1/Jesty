@@ -115,6 +115,14 @@
                         </div>
 
                         <div class="sm:col-span-2">
+                            <RecurringSchedulerForm
+                                v-model="form.recurring"
+                                :frequency-options="frequencyOptions"
+                                :errors="form.errors"
+                            />
+                        </div>
+
+                        <div class="sm:col-span-2">
                             <InputLabel for="file" value="Documento adjunto" />
                             <input
                                 id="file"
@@ -157,6 +165,7 @@ import SelectInput from '@/Components/SelectInput.vue';
 import InputError from '@/Components/InputError.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import NavLink from '@/Components/NavLink.vue';
+import RecurringSchedulerForm from '@/Components/RecurringSchedulerForm.vue';
 
 const props = defineProps({
     categories: {
@@ -164,6 +173,10 @@ const props = defineProps({
         default: () => [],
     },
     paymentMethods: {
+        type: Array,
+        default: () => [],
+    },
+    frequencyOptions: {
         type: Array,
         default: () => [],
     },
@@ -178,6 +191,15 @@ const form = useForm({
     payment_method_id: '',
     expense_category_id: '',
     file: null,
+    recurring: {
+        enabled: false,
+        frequency_type: 'monthly',
+        frequency_interval: 1,
+        next_run_at: new Date().toISOString().split('T')[0],
+        ends_at: '',
+        status: 'active',
+        id: null,
+    },
 });
 
 const fileName = ref('');

@@ -36,6 +36,7 @@ Route::middleware(['route.features.access:1'])->group(function() {
             'update' => 'invoices.update',
             'destroy' => 'invoices.destroy',
         ]);
+    Route::patch('invoices/{invoice}/status', [InvoiceController::class, 'updateStatus'])->name('invoices.updateStatus');
     Route::post('/invoices/create-from-budget/{budget}', [InvoiceController::class, 'createFromBudget'])->name('invoices.create-from-budget');
     Route::post('/invoices/store-with-items', [InvoiceController::class, 'storeWithItems'])->name('invoices.storeWithItems');
     Route::get('/invoices/{invoice}/print', [InvoiceController::class, 'print'])->name('invoices.print');
@@ -72,6 +73,7 @@ Route::middleware(['route.features.access:1'])->group(function() {
             'update' => 'budgets.update',
             'destroy' => 'budgets.destroy',
         ]);
+    Route::patch('budgets/{budget}/status', [BudgetController::class, 'updateStatus'])->name('budgets.updateStatus');
 
     Route::post('/budgets/store-with-items', [BudgetController::class, 'storeWithItems'])->name('budgets.storeWithItems');
     Route::get('/budgets/{budget}/print', [BudgetController::class, 'print'])->name('budgets.print');

@@ -14,9 +14,13 @@ class LeadController extends Controller
 {
     public function index()
     {
-
         $leads = Lead::where('company_id', Auth::user()->company_id)->get();
-        return Inertia::render('Leads/Index', ['leads' => $leads]);
+
+        return Inertia::render('Leads/Index', [
+            'leads' => $leads,
+            'importSummary' => session('importSummary'),
+            'importError' => session('importError'),
+        ]);
     }
 
     public function create()
@@ -96,5 +100,158 @@ return Inertia::location(route('leads.index'));
         $client=Client::create($client);
         $lead->delete();
         return Inertia::location(route('clients.show', $client->id));
+    }
+
+    public function exportCsv()
+    {
+        $companyId = Auth::user()->company_id;
+        $leads = Lead::where('company_id', $companyId)->get($this->exportableColumns());
+
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="leads-' . now()->format('YmdHis') . '.csv"',
+        ];
+
+        $columns = $this->columnLabels();
+
+        $callback = static function () use ($columns, $leads) {
+            $handle = fopen('php://output', 'w');
+            fputcsv($handle, array_values($columns));
+
+            foreach ($leads as $lead) {
+                $row = [];
+                foreach (array_keys($columns) as $key) {
+                    $row[] = $lead->{$key} ?? '';
+                }
+
+                fputcsv($handle, $row);
+            }
+
+            fclose($handle);
+        };
+
+        return response()->streamDownload($callback, 'leads-' . now()->format('YmdHis') . '.csv', $headers);
+    }
+
+    public function exportExcel()
+    {
+        $companyId = Auth::user()->company_id;
+        $leads = Lead::where('company_id', $companyId)->get($this->exportableColumns());
+
+        $columns = $this->columnLabels();
+        $filename = 'leads-' . now()->format('YmdHis') . '.xls';
+
+        $content = '<table border="1"><thead><tr>';
+        foreach ($columns as $label) {
+            $content .= '<th>' . e($label) . '</th>';
+        }
+        $content .= '</tr></thead><tbody>';
+
+        foreach ($leads as $lead) {
+            $content .= '<tr>';
+            foreach (array_keys($columns) as $key) {
+                $value = $lead->{$key} ?? '';
+                $content .= '<td>' . e($value) . '</td>';
+            }
+            $content .= '</tr>';
+        }
+
+        $content .= '</tbody></table>';
+
+        return response($content, 200, [
+            'Content-Type' => 'application/vnd.ms-excel; charset=utf-8',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ]);
+    }
+
+    public function import(Request $request)
+    {
+        $validated = $request->validate([
+            'records' => 'required|array',
+            'records.*.name' => 'nullable|string|max:255',
+            'records.*.company_name' => 'nullable|string|max:255',
+            'records.*.email' => 'nullable|email',
+            'records.*.phone' => 'nullable|string|max:50',
+            'records.*.position' => 'nullable|string|max:255',
+            'records.*.source' => 'nullable|string|max:255',
+            'records.*.status' => 'nullable|string|max:255',
+        ]);
+
+        $companyId = Auth::user()->company_id;
+
+        $created = 0;
+        $updated = 0;
+        $skipped = 0;
+
+        foreach ($validated['records'] as $record) {
+            $cleanRecord = $this->sanitizeRecord($record);
+
+            if (empty($cleanRecord) || (!$cleanRecord['name'] && !$cleanRecord['email'])) {
+                $skipped++;
+                continue;
+            }
+
+            $cleanRecord['company_id'] = $companyId;
+
+            if (!empty($cleanRecord['email'])) {
+                $existing = Lead::where('company_id', $companyId)
+                    ->where('email', $cleanRecord['email'])
+                    ->first();
+
+                if ($existing) {
+                    $existing->update($cleanRecord);
+                    $updated++;
+                    continue;
+                }
+            }
+
+            Lead::create($cleanRecord);
+            $created++;
+        }
+
+        if ($created === 0 && $updated === 0) {
+            return redirect()->route('leads.index')->with('importError', 'No se encontraron registros válidos para importar.');
+        }
+
+        return redirect()->route('leads.index')->with('importSummary', [
+            'created' => $created,
+            'updated' => $updated,
+            'skipped' => $skipped,
+        ]);
+    }
+
+    private function sanitizeRecord(array $record): array
+    {
+        $clean = [];
+
+        foreach ($this->exportableColumns() as $column) {
+            $value = $record[$column] ?? null;
+
+            if (is_string($value)) {
+                $value = trim($value);
+            }
+
+            $clean[$column] = $value === '' ? null : $value;
+        }
+
+        return $clean;
+    }
+
+    private function columnLabels(): array
+    {
+        return [
+            'name' => 'Nombre',
+            'company_name' => 'Empresa',
+            'email' => 'Correo electrónico',
+            'phone' => 'Teléfono',
+            'position' => 'Cargo',
+            'source' => 'Fuente',
+            'status' => 'Estado',
+        ];
+    }
+
+    private function exportableColumns(): array
+    {
+        return array_keys($this->columnLabels());
     }
 }
