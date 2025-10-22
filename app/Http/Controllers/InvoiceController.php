@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 use Barryvdh\DomPDF\Facade\Pdf; // Importa DomPDF
+use Illuminate\Validation\Rule;
 use phpseclib3\Crypt\RSA;
 use setasign\Fpdi\Fpdi;
 use setasign\Fpdi\PdfParser\StreamReader;
@@ -246,6 +247,47 @@ class InvoiceController extends Controller
 
 
         return Inertia::location(route('invoices.index'));
+    }
+
+    public function updateStatus(Request $request, Invoice $invoice)
+    {
+        if ($invoice->company_id !== Auth::user()->company_id) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'state' => ['required', Rule::in(['paid', 'pending', 'cancelled'])],
+        ]);
+
+        $previousState = $invoice->state;
+
+        if ($previousState !== $validated['state']) {
+            $invoice->forceFill(['state' => $validated['state']])->save();
+
+            if ($previousState === 'paid' && $invoice->state !== 'paid') {
+                $this->destroyIncomeFromInvoice($invoice);
+            }
+
+            if ($invoice->state === 'paid') {
+                $this->destroyIncomeFromInvoice($invoice);
+                $this->createIncomeFromInvoice($invoice);
+            } elseif ($invoice->state === 'cancelled') {
+                app(UserNotificationController::class)->createNotification(
+                    'Factura cancelada',
+                    'Se ha cancelado una factura',
+                    'Facturación'
+                );
+            }
+        }
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'message' => 'Estado de la factura actualizado correctamente.',
+                'invoice' => $invoice->fresh(),
+            ]);
+        }
+
+        return back()->with('success', 'Estado de la factura actualizado correctamente.');
     }
 
     public function destroy(Invoice $invoice)
