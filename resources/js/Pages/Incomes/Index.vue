@@ -5,6 +5,15 @@
                 eyebrow="Control financiero"
                 title="Ingresos registrados"
                 description="Explora la evolución de tus ingresos, analiza su origen y mantén un registro claro con herramientas preparadas para impresión."
+                :show-period-selector="true"
+                :period-mode="selectedPeriodMode"
+                :available-years="availableYears"
+                :selected-year="selectedYear"
+                :selected-month="selectedMonth"
+                :month-names="monthNames"
+                @update:period-mode="onPeriodModeChange"
+                @update:selected-year="onYearChange"
+                @update:selected-month="onMonthChange"
             >
                 <template #actions>
                     <NavLink
@@ -23,9 +32,21 @@
                 </template>
 
                 <template #metrics>
-                    <FinanceSummaryCard label="Total ingresos" :value="formatCurrency(totalGross)" :helper="`Impuestos incluidos: ${formatCurrency(totalTax)}`" />
-                    <FinanceSummaryCard label="Base imponible" :value="formatCurrency(totalBase)" :helper="`IVA medio ${averageTaxRate}%`" />
-                    <FinanceSummaryCard label="Ticket medio" :value="formatCurrency(averageTicket)" :helper="`${incomes.length} registros`" />
+                    <FinanceSummaryCard
+                        label="Total ingresos"
+                        :value="formatCurrency(totalGross)"
+                        :helper="`Impuestos incluidos: ${formatCurrency(totalTax)} · ${activePeriodLabel}`"
+                    />
+                    <FinanceSummaryCard
+                        label="Base imponible"
+                        :value="formatCurrency(totalBase)"
+                        :helper="`IVA medio ${averageTaxRate}% · ${activePeriodLabel}`"
+                    />
+                    <FinanceSummaryCard
+                        label="Ticket medio"
+                        :value="formatCurrency(averageTicket)"
+                        :helper="`${filteredIncomes.length} registros · ${activePeriodLabel}`"
+                    />
                     <FinanceSummaryCard label="Máximo registrado" :value="formatCurrency(highestIncome)" :helper="highestIncomeSource" />
                 </template>
             </FinancePageHeader>
@@ -35,7 +56,7 @@
                     <header class="flex flex-col gap-2 border-b border-slate-100 pb-4 sm:flex-row sm:items-end sm:justify-between">
                         <div>
                             <h2 class="text-xl font-semibold text-slate-800">Resumen mensual</h2>
-                            <p class="text-sm text-slate-500">Suma las entradas por mes para detectar patrones de estacionalidad.</p>
+                            <p class="text-sm text-slate-500">Suma las entradas por mes para detectar patrones de estacionalidad · {{ activePeriodLabel }}</p>
                         </div>
                         <div class="flex items-center gap-3 text-sm text-slate-500">
                             <span class="inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
@@ -92,10 +113,10 @@
                     <header class="flex flex-col gap-3 border-b border-slate-100 pb-4 sm:flex-row sm:items-center sm:justify-between">
                         <div>
                             <h2 class="text-xl font-semibold text-slate-800">Detalle de ingresos</h2>
-                            <p class="text-sm text-slate-500">Tabla optimizada para manejar grandes volúmenes con totales calculados.</p>
+                            <p class="text-sm text-slate-500">Tabla optimizada para manejar grandes volúmenes con totales calculados · {{ activePeriodLabel }}</p>
                         </div>
                         <div class="text-right text-sm text-slate-500">
-                            Total registros: {{ incomes.length }}
+                            Total registros: {{ filteredIncomes.length }}
                         </div>
                     </header>
                     <div class="mt-6 overflow-x-auto print:overflow-visible">
@@ -114,7 +135,7 @@
                             </thead>
                             <tbody class="divide-y divide-slate-100">
                                 <tr
-                                    v-for="income in incomes"
+                                    v-for="income in filteredIncomes"
                                     :key="income.id"
                                     class="bg-white/60 transition hover:bg-emerald-50/60"
                                 >
@@ -161,8 +182,8 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
-import { router } from '@inertiajs/vue3';
+import { computed, isRef, ref, watch } from 'vue';
+import { router, useRemember } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import FinancePageHeader from '@/Components/Finance/FinancePageHeader.vue';
 import FinanceSummaryCard from '@/Components/Finance/FinanceSummaryCard.vue';
@@ -180,6 +201,129 @@ const props = defineProps({
 });
 
 const incomes = computed(() => props.incomes ?? []);
+
+const monthNames = [
+    'Enero',
+    'Febrero',
+    'Marzo',
+    'Abril',
+    'Mayo',
+    'Junio',
+    'Julio',
+    'Agosto',
+    'Septiembre',
+    'Octubre',
+    'Noviembre',
+    'Diciembre',
+];
+
+const now = new Date();
+const initialFilters = {
+    periodMode: 'general',
+    year: Number.isNaN(now.getFullYear()) ? undefined : now.getFullYear(),
+    month: Number.isNaN(now.getMonth()) ? 1 : now.getMonth() + 1,
+};
+
+const rememberedFilters = useRemember(initialFilters, 'incomes.index.period');
+const rememberedRaw = isRef(rememberedFilters) ? rememberedFilters.value : rememberedFilters;
+
+const selectedPeriodMode = ref(rememberedRaw?.periodMode ?? initialFilters.periodMode);
+const selectedYear = ref(rememberedRaw?.year ?? initialFilters.year);
+const selectedMonth = ref(rememberedRaw?.month ?? initialFilters.month);
+
+const availableYears = computed(() => {
+    const years = incomes.value.reduce((acc, income) => {
+        const date = new Date(income.date);
+        if (!Number.isNaN(date.getTime())) {
+            acc.add(date.getFullYear());
+        }
+        return acc;
+    }, new Set());
+
+    return Array.from(years).sort((a, b) => b - a);
+});
+
+const syncRememberedFilters = () => {
+    const target = isRef(rememberedFilters) ? rememberedFilters.value : rememberedFilters;
+    if (!target) {
+        return;
+    }
+    target.periodMode = selectedPeriodMode.value;
+    target.year = selectedYear.value;
+    target.month = selectedMonth.value;
+};
+
+watch([selectedPeriodMode, selectedYear, selectedMonth], syncRememberedFilters, { immediate: true });
+
+watch(availableYears, (years) => {
+    if (!years.length) {
+        return;
+    }
+
+    if (!years.includes(selectedYear.value)) {
+        [selectedYear.value] = years;
+    }
+});
+
+const onPeriodModeChange = (value) => {
+    selectedPeriodMode.value = value;
+    if (value !== 'general' && availableYears.value.length && !availableYears.value.includes(selectedYear.value)) {
+        [selectedYear.value] = availableYears.value;
+    }
+    if (value === 'monthly' && (selectedMonth.value < 1 || selectedMonth.value > 12)) {
+        selectedMonth.value = initialFilters.month ?? 1;
+    }
+};
+
+const onYearChange = (value) => {
+    const numericValue = Number(value);
+    if (!Number.isNaN(numericValue)) {
+        selectedYear.value = numericValue;
+    }
+};
+
+const onMonthChange = (value) => {
+    const normalized = Math.min(12, Math.max(1, Number(value) || 1));
+    selectedMonth.value = normalized;
+};
+
+const filteredIncomes = computed(() => {
+    if (selectedPeriodMode.value === 'general') {
+        return incomes.value;
+    }
+
+    return incomes.value.filter((income) => {
+        const date = new Date(income.date);
+        if (Number.isNaN(date.getTime())) {
+            return false;
+        }
+
+        const incomeYear = date.getFullYear();
+        if (selectedPeriodMode.value === 'annual') {
+            return incomeYear === selectedYear.value;
+        }
+
+        if (selectedPeriodMode.value === 'monthly') {
+            return incomeYear === selectedYear.value && date.getMonth() + 1 === selectedMonth.value;
+        }
+
+        return true;
+    });
+});
+
+const activePeriodLabel = computed(() => {
+    if (selectedPeriodMode.value === 'annual' && selectedYear.value) {
+        return `Año ${selectedYear.value}`;
+    }
+
+    if (selectedPeriodMode.value === 'monthly' && selectedYear.value && selectedMonth.value) {
+        const monthIndex = Math.max(1, Math.min(12, selectedMonth.value)) - 1;
+        const monthLabel = monthNames[monthIndex] ?? `Mes ${selectedMonth.value}`;
+        return `${monthLabel} ${selectedYear.value}`;
+    }
+
+    return 'Periodo general';
+});
 
 const formatCurrency = (value) => {
     return new Intl.NumberFormat('es-ES', {
@@ -215,37 +359,37 @@ const totalAmount = (income) => {
     return base + taxAmount(income);
 };
 
-const totalBase = computed(() => incomes.value.reduce((acc, income) => acc + Number(income?.tax_base ?? 0), 0));
-const totalTax = computed(() => incomes.value.reduce((acc, income) => acc + taxAmount(income), 0));
+const totalBase = computed(() => filteredIncomes.value.reduce((acc, income) => acc + Number(income?.tax_base ?? 0), 0));
+const totalTax = computed(() => filteredIncomes.value.reduce((acc, income) => acc + taxAmount(income), 0));
 const totalGross = computed(() => totalBase.value + totalTax.value);
 
 const averageTicket = computed(() => {
-    if (!incomes.value.length) {
+    if (!filteredIncomes.value.length) {
         return 0;
     }
-    return totalGross.value / incomes.value.length;
+    return totalGross.value / filteredIncomes.value.length;
 });
 
 const averageTaxRate = computed(() => {
-    if (!incomes.value.length) {
+    if (!filteredIncomes.value.length) {
         return 0;
     }
-    const totalRate = incomes.value.reduce((acc, income) => acc + Number(income?.tax_rate ?? 0), 0);
-    return (totalRate / incomes.value.length).toFixed(1);
+    const totalRate = filteredIncomes.value.reduce((acc, income) => acc + Number(income?.tax_rate ?? 0), 0);
+    return (totalRate / filteredIncomes.value.length).toFixed(1);
 });
 
 const highestIncome = computed(() => {
-    if (!incomes.value.length) {
+    if (!filteredIncomes.value.length) {
         return 0;
     }
-    return Math.max(...incomes.value.map(income => totalAmount(income)));
+    return Math.max(...filteredIncomes.value.map((income) => totalAmount(income)));
 });
 
 const highestIncomeSource = computed(() => {
-    if (!incomes.value.length) {
-        return 'Sin registros';
+    if (!filteredIncomes.value.length) {
+        return `Sin registros · ${activePeriodLabel.value}`;
     }
-    const richest = incomes.value.reduce((acc, income) => {
+    const richest = filteredIncomes.value.reduce((acc, income) => {
         const amount = totalAmount(income);
         if (!acc || amount > acc.amount) {
             return { amount, source: income.source || 'Sin origen' };
@@ -253,21 +397,21 @@ const highestIncomeSource = computed(() => {
         return acc;
     }, null);
 
-    return richest ? `Origen ${richest.source}` : 'Sin registros';
+    return richest ? `Origen ${richest.source} · ${activePeriodLabel.value}` : `Sin registros · ${activePeriodLabel.value}`;
 });
 
 const uniqueSources = computed(() => {
-    const sources = new Set(incomes.value.map(income => income.source || 'Sin origen'));
+    const sources = new Set(filteredIncomes.value.map((income) => income.source || 'Sin origen'));
     return sources.size;
 });
 
 const sortedIncomes = computed(() => {
-    return [...incomes.value].sort((a, b) => new Date(a.date) - new Date(b.date));
+    return [...filteredIncomes.value].sort((a, b) => new Date(a.date) - new Date(b.date));
 });
 
 const lastIncomeFormatted = computed(() => {
     if (!sortedIncomes.value.length) {
-        return { amount: formatCurrency(0), date: 'Sin fecha', source: 'Sin origen' };
+        return { amount: formatCurrency(0), date: 'Sin registros', source: activePeriodLabel.value };
     }
     const income = sortedIncomes.value[sortedIncomes.value.length - 1];
     return {
@@ -279,7 +423,7 @@ const lastIncomeFormatted = computed(() => {
 
 const firstIncomeFormatted = computed(() => {
     if (!sortedIncomes.value.length) {
-        return { amount: formatCurrency(0), date: 'Sin fecha', source: 'Sin origen' };
+        return { amount: formatCurrency(0), date: 'Sin registros', source: activePeriodLabel.value };
     }
     const income = sortedIncomes.value[0];
     return {
@@ -290,20 +434,20 @@ const firstIncomeFormatted = computed(() => {
 });
 
 const averageDeviation = computed(() => {
-    if (incomes.value.length <= 1) {
+    if (filteredIncomes.value.length <= 1) {
         return 0;
     }
     const avg = averageTicket.value;
-    const variance = incomes.value.reduce((acc, income) => {
+    const variance = filteredIncomes.value.reduce((acc, income) => {
         const diff = totalAmount(income) - avg;
         return acc + diff * diff;
-    }, 0) / (incomes.value.length - 1);
+    }, 0) / (filteredIncomes.value.length - 1);
     return Math.sqrt(variance);
 });
 
 const monthlyIncomeData = computed(() => {
     const monthlyTotals = Array(12).fill(0);
-    incomes.value.forEach(income => {
+    filteredIncomes.value.forEach((income) => {
         const date = new Date(income.date);
         if (!Number.isNaN(date.getTime())) {
             monthlyTotals[date.getMonth()] += totalAmount(income);
@@ -327,7 +471,7 @@ const monthlyIncomeData = computed(() => {
 const palette = ['#0EA5E9', '#10B981', '#6366F1', '#F97316', '#F43F5E', '#8B5CF6', '#14B8A6', '#F59E0B', '#0F172A', '#84CC16', '#A855F7', '#0EA5E9'];
 
 const sourceDistributionData = computed(() => {
-    if (!incomes.value.length) {
+    if (!filteredIncomes.value.length) {
         return {
             labels: ['Sin datos'],
             datasets: [
@@ -340,7 +484,7 @@ const sourceDistributionData = computed(() => {
         };
     }
 
-    const totals = incomes.value.reduce((acc, income) => {
+    const totals = filteredIncomes.value.reduce((acc, income) => {
         const source = income.source || 'Sin origen';
         acc[source] = (acc[source] || 0) + totalAmount(income);
         return acc;
