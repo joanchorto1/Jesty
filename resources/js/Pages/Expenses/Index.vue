@@ -24,10 +24,10 @@
                 </template>
 
                 <template #metrics>
-                    <FinanceSummaryCard label="Gasto total" :value="formatCurrency(totalGrossAmount)" :helper="`${visibleExpenses.length} registros visibles`" />
-                    <FinanceSummaryCard label="Base imponible" :value="formatCurrency(totalNetAmount)" :helper="`IVA acumulado ${formatCurrency(totalTaxAmount)}`" />
-                    <FinanceSummaryCard label="Ticket medio" :value="formatCurrency(averageGrossAmount)" :helper="`Rango ${formatCurrency(lowestExpenseGross)} – ${formatCurrency(highestExpenseGross)}`" />
-                    <FinanceSummaryCard label="Mayor gasto" :value="formatCurrency(highestExpenseGross)" :helper="highestExpenseDescriptor" />
+                    <FinanceSummaryCard label="Gasto total" :value="formatCurrency(totalGrossAmount)" :helper="totalGrossHelper" />
+                    <FinanceSummaryCard label="Base imponible" :value="formatCurrency(totalNetAmount)" :helper="totalNetHelper" />
+                    <FinanceSummaryCard label="Ticket medio" :value="formatCurrency(averageGrossAmount)" :helper="averageHelper" />
+                    <FinanceSummaryCard label="Mayor gasto" :value="formatCurrency(highestExpenseGross)" :helper="highestExpenseHelper" />
                 </template>
             </FinancePageHeader>
 
@@ -46,7 +46,47 @@
                             Limpiar filtros
                         </button>
                     </header>
-                    <div class="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">
+                    <div class="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-6">
+                        <label class="flex flex-col text-sm font-medium text-slate-600">
+                            Periodo
+                            <select
+                                v-model="periodMode"
+                                class="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-200"
+                            >
+                                <option value="general">Todos los periodos</option>
+                                <option value="annual" :disabled="!availableYears.length">Anual</option>
+                                <option value="monthly" :disabled="!availableYears.length">Mensual</option>
+                            </select>
+                        </label>
+
+                        <label v-if="periodMode !== 'general'" class="flex flex-col text-sm font-medium text-slate-600">
+                            Año
+                            <select
+                                v-model="selectedYear"
+                                :disabled="!availableYears.length"
+                                class="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-200"
+                            >
+                                <option v-if="!availableYears.length" value="">Sin datos</option>
+                                <option v-for="year in availableYears" :key="year" :value="year">
+                                    {{ year }}
+                                </option>
+                            </select>
+                        </label>
+
+                        <label v-if="periodMode === 'monthly'" class="flex flex-col text-sm font-medium text-slate-600">
+                            Mes
+                            <select
+                                v-model="selectedMonth"
+                                :disabled="!availableMonths.length"
+                                class="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-200"
+                            >
+                                <option v-if="!availableMonths.length" value="">Sin datos</option>
+                                <option v-for="month in availableMonths" :key="month.value" :value="month.value">
+                                    {{ month.label }}
+                                </option>
+                            </select>
+                        </label>
+
                         <label class="flex flex-col text-sm font-medium text-slate-600">
                             Método de pago
                             <select
@@ -115,7 +155,7 @@
                         <header class="flex flex-col gap-2 border-b border-slate-100 pb-4 sm:flex-row sm:items-end sm:justify-between">
                             <div>
                                 <h2 class="text-xl font-semibold text-slate-800">Gasto mensual</h2>
-                                <p class="text-sm text-slate-500">Controla la evolución temporal de los desembolsos seleccionados.</p>
+                                <p class="text-sm text-slate-500">Controla la evolución temporal de los desembolsos seleccionados · {{ periodContextLabel }}.</p>
                             </div>
                             <div class="flex items-center gap-3 text-sm text-slate-500">
                                 <span class="inline-flex h-2.5 w-2.5 rounded-full bg-rose-500"></span>
@@ -130,7 +170,7 @@
                     <article class="bg-white rounded-3xl shadow-xl p-6 print:shadow-none print:rounded-none print:border print:border-slate-200 print:p-4">
                         <header class="border-b border-slate-100 pb-4">
                             <h2 class="text-xl font-semibold text-slate-800">Distribución por categoría</h2>
-                            <p class="text-sm text-slate-500">Comprende qué líneas de gasto concentran más recursos.</p>
+                            <p class="text-sm text-slate-500">Comprende qué líneas de gasto concentran más recursos · {{ periodContextLabel }}.</p>
                         </header>
                         <div class="mt-6">
                             <DoughnutChart :data="categoryDistributionData" />
@@ -235,7 +275,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { Inertia } from '@inertiajs/inertia';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import FinancePageHeader from '@/Components/Finance/FinancePageHeader.vue';
@@ -272,6 +312,105 @@ const startDate = ref('');
 const endDate = ref('');
 const selectedCategory = ref('');
 const showRecurringOnly = ref(false);
+const periodMode = ref('general');
+const selectedYear = ref('');
+const selectedMonth = ref('');
+
+const availableYears = computed(() => {
+    const years = new Set();
+    expenses.value.forEach(expense => {
+        const date = new Date(expense.date);
+        if (!Number.isNaN(date.getTime())) {
+            years.add(date.getFullYear());
+        }
+    });
+    return Array.from(years).sort((a, b) => b - a).map(year => String(year));
+});
+
+const monthOptions = [
+    { value: '01', label: 'Enero' },
+    { value: '02', label: 'Febrero' },
+    { value: '03', label: 'Marzo' },
+    { value: '04', label: 'Abril' },
+    { value: '05', label: 'Mayo' },
+    { value: '06', label: 'Junio' },
+    { value: '07', label: 'Julio' },
+    { value: '08', label: 'Agosto' },
+    { value: '09', label: 'Septiembre' },
+    { value: '10', label: 'Octubre' },
+    { value: '11', label: 'Noviembre' },
+    { value: '12', label: 'Diciembre' },
+];
+
+const availableMonths = computed(() => {
+    if (!selectedYear.value) {
+        return [];
+    }
+
+    const months = new Set();
+    expenses.value.forEach(expense => {
+        const date = new Date(expense.date);
+        if (!Number.isNaN(date.getTime()) && String(date.getFullYear()) === selectedYear.value) {
+            months.add((date.getMonth() + 1).toString().padStart(2, '0'));
+        }
+    });
+
+    if (!months.size) {
+        return [];
+    }
+
+    const orderedMonths = Array.from(months).sort((a, b) => Number(a) - Number(b));
+    return monthOptions.filter(option => orderedMonths.includes(option.value));
+});
+
+const ensureSelectedYear = () => {
+    if (!availableYears.value.length) {
+        selectedYear.value = '';
+        return;
+    }
+
+    if (!availableYears.value.includes(selectedYear.value)) {
+        selectedYear.value = availableYears.value[0];
+    }
+};
+
+const ensureSelectedMonth = () => {
+    if (periodMode.value !== 'monthly') {
+        return;
+    }
+
+    const months = availableMonths.value;
+    if (!months.length) {
+        selectedMonth.value = '';
+        return;
+    }
+
+    if (!months.find(month => month.value === selectedMonth.value)) {
+        selectedMonth.value = months[0].value;
+    }
+};
+
+watch([periodMode, availableYears], ([mode]) => {
+    if (mode === 'general') {
+        selectedYear.value = '';
+        selectedMonth.value = '';
+        return;
+    }
+
+    ensureSelectedYear();
+
+    if (mode === 'annual') {
+        selectedMonth.value = '';
+    }
+
+    if (mode === 'monthly') {
+        ensureSelectedMonth();
+    }
+});
+
+watch(selectedYear, () => {
+    ensureSelectedMonth();
+});
 
 const formatCurrency = (value) => {
     return new Intl.NumberFormat('es-ES', {
@@ -326,8 +465,40 @@ const matchesDate = (expense) => {
     return true;
 };
 
+const matchesPeriod = (expense) => {
+    if (periodMode.value === 'general') {
+        return true;
+    }
+
+    const date = new Date(expense.date);
+    if (Number.isNaN(date.getTime())) {
+        return false;
+    }
+
+    const year = String(date.getFullYear());
+
+    if (periodMode.value === 'annual') {
+        return !selectedYear.value || year === selectedYear.value;
+    }
+
+    if (periodMode.value === 'monthly') {
+        if (selectedYear.value && year !== selectedYear.value) {
+            return false;
+        }
+
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        return !selectedMonth.value || month === selectedMonth.value;
+    }
+
+    return true;
+};
+
+const periodFilteredExpenses = computed(() => {
+    return expenses.value.filter(expense => matchesPeriod(expense));
+});
+
 const visibleExpenses = computed(() => {
-    return expenses.value.filter(expense => {
+    return periodFilteredExpenses.value.filter(expense => {
         const matchesPaymentMethod = selectedPaymentMethod.value
             ? String(expense.payment_method_id) === selectedPaymentMethod.value
             : true;
@@ -342,11 +513,43 @@ const visibleExpenses = computed(() => {
     });
 });
 
-const filteredCountMessage = computed(() => {
-    if (visibleExpenses.value.length === expenses.value.length) {
-        return `${expenses.value.length} registros`; 
+const periodContextLabel = computed(() => {
+    if (periodMode.value === 'annual' && selectedYear.value) {
+        return `Año ${selectedYear.value}`;
     }
-    return `${visibleExpenses.value.length} de ${expenses.value.length} registros`;
+
+    if (periodMode.value === 'monthly' && selectedYear.value && selectedMonth.value) {
+        const monthName = monthOptions.find(month => month.value === selectedMonth.value)?.label ?? 'Mes';
+        return `${monthName} ${selectedYear.value}`;
+    }
+
+    if (periodMode.value === 'monthly' && selectedYear.value) {
+        return `Año ${selectedYear.value}`;
+    }
+
+    return 'Todos los periodos';
+});
+
+const filteredCountMessage = computed(() => {
+    if (periodMode.value === 'general') {
+        if (visibleExpenses.value.length === expenses.value.length) {
+            return `${expenses.value.length} registros · ${periodContextLabel.value}`;
+        }
+
+        return `${visibleExpenses.value.length} de ${expenses.value.length} registros · ${periodContextLabel.value}`;
+    }
+
+    const periodCount = periodFilteredExpenses.value.length;
+
+    if (!periodCount) {
+        return `Sin registros en ${periodContextLabel.value.toLowerCase()}`;
+    }
+
+    if (visibleExpenses.value.length === periodCount) {
+        return `${visibleExpenses.value.length} registros · ${periodContextLabel.value}`;
+    }
+
+    return `${visibleExpenses.value.length} de ${periodCount} registros · ${periodContextLabel.value}`;
 });
 
 const totalNetAmount = computed(() => visibleExpenses.value.reduce((acc, expense) => acc + Number(expense?.amount ?? 0), 0));
@@ -398,6 +601,30 @@ const highestExpenseDescriptor = computed(() => {
     return `${categoryNameValue} · ${methodNameValue}`;
 });
 
+const totalGrossHelper = computed(() => {
+    return `${visibleExpenses.value.length} registros visibles · ${periodContextLabel.value}`;
+});
+
+const totalNetHelper = computed(() => {
+    return `IVA acumulado ${formatCurrency(totalTaxAmount.value)} · ${periodContextLabel.value}`;
+});
+
+const averageHelper = computed(() => {
+    if (!visibleExpenses.value.length) {
+        return `Sin registros · ${periodContextLabel.value}`;
+    }
+
+    return `Rango ${formatCurrency(lowestExpenseGross.value)} – ${formatCurrency(highestExpenseGross.value)} · ${periodContextLabel.value}`;
+});
+
+const highestExpenseHelper = computed(() => {
+    if (!visibleExpenses.value.length) {
+        return `Sin registros · ${periodContextLabel.value}`;
+    }
+
+    return `${highestExpenseDescriptor.value} · ${periodContextLabel.value}`;
+});
+
 const recurringStatusLabel = (status) => {
     switch (status) {
         case 'paused':
@@ -423,7 +650,7 @@ const monthlyExpensesData = computed(() => {
         labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
         datasets: [
             {
-                label: 'Total mensual',
+                label: `Total mensual · ${periodContextLabel.value}`,
                 backgroundColor: 'rgba(244, 63, 94, 0.45)',
                 borderColor: 'rgba(244, 63, 94, 1)',
                 borderWidth: 1,
@@ -485,9 +712,14 @@ const resetFilters = () => {
     startDate.value = '';
     endDate.value = '';
     selectedCategory.value = '';
+    showRecurringOnly.value = false;
+    periodMode.value = 'general';
+    selectedYear.value = '';
+    selectedMonth.value = '';
 };
 
 const printPage = () => {
+    // La vista impresa reutiliza los filtros activos, por lo que no es necesario propagar el modo de periodo.
     window.print();
 };
 
