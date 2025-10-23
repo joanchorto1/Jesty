@@ -23,6 +23,68 @@
                     <slot name="metrics" />
                 </div>
             </div>
+
+            <div
+                v-if="showPeriodSelector"
+                class="mt-10 flex flex-col gap-4 rounded-2xl border border-white/20 bg-white/10 p-4 text-white/80 shadow-lg shadow-emerald-900/20 backdrop-blur print:hidden"
+            >
+                <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                    <div class="text-xs font-semibold uppercase tracking-widest text-emerald-200/80">
+                        Selecciona periodo de análisis
+                    </div>
+                    <div class="flex flex-wrap gap-2 text-sm">
+                        <button
+                            v-for="option in periodOptions"
+                            :key="option.value"
+                            type="button"
+                            class="rounded-full border border-white/20 px-4 py-1.5 font-medium transition"
+                            :class="{
+                                'bg-white/90 text-emerald-700 shadow': option.value === periodMode,
+                                'hover:bg-white/20': option.value !== periodMode,
+                            }"
+                            :aria-pressed="option.value === periodMode"
+                            @click="selectPeriodMode(option.value)"
+                        >
+                            {{ option.label }}
+                        </button>
+                    </div>
+                </div>
+
+                <div
+                    v-if="canPickYear"
+                    class="flex flex-col gap-3 border-t border-white/10 pt-4 text-sm sm:flex-row sm:items-center sm:justify-between"
+                >
+                    <label class="flex items-center gap-2">
+                        <span class="text-xs font-semibold uppercase tracking-widest text-emerald-200/80">Año</span>
+                        <select
+                            class="rounded-xl border border-white/30 bg-white/10 px-3 py-2 text-sm font-medium text-white focus:border-white/60 focus:outline-none focus:ring-2 focus:ring-white/40"
+                            :value="selectedYear ?? (availableYears[0] ?? '')"
+                            @change="onYearChange"
+                        >
+                            <option v-for="year in availableYears" :key="year" :value="year">
+                                {{ year }}
+                            </option>
+                        </select>
+                    </label>
+
+                    <label v-if="canPickMonth" class="flex items-center gap-2">
+                        <span class="text-xs font-semibold uppercase tracking-widest text-emerald-200/80">Mes</span>
+                        <select
+                            class="rounded-xl border border-white/30 bg-white/10 px-3 py-2 text-sm font-medium text-white focus:border-white/60 focus:outline-none focus:ring-2 focus:ring-white/40"
+                            :value="selectedMonth ?? 1"
+                            @change="onMonthChange"
+                        >
+                            <option
+                                v-for="(monthLabel, index) in monthLabels"
+                                :key="monthLabel"
+                                :value="index + 1"
+                            >
+                                {{ monthLabel }}
+                            </option>
+                        </select>
+                    </label>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -47,7 +109,46 @@ const props = defineProps({
         type: Number,
         default: 4,
     },
+    showPeriodSelector: {
+        type: Boolean,
+        default: false,
+    },
+    periodMode: {
+        type: String,
+        default: 'general',
+    },
+    availableYears: {
+        type: Array,
+        default: () => [],
+    },
+    selectedYear: {
+        type: Number,
+        default: null,
+    },
+    selectedMonth: {
+        type: Number,
+        default: null,
+    },
+    monthNames: {
+        type: Array,
+        default: () => [
+            'Enero',
+            'Febrero',
+            'Marzo',
+            'Abril',
+            'Mayo',
+            'Junio',
+            'Julio',
+            'Agosto',
+            'Septiembre',
+            'Octubre',
+            'Noviembre',
+            'Diciembre',
+        ],
+    },
 });
+
+const emit = defineEmits(['update:periodMode', 'update:selectedYear', 'update:selectedMonth']);
 
 const metricsGridClass = computed(() => {
     const base = 'grid grid-cols-1 gap-5';
@@ -61,4 +162,34 @@ const metricsGridClass = computed(() => {
 
     return variants[props.metricsColumns] ?? variants[4];
 });
+
+const periodOptions = [
+    { value: 'monthly', label: 'Mensual' },
+    { value: 'annual', label: 'Anual' },
+    { value: 'general', label: 'General' },
+];
+
+const canPickYear = computed(() => props.periodMode !== 'general' && props.availableYears.length > 0);
+const canPickMonth = computed(() => props.periodMode === 'monthly');
+const monthLabels = computed(() => props.monthNames.length ? props.monthNames : periodOptions.map(option => option.label));
+
+const selectPeriodMode = (value) => {
+    if (value !== props.periodMode) {
+        emit('update:periodMode', value);
+    }
+};
+
+const onYearChange = (event) => {
+    const value = Number(event.target.value);
+    if (!Number.isNaN(value)) {
+        emit('update:selectedYear', value);
+    }
+};
+
+const onMonthChange = (event) => {
+    const value = Number(event.target.value);
+    if (!Number.isNaN(value)) {
+        emit('update:selectedMonth', value);
+    }
+};
 </script>
