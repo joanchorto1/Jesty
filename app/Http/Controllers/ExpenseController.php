@@ -163,51 +163,311 @@ class ExpenseController extends Controller
         return Inertia::location(route('expenses.index'));
     }
     //Reports
-    public function report()
+    public function report(Request $request)
     {
-        $incomes = Income::where('company_id', Auth::user()->company_id)->get();
-        $expenses = Expense::where('company_id', Auth::user()->company_id)->get();
-        $clients= Client::where('company_id', Auth::user()->company_id)->get();
+        $mode = $this->resolveMode($request->string('mode')->toString());
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+        $companyId = Auth::user()->company_id;
+
+        $expenses = Expense::where('company_id', $companyId)
+            ->when($startDate, function ($query, $startDate) {
+                return $query->whereDate('date', '>=', $startDate);
+            })
+            ->when($endDate, function ($query, $endDate) {
+                return $query->whereDate('date', '<=', $endDate);
+            })
+            ->orderBy('date')
+            ->get();
+
+        $incomes = Income::where('company_id', $companyId)
+            ->when($startDate, function ($query, $startDate) {
+                return $query->whereDate('date', '>=', $startDate);
+            })
+            ->when($endDate, function ($query, $endDate) {
+                return $query->whereDate('date', '<=', $endDate);
+            })
+            ->orderBy('date')
+            ->get();
+
+        $clients= Client::where('company_id', $companyId)->get();
 
         return Inertia::render('Expenses/Report',[
-            'expenses' => $expenses,
-            'incomes' => $incomes,
+            'report' => $this->buildReportPayload($expenses, $incomes, $mode),
+            'filters' => [
+                'start_date' => $startDate,
+                'end_date' => $endDate,
+                'mode' => $mode,
+            ],
             'clients' => $clients,
         ]);
     }
+
     public function reportPrint(Request $request)
     {
-
+        $mode = $this->resolveMode($request->string('mode')->toString());
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
+        $companyId = Auth::user()->company_id;
 
-        $expenses = Expense::where('company_id', auth()->user()->company_id)
+        $expenses = Expense::where('company_id', $companyId)
             ->when($startDate, function ($query, $startDate) {
-                return $query->where('date', '>=', $startDate);
+                return $query->whereDate('date', '>=', $startDate);
             })
             ->when($endDate, function ($query, $endDate) {
-                return $query->where('date', '<=', $endDate);
+                return $query->whereDate('date', '<=', $endDate);
             })
-            ->orderBy('date', 'desc')
+            ->orderBy('date')
             ->get();
 
-        $incomes = Income::where('company_id', auth()->user()->company_id)
+        $incomes = Income::where('company_id', $companyId)
             ->when($startDate, function ($query, $startDate) {
-                return $query->where('date', '>=', $startDate);
+                return $query->whereDate('date', '>=', $startDate);
             })
             ->when($endDate, function ($query, $endDate) {
-                return $query->where('date', '<=', $endDate);
+                return $query->whereDate('date', '<=', $endDate);
             })
-            ->orderBy('date', 'desc')
+            ->orderBy('date')
             ->get();
 
-        $clients= Client::where('company_id', Auth::user()->company_id)->get();
+        $clients= Client::where('company_id', $companyId)->get();
 
         return Inertia::render('Expenses/ReportPrint', [
-            'expenses' => $expenses,
-            'incomes' => $incomes,
+            'report' => $this->buildReportPayload($expenses, $incomes, $mode),
+            'filters' => [
+                'start_date' => $startDate,
+                'end_date' => $endDate,
+                'mode' => $mode,
+            ],
             'clients' => $clients,
         ]);
+    }
+
+    private function resolveMode(?string $mode): string
+    {
+        $mode = $mode ?: 'general';
+
+        return in_array($mode, ['monthly', 'annual', 'general'], true) ? $mode : 'general';
+    }
+
+    private function buildReportPayload($expenses, $incomes, string $mode): array
+    {
+        $mode = $this->resolveMode($mode);
+
+        $groups = $this->buildPeriodGroups($expenses, $incomes, $mode);
+
+        $overallSummary = $this->buildSummary($expenses, $incomes);
+
+        return [
+            'mode' => $mode,
+            'groups' => $groups,
+            'overall' => [
+                'label' => 'Resumen general',
+                'summary' => $overallSummary,
+            ],
+        ];
+    }
+
+    private function buildPeriodGroups($expenses, $incomes, string $mode): array
+    {
+        if ($mode === 'general') {
+            return [
+                $this->buildPeriod('general', 'Resumen general', $expenses, $incomes),
+            ];
+        }
+
+        $expenseGroups = $expenses->groupBy(function ($expense) use ($mode) {
+            if (empty($expense->date)) {
+                return 'undefined';
+            }
+
+            $date = Carbon::parse($expense->date);
+
+            return $mode === 'monthly' ? $date->format('Y-m') : $date->format('Y');
+        });
+
+        $incomeGroups = $incomes->groupBy(function ($income) use ($mode) {
+            if (empty($income->date)) {
+                return 'undefined';
+            }
+
+            $date = Carbon::parse($income->date);
+
+            return $mode === 'monthly' ? $date->format('Y-m') : $date->format('Y');
+        });
+
+        $keys = $expenseGroups->keys()->merge($incomeGroups->keys())->unique()->sort();
+
+        return $keys->map(function (string $key) use ($expenseGroups, $incomeGroups, $mode) {
+            $label = $this->formatPeriodLabel($key, $mode);
+            $periodExpenses = $expenseGroups->get($key, collect());
+            $periodIncomes = $incomeGroups->get($key, collect());
+
+            return $this->buildPeriod($key, $label, $periodExpenses, $periodIncomes, $mode);
+        })->values()->all();
+    }
+
+    private function buildPeriod(string $key, string $label, $expenses, $incomes, string $mode = 'general'): array
+    {
+        $expenseTotals = $this->calculateExpenseTotals($expenses);
+        $incomeTotals = $this->calculateIncomeTotals($incomes);
+        $summary = $this->calculateSummary($expenseTotals, $incomeTotals);
+
+        return [
+            'key' => $key,
+            'label' => $label,
+            'mode' => $mode,
+            'range' => $this->determineRange($key, $mode, $expenses, $incomes),
+            'expenses' => [
+                'items' => $expenses->values(),
+                'totals' => $expenseTotals,
+            ],
+            'incomes' => [
+                'items' => $incomes->values(),
+                'totals' => $incomeTotals,
+            ],
+            'summary' => $summary,
+        ];
+    }
+
+    private function determineRange(string $key, string $mode, $expenses, $incomes): array
+    {
+        if ($mode === 'general') {
+            $dates = $expenses->pluck('date')->merge($incomes->pluck('date'))->filter();
+            $start = $dates->min();
+            $end = $dates->max();
+
+            return [
+                'start' => $start,
+                'end' => $end,
+            ];
+        }
+
+        if ($key === 'undefined') {
+            return [
+                'start' => null,
+                'end' => null,
+            ];
+        }
+
+        if ($mode === 'monthly') {
+            $date = Carbon::createFromFormat('Y-m', $key)->startOfMonth();
+
+            return [
+                'start' => $date->toDateString(),
+                'end' => $date->endOfMonth()->toDateString(),
+            ];
+        }
+
+        $date = Carbon::createFromFormat('Y', $key)->startOfYear();
+
+        return [
+            'start' => $date->toDateString(),
+            'end' => $date->endOfYear()->toDateString(),
+        ];
+    }
+
+    private function formatPeriodLabel(string $key, string $mode): string
+    {
+        if ($key === 'undefined') {
+            return 'Sin fecha';
+        }
+
+        if ($mode === 'monthly') {
+            return Carbon::createFromFormat('Y-m', $key)->translatedFormat('F Y');
+        }
+
+        if ($mode === 'annual') {
+            return Carbon::createFromFormat('Y', $key)->format('Y');
+        }
+
+        return 'Resumen general';
+    }
+
+    private function calculateExpenseTotals($expenses): array
+    {
+        $base = $expenses->sum(function ($expense) {
+            return (float) ($expense->amount ?? 0);
+        });
+
+        $tax = $expenses->sum(function ($expense) {
+            $amount = (float) ($expense->amount ?? 0);
+            $rate = (float) ($expense->iva ?? 0);
+
+            return $amount * $rate / 100;
+        });
+
+        return [
+            'count' => $expenses->count(),
+            'base' => $base,
+            'tax' => $tax,
+            'total' => $base + $tax,
+        ];
+    }
+
+    private function calculateIncomeTotals($incomes): array
+    {
+        $base = $incomes->sum(function ($income) {
+            return (float) ($income->tax_base ?? 0);
+        });
+
+        $tax = $incomes->sum(function ($income) {
+            $taxAmount = $income->tax_amount;
+
+            if ($taxAmount !== null) {
+                return (float) $taxAmount;
+            }
+
+            $base = (float) ($income->tax_base ?? 0);
+            $rate = (float) ($income->tax_rate ?? 0);
+
+            return $base * $rate / 100;
+        });
+
+        $total = $incomes->sum(function ($income) {
+            if ($income->total_amount !== null) {
+                return (float) $income->total_amount;
+            }
+
+            $base = (float) ($income->tax_base ?? 0);
+            $taxAmount = (float) ($income->tax_amount ?? 0);
+
+            return $base + $taxAmount;
+        });
+
+        return [
+            'count' => $incomes->count(),
+            'base' => $base,
+            'tax' => $tax,
+            'total' => $total,
+        ];
+    }
+
+    private function calculateSummary(array $expenseTotals, array $incomeTotals): array
+    {
+        $grossMargin = $incomeTotals['base'] - $expenseTotals['base'];
+        $ivaBalance = $incomeTotals['tax'] - $expenseTotals['tax'];
+        $net = $incomeTotals['total'] - $expenseTotals['total'];
+
+        return [
+            'total_income' => $incomeTotals['total'],
+            'total_income_base' => $incomeTotals['base'],
+            'total_income_tax' => $incomeTotals['tax'],
+            'total_expense_base' => $expenseTotals['base'],
+            'total_expense_tax' => $expenseTotals['tax'],
+            'total_expense_total' => $expenseTotals['total'],
+            'gross_margin' => $grossMargin,
+            'iva_balance' => $ivaBalance,
+            'net_balance' => $net,
+        ];
+    }
+
+    private function buildSummary($expenses, $incomes): array
+    {
+        $expenseTotals = $this->calculateExpenseTotals($expenses);
+        $incomeTotals = $this->calculateIncomeTotals($incomes);
+
+        return $this->calculateSummary($expenseTotals, $incomeTotals);
     }
 
     protected function syncRecurringTemplate(Expense $expense, array $validated, bool $isNew = false): void
