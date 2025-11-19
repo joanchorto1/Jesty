@@ -16,7 +16,6 @@ class DocumentNumberGenerator
         $pattern = sprintf('%s-%s-', $prefix, $yearSuffix);
 
         $latestDocument = $modelClass::where('company_id', $companyId)
-            ->whereYear('date', $year)
             ->where($numberColumn, 'like', $pattern . '%')
             ->orderBy($numberColumn, 'desc')
             ->first();
