@@ -10,6 +10,7 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\ExpenseCategoryController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\IncomeController;
+use App\Http\Controllers\InvoicePublicController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\InvoiceItemController;
 use App\Http\Controllers\LeadController;
@@ -37,6 +38,8 @@ use Inertia\Inertia;
 |
 */
 
+
+Route::get('invoices/public/{token}', InvoicePublicController::class)->name('invoices.public.show');
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [

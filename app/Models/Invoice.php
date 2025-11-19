@@ -12,9 +12,12 @@ class Invoice extends Model
     protected $fillable = [
         'recurring_invoice_id',
         'client_id',
+        'company_id',
         'date',
         'due_date',
         'name',
+        'number',
+        'external_reference',
         'base_imponible',
         'iva',
         'monto_iva',
@@ -23,8 +26,19 @@ class Invoice extends Model
         'notes',
         'irpf_tax',
         'total_irpf',
-        'company_id',
         'pdf_path',
+        'public_token',
+    ];
+
+    protected $casts = [
+        'date' => 'date',
+        'due_date' => 'date',
+        'base_imponible' => 'float',
+        'iva' => 'float',
+        'monto_iva' => 'float',
+        'total' => 'float',
+        'irpf_tax' => 'float',
+        'total_irpf' => 'float',
     ];
 
     public function company()

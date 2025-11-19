@@ -43,6 +43,7 @@ return [
     'avero' => [
         'company_id' => env('AVERO_COMPANY_ID'),
         'default_category' => env('AVERO_CATEGORY', 'Avero'),
+        'invoice_prefix' => env('AVERO_INVOICE_PREFIX', 'FA'),
     ],
 
 ];

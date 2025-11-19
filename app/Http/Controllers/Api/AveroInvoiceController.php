@@ -9,8 +9,10 @@ use App\Models\Company;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\Product;
+use App\Services\DocumentNumberGenerator;
 use App\Services\DocumentTotalsCalculator;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -29,14 +31,15 @@ class AveroInvoiceController extends Controller
         ]);
 
         $validated = $request->validate([
-            'document_number' => 'required|string|max:255',
+            'document_number' => 'nullable|string|max:255',
+            'source_reference' => 'nullable|string|max:255',
             'date' => 'required|date',
             'due_date' => 'nullable|date',
             'notes' => 'nullable|string',
             'client.name' => 'required|string|max:255',
             'client.nif' => 'required|string|max:255',
-            'client.email' => 'nullable|email',
-            'client.address' => 'nullable|string',
+            'client.email' => 'required|email',
+            'client.address' => 'required|string',
             'client.city' => 'nullable|string',
             'client.postal_code' => 'nullable|string',
             'client.country' => 'nullable|string',
@@ -62,12 +65,29 @@ class AveroInvoiceController extends Controller
             'items_count' => count($validated['items']),
         ]);
 
-        try {
-            $invoice = DB::transaction(function () use ($validated) {
-                Log::debug('Resolving company for Avero invoice import');
-                $company = $this->resolveCompany();
-                Log::info('Company resolved for Avero invoice import', ['company_id' => $company->id]);
+        $externalReference = $validated['document_number'] ?? ($validated['source_reference'] ?? null);
 
+        try {
+            $company = $this->resolveCompany();
+            Log::info('Company resolved for Avero invoice import', ['company_id' => $company->id]);
+
+            if (! empty($externalReference)) {
+                $existingInvoice = $this->findInvoiceByExternalReference($company->id, $externalReference);
+
+                if ($existingInvoice) {
+                    $existingInvoice = $existingInvoice->fresh(['client', 'company', 'items.product']);
+                    Log::info('Invoice already imported from Avero, returning existing data', [
+                        'invoice_id' => $existingInvoice->id,
+                        'external_reference' => $externalReference,
+                    ]);
+
+                    $pdfUrl = $this->ensureInvoicePdf($existingInvoice);
+
+                    return response()->json($this->formatInvoiceResponse($existingInvoice, $pdfUrl));
+                }
+            }
+
+            $invoice = DB::transaction(function () use ($validated, $company, $externalReference) {
                 Log::debug('Resolving client for Avero invoice import', ['client' => $validated['client']]);
                 $client = $this->findOrCreateClient($company->id, $validated['client']);
                 Log::info('Client resolved for Avero invoice import', ['client_id' => $client->id]);
@@ -103,13 +123,27 @@ class AveroInvoiceController extends Controller
                 Log::info('Calculated totals for Avero invoice import', ['totals' => $totals]);
 
                 $summary = $validated['summary'];
-                Log::debug('Creating invoice from Avero payload', ['summary' => $summary]);
+                $invoiceNumber = DocumentNumberGenerator::generate(
+                    Invoice::class,
+                    'number',
+                    config('services.avero.invoice_prefix', 'FA'),
+                    $company->id,
+                    Carbon::parse($validated['date'])
+                );
+
+                Log::debug('Creating invoice from Avero payload', [
+                    'summary' => $summary,
+                    'invoice_number' => $invoiceNumber,
+                ]);
+
                 $invoice = Invoice::create([
                     'company_id' => $company->id,
                     'client_id' => $client->id,
                     'date' => $validated['date'],
                     'due_date' => $validated['due_date'] ?? null,
-                    'name' => $validated['document_number'],
+                    'name' => $invoiceNumber,
+                    'number' => $invoiceNumber,
+                    'external_reference' => $externalReference,
                     'state' => 'pending',
                     'base_imponible' => $summary['base_imponible'],
                     'iva' => $totals['effectiveRate'],
@@ -145,26 +179,16 @@ class AveroInvoiceController extends Controller
                 return $invoice;
             });
 
-            Log::debug('Generating PDF for Avero invoice', ['invoice_id' => $invoice->id]);
-            $pdfUrl = $this->generateInvoicePdf($invoice->fresh(['client', 'company', 'items.product']));
+            $invoice = $invoice->fresh(['client', 'company', 'items.product']);
+            $pdfUrl = $this->ensureInvoicePdf($invoice);
             Log::info('PDF generated for Avero invoice', ['invoice_id' => $invoice->id, 'pdf_url' => $pdfUrl]);
 
             Log::info('Invoice import from Avero completed successfully', [
                 'invoice_id' => $invoice->id,
-                'response' => [
-                    'status' => 'success',
-                    'message' => null,
-                    'pdf_url' => $pdfUrl,
-                    'invoice_id' => $invoice->id,
-                ],
+                'invoice_number' => $invoice->number,
             ]);
 
-            return response()->json([
-                'status' => 'success',
-                'message' => null,
-                'pdf_url' => $pdfUrl,
-                'invoice_id' => $invoice->id,
-            ]);
+            return response()->json($this->formatInvoiceResponse($invoice, $pdfUrl));
         } catch (Throwable $exception) {
             Log::error('Error importing invoice from Avero', [
                 'message' => $exception->getMessage(),
@@ -173,8 +197,7 @@ class AveroInvoiceController extends Controller
             ]);
 
             return response()->json([
-                'status' => 'error',
-                'message' => $exception->getMessage(),
+                'message' => 'Internal server error.',
             ], 500);
         }
     }
@@ -273,22 +296,60 @@ class AveroInvoiceController extends Controller
         return $product;
     }
 
-    protected function generateInvoicePdf(Invoice $invoice): string
+    protected function ensureInvoicePdf(Invoice $invoice): string
     {
-        Log::debug('Rendering invoice PDF for Avero import', ['invoice_id' => $invoice->id]);
-        $pdf = Pdf::loadView('pdfs.invoice', [
-            'invoice' => $invoice,
-            'client' => $invoice->client,
-            'company' => $invoice->company,
-        ]);
+        $invoice->loadMissing('client', 'company', 'items.product');
 
-        $fileName = sprintf('invoices/%s-%s.pdf', $invoice->name, Str::uuid());
-        Log::debug('Storing invoice PDF for Avero import', ['invoice_id' => $invoice->id, 'file_name' => $fileName]);
-        Storage::disk('public')->put($fileName, $pdf->output());
+        $disk = Storage::disk('public');
+        $shouldGenerate = empty($invoice->pdf_path) || ! $disk->exists($invoice->pdf_path);
 
-        $invoice->forceFill(['pdf_path' => $fileName])->save();
+        if ($shouldGenerate) {
+            Log::debug('Rendering invoice PDF for Avero import', ['invoice_id' => $invoice->id]);
+            $pdf = Pdf::loadView('pdfs.invoice', [
+                'invoice' => $invoice,
+                'client' => $invoice->client,
+                'company' => $invoice->company,
+            ]);
 
-        return Storage::disk('public')->url($fileName);
+            $fileName = sprintf(
+                'invoices/%s-%s.pdf',
+                Str::slug($invoice->number ?? $invoice->name ?? (string) $invoice->id),
+                Str::uuid()
+            );
+
+            Log::debug('Storing invoice PDF for Avero import', ['invoice_id' => $invoice->id, 'file_name' => $fileName]);
+            $disk->put($fileName, $pdf->output());
+
+            $invoice->forceFill(['pdf_path' => $fileName])->save();
+        }
+
+        if (! $invoice->public_token) {
+            $invoice->forceFill(['public_token' => (string) Str::uuid()])->save();
+        }
+
+        return route('invoices.public.show', ['token' => $invoice->public_token]);
+    }
+
+    protected function findInvoiceByExternalReference(int $companyId, ?string $reference): ?Invoice
+    {
+        if (! $reference) {
+            return null;
+        }
+
+        return Invoice::where('company_id', $companyId)
+            ->where('external_reference', $reference)
+            ->first();
+    }
+
+    protected function formatInvoiceResponse(Invoice $invoice, string $pdfUrl): array
+    {
+        return [
+            'invoice_id' => $invoice->id,
+            'invoice_number' => $invoice->number ?? $invoice->name,
+            'invoice_date' => $invoice->date ? $invoice->date->toDateString() : null,
+            'invoice_total' => (float) $invoice->total,
+            'invoice_url' => $pdfUrl,
+        ];
     }
 
     protected function calculateLineTotal(float $quantity, float $unitPrice, float $discount): float
