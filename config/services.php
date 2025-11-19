@@ -40,4 +40,9 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'avero' => [
+        'company_id' => env('AVERO_COMPANY_ID'),
+        'default_category' => env('AVERO_CATEGORY', 'Avero'),
+    ],
+
 ];

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Factura #{{ $invoice->id }}</title>
+    <title>Factura #{{ $invoice->name ?? $invoice->id }}</title>
     <style>
         * {
             box-sizing: border-box;
@@ -80,6 +80,7 @@
 </head>
 <body>
 <header>
+    <p><strong>Número:</strong> {{ $invoice->name }}</p>
     <p><strong>Fecha:</strong> {{ $invoice->date }}</p>
     @if($invoice->due_date)
         <p><strong>Vencimiento:</strong> {{ $invoice->due_date }}</p>
@@ -101,7 +102,7 @@
             <p><strong>{{ $client->name }}</strong></p>
             <p>{{ $client->address }}</p>
             <p>{{ $client->phone }}</p>
-            <p>{{ $client->email }}</p>∫
+            <p>{{ $client->email }}</p>
             <p>ID: {{ $client->nif }}</p>
         </div>
     </div>
@@ -115,6 +116,7 @@
                 <th>Cantidad</th>
                 <th>Precio Unitario</th>
                 <th>Descuento</th>
+                <th>IVA</th>
                 <th>Total</th>
             </tr>
             </thead>
@@ -122,21 +124,17 @@
             @foreach ($invoice->items as $item)
                 <tr>
                     <td>{{ $loop->iteration }}</td>
-                    <td>{{ $item->product->name }}</td>
+                    <td>{{ optional($item->product)->name ?? '—' }}</td>
                     <td>{{ $item->quantity }}</td>
                     <td>${{ number_format($item->unit_price, 2) }}</td>
                     <td>{{ $item->discount }}%</td>
+                    <td>{{ $item->iva }}%</td>
                     <td>${{ number_format($item->total, 2) }}</td>
                 </tr>
             @endforeach
             </tbody>
         </table>
     </div>
-
-    @php
-        $irpf = $invoice->base_imponible * 0.15;
-        $total_final = $invoice->base_imponible + $invoice->monto_iva - $irpf;
-    @endphp
 
     <div class="totals">
         <table>
@@ -145,19 +143,28 @@
                 <td>${{ number_format($invoice->base_imponible, 2) }}</td>
             </tr>
             <tr>
-                <th>IVA (21%):</th>
+                <th>IVA ({{ number_format($invoice->iva, 2) }}%):</th>
                 <td>${{ number_format($invoice->monto_iva, 2) }}</td>
             </tr>
-            <tr>
-                <th>Retención IRPF (15%):</th>
-                <td>− ${{ number_format($irpf, 2) }}</td>
-            </tr>
+            @if(($invoice->total_irpf ?? 0) > 0)
+                <tr>
+                    <th>Retención IRPF ({{ number_format($invoice->irpf_tax, 2) }}%):</th>
+                    <td>− ${{ number_format($invoice->total_irpf, 2) }}</td>
+                </tr>
+            @endif
             <tr>
                 <th>Total a pagar:</th>
-                <td><strong>${{ number_format($total_final, 2) }}</strong></td>
+                <td><strong>${{ number_format($invoice->total, 2) }}</strong></td>
             </tr>
         </table>
     </div>
+
+    @if($invoice->notes)
+        <div class="panel">
+            <div class="panel-heading">Notes</div>
+            <p>{{ $invoice->notes }}</p>
+        </div>
+    @endif
 </div>
 
 <footer>
