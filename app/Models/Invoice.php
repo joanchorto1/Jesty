@@ -13,13 +13,18 @@ class Invoice extends Model
         'recurring_invoice_id',
         'client_id',
         'date',
+        'due_date',
         'name',
         'base_imponible',
         'iva',
         'monto_iva',
         'total',
         'state',
+        'notes',
+        'irpf_tax',
+        'total_irpf',
         'company_id',
+        'pdf_path',
     ];
 
     public function company()
