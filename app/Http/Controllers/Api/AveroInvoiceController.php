@@ -10,7 +10,9 @@ use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\Product;
 use App\Services\AveroInvoiceNotifier;
+use App\Services\DocumentNumberGenerator;
 use App\Services\DocumentTotalsCalculator;
+use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -108,13 +110,25 @@ class AveroInvoiceController extends Controller
                 Log::info('Calculated totals for Avero invoice import', ['totals' => $totals]);
 
                 $summary = $validated['summary'];
-                Log::debug('Creating invoice from Avero payload', ['summary' => $summary]);
+                $issueDate = Carbon::parse($validated['date']);
+                $invoiceNumber = DocumentNumberGenerator::generate(
+                    Invoice::class,
+                    'name',
+                    config('services.avero.invoice_prefix', 'FA'),
+                    $company->id,
+                    $issueDate
+                );
+
+                Log::debug('Creating invoice from Avero payload', [
+                    'summary' => $summary,
+                    'generated_invoice_number' => $invoiceNumber,
+                ]);
                 $invoice = Invoice::create([
                     'company_id' => $company->id,
                     'client_id' => $client->id,
-                    'date' => $validated['date'],
+                    'date' => $issueDate->toDateString(),
                     'due_date' => $validated['due_date'] ?? null,
-                    'name' => $validated['document_number'],
+                    'name' => $invoiceNumber,
                     'state' => 'pending',
                     'base_imponible' => $summary['base_imponible'],
                     'iva' => $totals['effectiveRate'],
