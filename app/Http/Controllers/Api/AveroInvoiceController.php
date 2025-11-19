@@ -81,9 +81,9 @@ class AveroInvoiceController extends Controller
                         'external_reference' => $externalReference,
                     ]);
 
-                    $pdfUrl = $this->ensureInvoicePdf($existingInvoice);
+                    $pdfUrls = $this->ensureInvoicePdf($existingInvoice);
 
-                    return response()->json($this->formatInvoiceResponse($existingInvoice, $pdfUrl));
+                    return response()->json($this->formatInvoiceResponse($existingInvoice, $pdfUrls));
                 }
             }
 
@@ -180,15 +180,19 @@ class AveroInvoiceController extends Controller
             });
 
             $invoice = $invoice->fresh(['client', 'company', 'items.product']);
-            $pdfUrl = $this->ensureInvoicePdf($invoice);
-            Log::info('PDF generated for Avero invoice', ['invoice_id' => $invoice->id, 'pdf_url' => $pdfUrl]);
+            $pdfUrls = $this->ensureInvoicePdf($invoice);
+            Log::info('PDF generated for Avero invoice', [
+                'invoice_id' => $invoice->id,
+                'public_url' => $pdfUrls['public_url'] ?? null,
+                'storage_url' => $pdfUrls['storage_url'] ?? null,
+            ]);
 
             Log::info('Invoice import from Avero completed successfully', [
                 'invoice_id' => $invoice->id,
                 'invoice_number' => $invoice->number,
             ]);
 
-            return response()->json($this->formatInvoiceResponse($invoice, $pdfUrl));
+            return response()->json($this->formatInvoiceResponse($invoice, $pdfUrls));
         } catch (Throwable $exception) {
             Log::error('Error importing invoice from Avero', [
                 'message' => $exception->getMessage(),
@@ -296,7 +300,7 @@ class AveroInvoiceController extends Controller
         return $product;
     }
 
-    protected function ensureInvoicePdf(Invoice $invoice): string
+    protected function ensureInvoicePdf(Invoice $invoice): array
     {
         $invoice->loadMissing('client', 'company', 'items.product');
 
@@ -327,7 +331,12 @@ class AveroInvoiceController extends Controller
             $invoice->forceFill(['public_token' => (string) Str::uuid()])->save();
         }
 
-        return route('invoices.public.show', ['token' => $invoice->public_token]);
+        $storageUrl = $invoice->pdf_path ? $disk->url($invoice->pdf_path) : null;
+
+        return [
+            'public_url' => route('invoices.public.show', ['token' => $invoice->public_token]),
+            'storage_url' => $storageUrl,
+        ];
     }
 
     protected function findInvoiceByExternalReference(int $companyId, ?string $reference): ?Invoice
@@ -341,14 +350,15 @@ class AveroInvoiceController extends Controller
             ->first();
     }
 
-    protected function formatInvoiceResponse(Invoice $invoice, string $pdfUrl): array
+    protected function formatInvoiceResponse(Invoice $invoice, array $pdfUrls): array
     {
         return [
             'invoice_id' => $invoice->id,
             'invoice_number' => $invoice->number ?? $invoice->name,
             'invoice_date' => $invoice->date ? $invoice->date->toDateString() : null,
             'invoice_total' => (float) $invoice->total,
-            'invoice_url' => $pdfUrl,
+            'invoice_url' => $pdfUrls['public_url'] ?? null,
+            'invoice_pdf_url' => $pdfUrls['storage_url'] ?? null,
         ];
     }
 
