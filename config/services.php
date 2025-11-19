@@ -43,8 +43,6 @@ return [
     'avero' => [
         'company_id' => env('AVERO_COMPANY_ID'),
         'default_category' => env('AVERO_CATEGORY', 'Avero'),
-        'webhook_url' => env('AVERO_WEBHOOK_URL'),
-        'api_token' => env('AVERO_API_TOKEN'),
     ],
 
 ];
