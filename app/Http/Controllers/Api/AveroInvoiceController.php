@@ -9,6 +9,7 @@ use App\Models\Company;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\Product;
+use App\Services\AveroInvoiceNotifier;
 use App\Services\DocumentTotalsCalculator;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
@@ -21,6 +22,10 @@ use Throwable;
 
 class AveroInvoiceController extends Controller
 {
+    public function __construct(private AveroInvoiceNotifier $averoNotifier)
+    {
+    }
+
     public function __invoke(Request $request): JsonResponse
     {
         Log::info('Starting invoice import from Avero', [
@@ -145,9 +150,17 @@ class AveroInvoiceController extends Controller
                 return $invoice;
             });
 
+            $invoiceWithRelations = $invoice->fresh(['client', 'company', 'items.product']);
+
             Log::debug('Generating PDF for Avero invoice', ['invoice_id' => $invoice->id]);
-            $pdfUrl = $this->generateInvoicePdf($invoice->fresh(['client', 'company', 'items.product']));
+            $pdfUrl = $this->generateInvoicePdf($invoiceWithRelations);
             Log::info('PDF generated for Avero invoice', ['invoice_id' => $invoice->id, 'pdf_url' => $pdfUrl]);
+
+            $averoSync = $this->averoNotifier->notify($invoiceWithRelations, $pdfUrl);
+            Log::info('Avero notification processed for invoice', [
+                'invoice_id' => $invoice->id,
+                'avero_sync' => $averoSync,
+            ]);
 
             Log::info('Invoice import from Avero completed successfully', [
                 'invoice_id' => $invoice->id,
@@ -156,6 +169,7 @@ class AveroInvoiceController extends Controller
                     'message' => null,
                     'pdf_url' => $pdfUrl,
                     'invoice_id' => $invoice->id,
+                    'avero_sync' => $averoSync,
                 ],
             ]);
 
@@ -164,6 +178,7 @@ class AveroInvoiceController extends Controller
                 'message' => null,
                 'pdf_url' => $pdfUrl,
                 'invoice_id' => $invoice->id,
+                'avero_sync' => $averoSync,
             ]);
         } catch (Throwable $exception) {
             Log::error('Error importing invoice from Avero', [
