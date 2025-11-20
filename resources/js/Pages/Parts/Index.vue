@@ -321,13 +321,15 @@ const formatCurrency = (value) =>
 const formatDate = (value) => (value ? new Date(value).toLocaleDateString('ca-ES') : '—');
 
 const filteredParts = computed(() =>
-    props.parts.filter((part) => {
-        const matchesStatus = !filters.status || part.status === filters.status;
-        const matchesClient = !filters.client_id || part.client_id === Number(filters.client_id);
-        const matchesStart = !filters.start_date || new Date(part.date) >= new Date(filters.start_date);
-        const matchesEnd = !filters.end_date || new Date(part.date) <= new Date(filters.end_date);
-        return matchesStatus && matchesClient && matchesStart && matchesEnd;
-    })
+    props.parts
+        .filter((part) => {
+            const matchesStatus = !filters.status || part.status === filters.status;
+            const matchesClient = !filters.client_id || part.client_id === Number(filters.client_id);
+            const matchesStart = !filters.start_date || new Date(part.date) >= new Date(filters.start_date);
+            const matchesEnd = !filters.end_date || new Date(part.date) <= new Date(filters.end_date);
+            return matchesStatus && matchesClient && matchesStart && matchesEnd;
+        })
+        .sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0))
 );
 
 const filteredTotal = computed(() => filteredParts.value.reduce((total, part) => total + Number(part.total || 0), 0));

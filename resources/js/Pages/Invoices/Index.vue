@@ -348,18 +348,21 @@ const startDate = ref('');
 const endDate = ref('');
 const minTotal = ref(null);
 
-const filteredInvoices = computed(() => props.invoices.filter(invoice => {
-    const clientMatch = selectedClient.value === '' || invoice.client_id === selectedClient.value;
-    const statusMatch = selectedStatus.value === '' || invoice.state === selectedStatus.value;
+const filteredInvoices = computed(() => props.invoices
+    .filter(invoice => {
+        const clientMatch = selectedClient.value === '' || invoice.client_id === selectedClient.value;
+        const statusMatch = selectedStatus.value === '' || invoice.state === selectedStatus.value;
 
-    const invoiceDate = new Date(invoice.date);
-    const startDateMatch = startDate.value === '' || invoiceDate >= new Date(startDate.value);
-    const endDateMatch = endDate.value === '' || invoiceDate <= new Date(endDate.value);
+        const invoiceDate = new Date(invoice.date);
+        const startDateMatch = startDate.value === '' || invoiceDate >= new Date(startDate.value);
+        const endDateMatch = endDate.value === '' || invoiceDate <= new Date(endDate.value);
 
-    const totalMatch = minTotal.value === null || Number(invoice.total) >= Number(minTotal.value || 0);
+        const totalMatch = minTotal.value === null || Number(invoice.total) >= Number(minTotal.value || 0);
 
-    return clientMatch && statusMatch && startDateMatch && endDateMatch && totalMatch;
-}));
+        return clientMatch && statusMatch && startDateMatch && endDateMatch && totalMatch;
+    })
+    .sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0))
+);
 
 const filteredInvoicesTotal = computed(() => filteredInvoices.value.reduce((total, invoice) => total + Number(invoice.total || 0), 0));
 
