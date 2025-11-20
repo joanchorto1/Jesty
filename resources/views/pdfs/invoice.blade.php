@@ -7,169 +7,265 @@
     <style>
         * {
             box-sizing: border-box;
-            margin: 0;
-            padding: 0;
         }
 
         body {
             font-family: 'DejaVu Sans', Arial, sans-serif;
             font-size: 10px;
-            color: #333;
-            background-color: #fff;
-            margin: 20px;
-        }
-
-        header, footer {
-            text-align: center;
-            margin-bottom: 20px;
+            color: #1a1a1a;
+            background-color: #f4f6fb;
+            margin: 0;
+            padding: 24px;
         }
 
         .container {
-            width: 100%;
-            max-width: 850px;
+            max-width: 880px;
             margin: 0 auto;
-        }
-
-        .details, .items, .totals {
-            margin-bottom: 20px;
-        }
-
-        h1, h2, h3, p {
-            margin: 5px 0;
-        }
-
-        .panel {
-            margin-bottom: 20px;
             background: #ffffff;
-            border: 1px solid #ddd;
-            padding: 10px;
-            border-radius: 5px;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(15, 23, 42, 0.12);
         }
 
-        .panel-heading {
-            font-weight: bold;
-            margin-bottom: 10px;
+        header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            border-bottom: 2px solid #eef2ff;
+            padding-bottom: 16px;
+            margin-bottom: 24px;
+        }
+
+        header .company-name {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            color: #1f4e79;
+        }
+
+        header p {
+            margin: 2px 0;
+        }
+
+        .invoice-meta {
+            text-align: right;
+        }
+
+        .invoice-label {
+            text-transform: uppercase;
+            font-size: 9px;
+            color: #6b7280;
+            letter-spacing: 0.2em;
+        }
+
+        .invoice-number {
+            font-size: 18px;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        .card {
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 16px;
+            background: linear-gradient(135deg, #ffffff 0%, #f9fbff 100%);
+        }
+
+        .card-title {
+            text-transform: uppercase;
+            font-size: 9px;
+            letter-spacing: 0.2em;
+            color: #9ca3af;
+            margin-bottom: 8px;
+        }
+
+        .card-content p {
+            margin: 2px 0;
+            line-height: 1.4;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 24px;
         }
 
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: center;
+        thead {
+            background: #1f4e79;
+            color: #ffffff;
         }
 
         th {
-            background: #3498db;
-            color: #fff;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            padding: 10px;
+            text-transform: uppercase;
+            font-size: 9px;
+        }
+
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #eef2ff;
+            color: #374151;
+        }
+
+        tbody tr:nth-child(even) {
+            background: #f8fafc;
         }
 
         .totals {
-            float: right;
+            margin-left: auto;
             width: 50%;
         }
 
-        .totals th, .totals td {
+        .totals table {
+            border: 1px solid #e5e7eb;
+        }
+
+        .totals th {
+            text-align: left;
+            background: #f9fafb;
+            color: #6b7280;
+        }
+
+        .totals td {
             text-align: right;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .total-due {
+            background: #1f4e79;
+            color: #ffffff;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 9px;
+            color: #6b7280;
+            margin-top: 32px;
+        }
+
+        .notes {
+            border-top: 1px solid #e5e7eb;
+            padding-top: 16px;
+            margin-top: 16px;
         }
     </style>
 </head>
 <body>
-<header>
-    <p><strong>Número:</strong> {{ $invoice->number ?? $invoice->name ?? $invoice->id }}</p>
-    <p><strong>Fecha:</strong> {{ $invoice->date }}</p>
-    @if($invoice->due_date)
-        <p><strong>Vencimiento:</strong> {{ $invoice->due_date }}</p>
-    @endif
-</header>
-
 <div class="container">
-    <div class="details">
-        <div class="panel">
-            <div class="panel-heading">Detalles de la Empresa</div>
-            <p><strong>{{ $company->name }}</strong></p>
+    <header>
+        <div>
+            <div class="company-name">{{ $company->name }}</div>
             <p>{{ $company->address }}</p>
             <p>{{ $company->phone }}</p>
             <p>{{ $company->email }}</p>
-            <p>ID: {{ $company->nif }}</p>
+            <p>{{ $company->nif }}</p>
         </div>
-        <div class="panel">
-            <div class="panel-heading">Detalles del Cliente</div>
-            <p><strong>{{ $client->name }}</strong></p>
-            <p>{{ $client->address }}</p>
-            <p>{{ $client->phone }}</p>
-            <p>{{ $client->email }}</p>
-            <p>ID: {{ $client->nif }}</p>
+        <div class="invoice-meta">
+            <div class="invoice-label">Factura</div>
+            <div class="invoice-number">#{{ $invoice->number ?? $invoice->name ?? $invoice->id }}</div>
+            <p><strong>Fecha:</strong> {{ $invoice->date }}</p>
+            @if($invoice->due_date)
+                <p><strong>Vencimiento:</strong> {{ $invoice->due_date }}</p>
+            @endif
+        </div>
+    </header>
+
+    <div class="grid">
+        <div class="card">
+            <div class="card-title">Empresa</div>
+            <div class="card-content">
+                <p><strong>{{ $company->name }}</strong></p>
+                <p>{{ $company->address }}</p>
+                <p>{{ $company->phone }}</p>
+                <p>{{ $company->email }}</p>
+                <p>ID: {{ $company->nif }}</p>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-title">Cliente</div>
+            <div class="card-content">
+                <p><strong>{{ $client->name }}</strong></p>
+                <p>{{ $client->address }}</p>
+                <p>{{ $client->phone }}</p>
+                <p>{{ $client->email }}</p>
+                <p>ID: {{ $client->nif }}</p>
+            </div>
         </div>
     </div>
 
-    <div class="items">
-        <table>
-            <thead>
+    <table>
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Producto</th>
+            <th>Cantidad</th>
+            <th>Precio Unitario</th>
+            <th>Descuento</th>
+            <th>IVA</th>
+            <th>Total</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach ($invoice->items as $item)
             <tr>
-                <th>#</th>
-                <th>Producto</th>
-                <th>Cantidad</th>
-                <th>Precio Unitario</th>
-                <th>Descuento</th>
-                <th>IVA</th>
-                <th>Total</th>
+                <td>{{ $loop->iteration }}</td>
+                <td>{{ optional($item->product)->name ?? '—' }}</td>
+                <td>{{ $item->quantity }}</td>
+                <td>${{ number_format($item->unit_price, 2) }}</td>
+                <td>{{ $item->discount }}%</td>
+                <td>{{ $item->iva }}%</td>
+                <td>${{ number_format($item->total, 2) }}</td>
             </tr>
-            </thead>
-            <tbody>
-            @foreach ($invoice->items as $item)
-                <tr>
-                    <td>{{ $loop->iteration }}</td>
-                    <td>{{ optional($item->product)->name ?? '—' }}</td>
-                    <td>{{ $item->quantity }}</td>
-                    <td>${{ number_format($item->unit_price, 2) }}</td>
-                    <td>{{ $item->discount }}%</td>
-                    <td>{{ $item->iva }}%</td>
-                    <td>${{ number_format($item->total, 2) }}</td>
-                </tr>
-            @endforeach
-            </tbody>
-        </table>
-    </div>
+        @endforeach
+        </tbody>
+    </table>
 
     <div class="totals">
         <table>
             <tr>
-                <th>Base Imponible:</th>
+                <th>Base Imponible</th>
                 <td>${{ number_format($invoice->base_imponible, 2) }}</td>
             </tr>
             <tr>
-                <th>IVA ({{ number_format($invoice->iva, 2) }}%):</th>
+                <th>IVA ({{ number_format($invoice->iva, 2) }}%)</th>
                 <td>${{ number_format($invoice->monto_iva, 2) }}</td>
             </tr>
             @if(($invoice->total_irpf ?? 0) > 0)
                 <tr>
-                    <th>Retención IRPF ({{ number_format($invoice->irpf_tax, 2) }}%):</th>
+                    <th>Retención IRPF ({{ number_format($invoice->irpf_tax, 2) }}%)</th>
                     <td>− ${{ number_format($invoice->total_irpf, 2) }}</td>
                 </tr>
             @endif
-            <tr>
-                <th>Total a pagar:</th>
-                <td><strong>${{ number_format($invoice->total, 2) }}</strong></td>
+            <tr class="total-due">
+                <th>Total a pagar</th>
+                <td>${{ number_format($invoice->total, 2) }}</td>
             </tr>
         </table>
     </div>
 
     @if($invoice->notes)
-        <div class="panel">
-            <div class="panel-heading">Notes</div>
+        <div class="notes">
+            <strong>Notas</strong>
             <p>{{ $invoice->notes }}</p>
         </div>
     @endif
-</div>
 
-<footer>
-    <p>Gracias por confiar en nosotros</p>
-    <p>© {{ date('Y') }} {{ $company->name }}</p>
-</footer>
+    <footer>
+        <p>Gracias por confiar en nosotros</p>
+        <p>© {{ date('Y') }} {{ $company->name }} — Factura generada electrónicamente</p>
+    </footer>
+</div>
 </body>
 </html>
