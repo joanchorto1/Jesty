@@ -12,9 +12,28 @@
         body {
             margin: 0;
             padding: 28px;
-            font-family: 'DejaVu Sans', Arial, sans-serif;
-            background: #f1f5f9;
+            font-family: 'Inter', 'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif;
+            background: #f8fafc;
             color: #0f172a;
+            line-height: 1.6;
+        }
+
+        @font-face {
+            font-family: 'Inter';
+            font-style: normal;
+            font-weight: 400;
+            src: local('Inter'), local('Inter-Regular');
+        }
+
+        @font-face {
+            font-family: 'Inter';
+            font-style: normal;
+            font-weight: 600;
+            src: local('Inter'), local('Inter-SemiBold');
+        }
+
+        @page {
+            margin: 24px;
         }
 
         .page {
@@ -24,7 +43,8 @@
             border: 1px solid #e2e8f0;
             border-radius: 24px;
             padding: 32px;
-            box-shadow: 0 20px 55px rgba(15, 23, 42, 0.12);
+            box-shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
+            page-break-inside: avoid;
         }
 
         header {
@@ -59,6 +79,7 @@
             gap: 16px;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             margin-top: 32px;
+            page-break-inside: avoid;
         }
 
         .card {
@@ -66,6 +87,7 @@
             border-radius: 18px;
             padding: 18px 20px;
             box-shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
+            page-break-inside: avoid;
         }
 
         .eyebrow {
@@ -103,6 +125,7 @@
             border-radius: 16px;
             overflow: hidden;
             font-size: 12px;
+            page-break-inside: auto;
         }
 
         thead {
@@ -110,6 +133,7 @@
             color: #1d4ed8;
             text-transform: uppercase;
             letter-spacing: 0.2em;
+            display: table-header-group;
         }
 
         th, td {
@@ -124,6 +148,7 @@
 
         tbody tr {
             border-top: 1px solid #e2e8f0;
+            page-break-inside: avoid;
         }
 
         tbody tr:first-child {
@@ -161,6 +186,7 @@
             display: grid;
             gap: 16px;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            page-break-inside: avoid;
         }
 
         .totals-card {
@@ -169,6 +195,7 @@
             padding: 20px;
             box-shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
             height: 100%;
+            page-break-inside: avoid;
         }
 
         .totals-card dl {
@@ -214,6 +241,7 @@
             color: #475569;
             font-size: 13px;
             line-height: 1.5;
+            page-break-inside: avoid;
         }
 
         .notes h3 {
