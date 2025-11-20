@@ -344,14 +344,17 @@ const filters = reactive({
     end_date: ''
 });
 
-const filteredBudgets = computed(() => props.budgets.filter(budget => {
-    const matchesState = !filters.state || budget.state === filters.state;
-    const matchesClient = !filters.client_id || budget.client_id === filters.client_id;
-    const matchesStartDate = !filters.start_date || new Date(budget.date) >= new Date(filters.start_date);
-    const matchesEndDate = !filters.end_date || new Date(budget.date) <= new Date(filters.end_date);
+const filteredBudgets = computed(() => props.budgets
+    .filter(budget => {
+        const matchesState = !filters.state || budget.state === filters.state;
+        const matchesClient = !filters.client_id || budget.client_id === filters.client_id;
+        const matchesStartDate = !filters.start_date || new Date(budget.date) >= new Date(filters.start_date);
+        const matchesEndDate = !filters.end_date || new Date(budget.date) <= new Date(filters.end_date);
 
-    return matchesState && matchesClient && matchesStartDate && matchesEndDate;
-}));
+        return matchesState && matchesClient && matchesStartDate && matchesEndDate;
+    })
+    .sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0))
+);
 
 const filteredBudgetsTotal = computed(() => filteredBudgets.value.reduce((total, budget) => total + Number(budget.total || 0), 0));
 
