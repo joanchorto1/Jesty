@@ -12,6 +12,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
+        $schedule->command('expenses:generate-recurring')
+            ->dailyAt('02:00')
+            ->description('Genera gastos pendientes de plantillas recurrentes.');
+
         $schedule->command('recurring-invoices:generate')
             ->dailyAt('03:00')
             ->description('Genera facturas pendientes de plantillas recurrentes.');
