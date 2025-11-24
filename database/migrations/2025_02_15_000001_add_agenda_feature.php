@@ -40,13 +40,13 @@ return new class extends Migration
         $roles = DB::table('roles')->pluck('id');
 
         foreach ($roles as $roleId) {
-            $roleHasFeature = DB::table('role_features')
+            $roleHasFeature = DB::table('role_feature')
                 ->where('role_id', $roleId)
                 ->where('feature_id', $featureId)
                 ->exists();
 
             if (!$roleHasFeature) {
-                DB::table('role_features')->insert([
+                DB::table('role_feature')->insert([
                     'role_id' => $roleId,
                     'feature_id' => $featureId,
                     'created_at' => now(),
@@ -62,7 +62,7 @@ return new class extends Migration
 
         if ($featureId) {
             DB::table('plan_feature')->where('feature_id', $featureId)->delete();
-            DB::table('role_features')->where('feature_id', $featureId)->delete();
+            DB::table('role_feature')->where('feature_id', $featureId)->delete();
             DB::table('features')->where('id', $featureId)->delete();
         }
     }
