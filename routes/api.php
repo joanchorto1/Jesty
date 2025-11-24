@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AveroInvoiceController;
+use App\Http\Controllers\Api\AppointmentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -20,3 +21,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::post('invoices/from-avero', AveroInvoiceController::class);
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('appointments/availability', [AppointmentController::class, 'availability'])->name('api.appointments.availability');
+    Route::post('appointments', [AppointmentController::class, 'store'])->name('api.appointments.store');
+});

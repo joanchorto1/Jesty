@@ -94,12 +94,13 @@ Route::middleware('check.company.plan')->group(function () {
     require __DIR__ . '/web/Inventario.php';
     require __DIR__ . '/web/CRM.php';
     require __DIR__ . '/web/Contabilidad.php';
-    require __DIR__ . '/web/TPV.php';
+//    require __DIR__ . '/web/TPV.php';
     require __DIR__ . '/web/Clients.php';
     require __DIR__ . '/web/Facturacion.php';
 //    require __DIR__ . '/web/Proyectos.php';
-    require __DIR__ . '/web/RRHH.php';
+//    require __DIR__ . '/web/RRHH.php';
     require __DIR__ . '/web/Notifications.php';
+    require __DIR__ . '/web/Agenda.php';
 
 
 });
