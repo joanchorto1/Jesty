@@ -34,6 +34,7 @@ class DatabaseSeeder extends Seeder
         ['name' => 'Clientes', 'description' => 'Gestión de clientes'],
         ['name' => 'Administradores', 'description' => 'Gestión de administradores'],
         ['name' => 'RRHH', 'description' => 'Gestión de recursos humanos'],
+        ['name' => 'Agenda', 'description' => 'Planificació de cites i reunions'],
     ];
 
     foreach ($features as $feature) {
@@ -107,12 +108,13 @@ class DatabaseSeeder extends Seeder
     $clientes = Feature::where('name', 'Clientes')->first();
     $administradores = Feature::where('name', 'Administradores')->first();
     $rrhh = Feature::where('name', 'RRHH')->first();
+    $agenda = Feature::where('name', 'Agenda')->first();
 
 
-    $basicPlan->features()->attach([$facturacion->id,$administradores->id,$inventario->id,$clientes->id]);
-    $standardPlan->features()->attach([$facturacion->id, $inventario->id, $crm->id, $clientes->id, $administradores->id]);
-    $premiumPlan->features()->attach([$facturacion->id, $inventario->id, $crm->id, $contabilidad->id, $tpv->id, $clientes->id, $administradores->id, $rrhh->id]);
-    $firstMonthFree->features()->attach([$facturacion->id,$administradores->id,$inventario->id,$clientes->id,$contabilidad->id,$tpv->id,$crm->id,$rrhh->id]);
+    $basicPlan->features()->attach([$facturacion->id,$administradores->id,$inventario->id,$clientes->id,$agenda->id]);
+    $standardPlan->features()->attach([$facturacion->id, $inventario->id, $crm->id, $clientes->id, $administradores->id, $agenda->id]);
+    $premiumPlan->features()->attach([$facturacion->id, $inventario->id, $crm->id, $contabilidad->id, $tpv->id, $clientes->id, $administradores->id, $rrhh->id, $agenda->id]);
+    $firstMonthFree->features()->attach([$facturacion->id,$administradores->id,$inventario->id,$clientes->id,$contabilidad->id,$tpv->id,$crm->id,$rrhh->id,$agenda->id]);
 
     Log::info('Features y planes creados correctamente');
 

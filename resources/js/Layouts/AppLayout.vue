@@ -218,120 +218,19 @@
                                         </div>
                                     </div>
 
-                                    <div v-if="hasFeature('TPV')" class="space-y-3">
-                                        <p class="text-xs uppercase tracking-[0.35em] text-blue-200/60">TPV</p>
-                                        <NewNavLink :href="route('dashboard.tpv')" :active="route().current('dashboard.tpv')">
+                                    <div v-if="hasFeature('Agenda')" class="space-y-3">
+                                        <p class="text-xs uppercase tracking-[0.35em] text-blue-200/60">Agenda</p>
+                                        <NewNavLink :href="route('appointments.index')" :active="route().current('appointments.index')">
                                             <div class="flex items-center gap-3">
                                                 <span class="flex h-7 w-7 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
-                                                    <PayIcon class="icon-accent h-4 w-4" />
+                                                    <MenuCalendarIcon class="icon-accent h-4 w-4" />
                                                 </span>
                                                 <div class="text-left">
-                                                    <p class="text-sm font-semibold">TPV</p>
-                                                    <p class="text-xs text-blue-100/70">Cobraments i punts de venda</p>
+                                                    <p class="text-sm font-semibold">Cites</p>
+                                                    <p class="text-xs text-blue-100/70">Agenda i reunions</p>
                                                 </div>
                                             </div>
-                                            <DropdownIcon class="h-3 w-3 text-blue-100/70" />
                                         </NewNavLink>
-                                        <div v-if="isTpvPage" class="ml-4 space-y-2 border-l border-white/10 pl-4">
-                                            <NewNavLink :href="route('tikets.create')" :active="route().current('tikets.create')" variant="sub">
-                                                <div class="flex items-center gap-3">
-                                                    <span class="flex h-7 w-7 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
-                                                        <MenuPaymentIcon class="icon-accent h-4 w-4 text-blue-100" />
-                                                    </span>
-                                                    <span class="text-sm">Nova venda</span>
-                                                </div>
-                                            </NewNavLink>
-                                            <NewNavLink :href="route('tikets.index')" :active="route().current('tikets.index')" variant="sub">
-                                                <div class="flex items-center gap-3">
-                                                    <span class="flex h-7 w-7 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
-                                                        <MenuInvoiceIcon class="icon-accent h-4 w-4 text-blue-100" />
-                                                    </span>
-                                                    <span class="text-sm">Tickets</span>
-                                                </div>
-                                            </NewNavLink>
-                                            <NewNavLink :href="route('tikets.productReport')" :active="route().current('tikets.productReport')" variant="sub">
-                                                <div class="flex items-center gap-3">
-                                                    <span class="flex h-7 w-7 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
-                                                        <MenuReportIcon class="icon-accent h-4 w-4 text-blue-100" />
-                                                    </span>
-                                                    <span class="text-sm">Informe de productes</span>
-                                                </div>
-                                            </NewNavLink>
-                                        </div>
-                                    </div>
-
-                                    <div v-if="hasFeature('RRHH')" class="space-y-3">
-                                        <p class="text-xs uppercase tracking-[0.35em] text-blue-200/60">Persones</p>
-                                        <NewNavLink :href="route('dashboard.rrhh')" :active="route().current('dashboard.rrhh')">
-                                            <div class="flex items-center gap-3">
-                                                <span class="flex h-7 w-7 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
-                                                    <MenuRRHHIcon class="icon-accent h-4 w-4" />
-                                                </span>
-                                                <div class="text-left">
-                                                    <p class="text-sm font-semibold">RRHH</p>
-                                                    <p class="text-xs text-blue-100/70">Equip, fitxatges i formació</p>
-                                                </div>
-                                            </div>
-                                            <DropdownIcon class="h-3 w-3 text-blue-100/70" />
-                                        </NewNavLink>
-                                        <div v-if="isRRHHPage" class="ml-4 space-y-2 border-l border-white/10 pl-4">
-                                            <NewNavLink :href="route('employees.index')" :active="route().current('employees.index')" variant="sub">
-                                                <div class="flex items-center gap-3">
-                                                    <span class="flex h-7 w-7 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
-                                                        <MenuClientsIcon class="icon-accent h-4 w-4 text-blue-100" />
-                                                    </span>
-                                                    <span class="text-sm">Empleats</span>
-                                                </div>
-                                            </NewNavLink>
-                                            <NewNavLink :href="route('departments.index')" :active="route().current('departments.index')" variant="sub">
-                                                <div class="flex items-center gap-3">
-                                                    <span class="flex h-7 w-7 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
-                                                        <MenuCategoryIcon class="icon-accent h-4 w-4 text-blue-100" />
-                                                    </span>
-                                                    <span class="text-sm">Departaments</span>
-                                                </div>
-                                            </NewNavLink>
-                                            <NewNavLink :href="route('payrolls.index')" :active="route().current('payrolls.index')" variant="sub">
-                                                <div class="flex items-center gap-3">
-                                                    <span class="flex h-7 w-7 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
-                                                        <MenuInvoiceIcon class="icon-accent h-4 w-4 text-blue-100" />
-                                                    </span>
-                                                    <span class="text-sm">Nòmines</span>
-                                                </div>
-                                            </NewNavLink>
-                                            <NewNavLink :href="route('attendances.index')" :active="route().current('attendances.index')" variant="sub">
-                                                <div class="flex items-center gap-3">
-                                                    <span class="flex h-7 w-7 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
-                                                        <MenuAccountingIcon class="icon-accent h-4 w-4 text-blue-100" />
-                                                    </span>
-                                                    <span class="text-sm">Control horari</span>
-                                                </div>
-                                            </NewNavLink>
-                                            <NewNavLink :href="route('performance-reviews.index')" :active="route().current('performance-reviews.index')" variant="sub">
-                                                <div class="flex items-center gap-3">
-                                                    <span class="flex h-7 w-7 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
-                                                        <MenuReportIcon class="icon-accent h-4 w-4 text-blue-100" />
-                                                    </span>
-                                                    <span class="text-sm">Desempeño</span>
-                                                </div>
-                                            </NewNavLink>
-                                            <NewNavLink :href="route('leaves.index')" :active="route().current('leaves.index')" variant="sub">
-                                                <div class="flex items-center gap-3">
-                                                    <span class="flex h-7 w-7 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
-                                                        <MenuExpenseIcon class="icon-accent h-4 w-4 text-blue-100" />
-                                                    </span>
-                                                    <span class="text-sm">Vacances i absències</span>
-                                                </div>
-                                            </NewNavLink>
-                                            <NewNavLink :href="route('trainings.index')" :active="route().current('trainings.index')" variant="sub">
-                                                <div class="flex items-center gap-3">
-                                                    <span class="flex h-7 w-7 items-center justify-center rounded-xl bg-white/10 text-blue-200 transition group-hover:bg-white/20">
-                                                        <AddProductIcon class="icon-accent h-4 w-4 text-blue-100" />
-                                                    </span>
-                                                    <span class="text-sm">Formacions</span>
-                                                </div>
-                                            </NewNavLink>
-                                        </div>
                                     </div>
 
                                     <div v-if="hasFeature('CRM')" class="space-y-3">
@@ -441,23 +340,20 @@ import MenuPaymentIcon from "@/Components/Icons/MenuPaymentIcon.vue";
 import MenuCRMIcon from "@/Components/Icons/MenuCRMIcon.vue";
 import DropdownIcon from "@/Components/Icons/DropdownIcon.vue";
 import NewNavLink from "@/Components/NewNavLink.vue";
-import PayIcon from "@/Components/Icons/PayIcon.vue";
 import AddProductIcon from "@/Components/Icons/AddProductIcon.vue";
 import IncomeIcon from "@/Components/Icons/IncomeIcon.vue";
 import { computed } from "vue";
 import { usePage } from "@inertiajs/vue3";
-import MenuRRHHIcon from "@/Components/Icons/MenuRRHHIcon.vue";
 import MenuHomeIcon from "@/Components/Icons/MenuHomeIcon.vue";
+import MenuCalendarIcon from "@/Components/Icons/MenuCalendarIcon.vue";
 
 const features = computed(() => usePage().props.features);
 
 const hasFeature = (featureName) => features.value?.some((feature) => feature.name === featureName);
 
-const isRRHHPage = route().current('dashboard.rrhh') || route().current('employees.index') || route().current('departments.index') || route().current('payrolls.index') || route().current('attendances.index') || route().current('performance-reviews.index') || route().current('leaves.index') || route().current('trainings.index');
 const isBillingPage = route().current('dashboard.billing') || route().current('budgets.index') || route().current('invoices.index') || route().current('parts.index') || route().current('parts.create');
 const isProductsPage = route().current('products.index') || route().current('categories.index') || route().current('dashboard.products') || route().current('suppliers.index') || route().current('stockEntries.index');
 const isAccountingPage = route().current('expenses.index') || route().current('expenses.report') || route().current('dashboard.accounting') || route().current('expenseCategories.index') || route().current('paymentMethods.index') || route().current('incomes.index');
-const isTpvPage = route().current('dashboard.tpv') || route().current('tikets.create') || route().current('tikets.index') || route().current('tikets.productReport');
 const isCrmPage = route().current('dashboard.crm') || route().current('leads.index') || route().current('opportunities.index') || route().current('tasks.index') || route().current('activities.index') || route().current('notes.index') || route().current('leads.create') || route().current('opportunities.create') || route().current('tasks.create') || route().current('activities.create') || route().current('notes.create') || route().current('leads.edit') || route().current('opportunities.edit') || route().current('tasks.edit') || route().current('activities.edit') || route().current('notes.edit') || route().current('leads.show') || route().current('opportunities.show') || route().current('tasks.show') || route().current('activities.show') || route().current('notes.show');
 const isAdminPage = route().current('dashboard.admin') || route().current('users.index') || route().current('roles.index') || route().current('permissions.index') || route().current('users.create') || route().current('roles.create') || route().current('permissions.create') || route().current('users.edit') || route().current('roles.edit') || route().current('permissions.edit') || route().current('users.show') || route().current('roles.show') || route().current('permissions.show') || route().current('users.destroy') || route().current('roles.destroy') || route().current('permissions.destroy') || route().current('user_tasks.index') || route().current('user_tasks.adminCreate') || route().current('user_tasks.adminEdit') || route().current('user_tasks.destroy');
 </script>
