@@ -144,7 +144,7 @@ class AveroInvoiceController extends Controller
                     'name' => $invoiceNumber,
                     'number' => $invoiceNumber,
                     'external_reference' => $externalReference,
-                    'state' => 'pending',
+                    'state' => 'paid',
                     'base_imponible' => $summary['base_imponible'],
                     'iva' => $totals['effectiveRate'],
                     'monto_iva' => $summary['total_iva'],
