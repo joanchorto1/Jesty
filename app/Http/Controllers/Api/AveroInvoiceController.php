@@ -122,7 +122,7 @@ class AveroInvoiceController extends Controller
 
                 Log::info('Calculated totals for Avero invoice import', ['totals' => $totals]);
 
-                $summary = $validated['summary'];
+                $summary = $this->normalizeSummaryWithIrpf($validated['summary']);
                 $invoiceNumber = DocumentNumberGenerator::generate(
                     Invoice::class,
                     'number',
@@ -149,8 +149,8 @@ class AveroInvoiceController extends Controller
                     'iva' => $totals['effectiveRate'],
                     'monto_iva' => $summary['total_iva'],
                     'total' => $summary['total'],
-                    'irpf_tax' => $summary['irpf_tax'] ?? 0,
-                    'total_irpf' => $summary['total_irpf'] ?? 0,
+                    'irpf_tax' => $summary['irpf_tax'],
+                    'total_irpf' => $summary['total_irpf'],
                     'notes' => $validated['notes'] ?? null,
                 ]);
                 Log::info('Invoice created from Avero payload', ['invoice_id' => $invoice->id]);
@@ -298,6 +298,33 @@ class AveroInvoiceController extends Controller
         ]);
 
         return $product;
+    }
+
+    protected function normalizeSummaryWithIrpf(array $summary): array
+    {
+        $baseImponible = (float) ($summary['base_imponible'] ?? 0);
+        $totalIva = (float) ($summary['total_iva'] ?? 0);
+
+        $irpfRate = isset($summary['irpf_tax']) ? (float) $summary['irpf_tax'] : 0.0;
+        if ($irpfRate <= 0) {
+            $irpfRate = 15.0;
+        }
+
+        $totalIrpf = isset($summary['total_irpf'])
+            ? (float) $summary['total_irpf']
+            : round($baseImponible * $irpfRate / 100, 2);
+
+        $total = isset($summary['total'])
+            ? (float) $summary['total']
+            : round($baseImponible + $totalIva - $totalIrpf, 2);
+
+        return array_merge($summary, [
+            'base_imponible' => $baseImponible,
+            'total_iva' => $totalIva,
+            'irpf_tax' => $irpfRate,
+            'total_irpf' => $totalIrpf,
+            'total' => $total,
+        ]);
     }
 
     protected function ensureInvoicePdf(Invoice $invoice): array
