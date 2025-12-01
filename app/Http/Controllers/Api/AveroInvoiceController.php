@@ -331,6 +331,20 @@ class AveroInvoiceController extends Controller
     {
         $invoice->loadMissing('client', 'company', 'items.product');
 
+        if (($invoice->irpf_tax ?? 0) <= 0 || is_null($invoice->total_irpf)) {
+            $baseImponible = (float) ($invoice->base_imponible ?? 0);
+            $ivaAmount = (float) ($invoice->monto_iva ?? 0);
+
+            $irpfRate = max((float) ($invoice->irpf_tax ?? 0), 15.0);
+            $totalIrpf = $invoice->total_irpf ?? round($baseImponible * $irpfRate / 100, 2);
+
+            $invoice->forceFill([
+                'irpf_tax' => $irpfRate,
+                'total_irpf' => $totalIrpf,
+                'total' => $invoice->total ?? round($baseImponible + $ivaAmount - $totalIrpf, 2),
+            ])->save();
+        }
+
         $disk = Storage::disk('public');
         $shouldGenerate = empty($invoice->pdf_path) || ! $disk->exists($invoice->pdf_path);
 
