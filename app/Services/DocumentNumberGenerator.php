@@ -30,20 +30,20 @@ class DocumentNumberGenerator
                         ->lockForUpdate()
                         ->first();
 
+                    $latestDocument = $modelClass::where('company_id', $companyId)
+                        ->where($numberColumn, 'like', $pattern . '%')
+                        ->lockForUpdate()
+                        ->orderBy($numberColumn, 'desc')
+                        ->first();
+
+                    $lastDocumentSequence = 0;
+
+                    if ($latestDocument && preg_match('/(\d+)$/', $latestDocument->{$numberColumn}, $matches)) {
+                        $lastDocumentSequence = (int) $matches[1];
+                    }
+
                     if (! $counter) {
-                        $latestDocument = $modelClass::where('company_id', $companyId)
-                            ->where($numberColumn, 'like', $pattern . '%')
-                            ->lockForUpdate()
-                            ->orderBy($numberColumn, 'desc')
-                            ->first();
-
-                        $lastSequence = 0;
-
-                        if ($latestDocument && preg_match('/(\d+)$/', $latestDocument->{$numberColumn}, $matches)) {
-                            $lastSequence = (int) $matches[1];
-                        }
-
-                        $nextSequence = $lastSequence + 1;
+                        $nextSequence = $lastDocumentSequence + 1;
 
                         DB::table('document_number_counters')->insert([
                             'company_id' => $companyId,
@@ -54,7 +54,8 @@ class DocumentNumberGenerator
                             'updated_at' => now(),
                         ]);
                     } else {
-                        $nextSequence = $counter->last_sequence + 1;
+                        $lastSequence = max($counter->last_sequence, $lastDocumentSequence);
+                        $nextSequence = $lastSequence + 1;
 
                         DB::table('document_number_counters')
                             ->where('id', $counter->id)
