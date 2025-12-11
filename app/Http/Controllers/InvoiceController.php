@@ -22,6 +22,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
@@ -87,18 +88,20 @@ class InvoiceController extends Controller
                 'state' => 'required|string|in:pagado,no_pagado',
             ]);
 
-            $issueDate = Carbon::parse($request->input('date'));
-            $data = $request->except('name');
-            $data['company_id'] = Auth::user()->company_id;
-            $data['name'] = DocumentNumberGenerator::generate(
-                Invoice::class,
-                'name',
-                'FA',
-                Auth::user()->company_id,
-                $issueDate
-            );
+            DB::transaction(function () use ($request) {
+                $issueDate = Carbon::parse($request->input('date'));
+                $data = $request->except('name');
+                $data['company_id'] = Auth::user()->company_id;
+                $data['name'] = DocumentNumberGenerator::generate(
+                    Invoice::class,
+                    'name',
+                    'FA',
+                    Auth::user()->company_id,
+                    $issueDate
+                );
 
-            Invoice::create($data);
+                Invoice::create($data);
+            });
 
             return response()->json(['status' => 'success']);
         } catch (\Exception $e) {
@@ -153,78 +156,91 @@ class InvoiceController extends Controller
         $template = null;
         $isRecurring = $request->boolean('is_recurring');
 
-        if ($isRecurring) {
-            $firstIssueOn = Carbon::parse($request->input('first_issue_on', $validated['date']));
-            $endsAt = $request->filled('ends_at') ? Carbon::parse($request->input('ends_at')) : null;
-            $status = $request->input('recurring_status', 'active');
-            $template = RecurringInvoice::create([
-                'company_id' => $companyId,
-                'client_id' => $validated['client_id'],
-                'status' => $status,
-                'invoice_state' => $request->input('recurring_invoice_state', $validated['state']),
-                'frequency_unit' => $request->input('frequency_unit'),
-                'frequency_interval' => (int) $request->input('frequency_interval', 1),
-                'first_issue_on' => $firstIssueOn->toDateString(),
-                'next_run_at' => $firstIssueOn->copy()->startOfDay(),
-                'ends_at' => $endsAt,
-                'expected_total' => $totals['total'],
-                'active' => $status === 'active',
-            ]);
-
-            foreach ($itemsPayload as $item) {
-                RecurringInvoiceItem::create([
-                    'recurring_invoice_id' => $template->id,
-                    'product_id' => $item['product_id'],
-                    'quantity' => $item['quantity'],
-                    'unit_price' => $item['unit_price'],
-                    'discount' => $item['discount'],
-                    'iva' => $item['iva'],
+        DB::transaction(function () use (
+            &$invoice,
+            &$template,
+            $generator,
+            $isRecurring,
+            $request,
+            $validated,
+            $companyId,
+            $issueDate,
+            $itemsPayload,
+            $totals
+        ) {
+            if ($isRecurring) {
+                $firstIssueOn = Carbon::parse($request->input('first_issue_on', $validated['date']));
+                $endsAt = $request->filled('ends_at') ? Carbon::parse($request->input('ends_at')) : null;
+                $status = $request->input('recurring_status', 'active');
+                $template = RecurringInvoice::create([
+                    'company_id' => $companyId,
+                    'client_id' => $validated['client_id'],
+                    'status' => $status,
+                    'invoice_state' => $request->input('recurring_invoice_state', $validated['state']),
+                    'frequency_unit' => $request->input('frequency_unit'),
+                    'frequency_interval' => (int) $request->input('frequency_interval', 1),
+                    'first_issue_on' => $firstIssueOn->toDateString(),
+                    'next_run_at' => $firstIssueOn->copy()->startOfDay(),
+                    'ends_at' => $endsAt,
+                    'expected_total' => $totals['total'],
+                    'active' => $status === 'active',
                 ]);
-            }
 
-            if ($request->boolean('generate_first_invoice') && $template->status === 'active') {
-                $invoice = $generator->generate($template, $firstIssueOn);
-            }
-        } else {
-            $invoiceData = [
-                'recurring_invoice_id' => null,
-                'company_id' => $companyId,
-                'client_id' => $validated['client_id'],
-                'date' => $issueDate->toDateString(),
-                'state' => $validated['state'],
-                'base_imponible' => $totals['base'],
-                'monto_iva' => $totals['tax'],
-                'total' => $totals['total'],
-                'iva' => $totals['effectiveRate'],
-                'name' => DocumentNumberGenerator::generate(
-                    Invoice::class,
-                    'name',
-                    'FA',
-                    $companyId,
-                    $issueDate
-                ),
-            ];
-
-            $invoice = Invoice::create($invoiceData);
-
-            foreach ($itemsPayload as $item) {
-                $lineBase = $item['quantity'] * $item['unit_price'];
-                if ($item['discount'] > 0) {
-                    $lineBase -= ($lineBase * $item['discount']) / 100;
+                foreach ($itemsPayload as $item) {
+                    RecurringInvoiceItem::create([
+                        'recurring_invoice_id' => $template->id,
+                        'product_id' => $item['product_id'],
+                        'quantity' => $item['quantity'],
+                        'unit_price' => $item['unit_price'],
+                        'discount' => $item['discount'],
+                        'iva' => $item['iva'],
+                    ]);
                 }
-                $lineBase = round($lineBase, 2);
 
-                InvoiceItem::create([
-                    'invoice_id' => $invoice->id,
-                    'product_id' => $item['product_id'],
-                    'quantity' => $item['quantity'],
-                    'unit_price' => $item['unit_price'],
-                    'discount' => $item['discount'],
-                    'total' => $lineBase,
-                    'iva' => $item['iva'],
-                ]);
+                if ($request->boolean('generate_first_invoice') && $template->status === 'active') {
+                    $invoice = $generator->generate($template, $firstIssueOn);
+                }
+            } else {
+                $invoiceData = [
+                    'recurring_invoice_id' => null,
+                    'company_id' => $companyId,
+                    'client_id' => $validated['client_id'],
+                    'date' => $issueDate->toDateString(),
+                    'state' => $validated['state'],
+                    'base_imponible' => $totals['base'],
+                    'monto_iva' => $totals['tax'],
+                    'total' => $totals['total'],
+                    'iva' => $totals['effectiveRate'],
+                    'name' => DocumentNumberGenerator::generate(
+                        Invoice::class,
+                        'name',
+                        'FA',
+                        $companyId,
+                        $issueDate
+                    ),
+                ];
+
+                $invoice = Invoice::create($invoiceData);
+
+                foreach ($itemsPayload as $item) {
+                    $lineBase = $item['quantity'] * $item['unit_price'];
+                    if ($item['discount'] > 0) {
+                        $lineBase -= ($lineBase * $item['discount']) / 100;
+                    }
+                    $lineBase = round($lineBase, 2);
+
+                    InvoiceItem::create([
+                        'invoice_id' => $invoice->id,
+                        'product_id' => $item['product_id'],
+                        'quantity' => $item['quantity'],
+                        'unit_price' => $item['unit_price'],
+                        'discount' => $item['discount'],
+                        'total' => $lineBase,
+                        'iva' => $item['iva'],
+                    ]);
+                }
             }
-        }
+        });
 
         if ($invoice) {
             $invoice->load('items');
@@ -428,36 +444,41 @@ class InvoiceController extends Controller
             $budget->save();
             // Crear la factura con los datos del presupuesto
             $issueDate = Carbon::now();
-            $invoice = Invoice::create([
-                'company_id' => $budget->company_id,
-                'client_id' => $budget->client_id,
-                'date' => $issueDate,
-                'total' => $budget->total,
-                'state' => 'pending',
-                'monto_iva' => $budget->monto_iva,
-                'base_imponible' => $budget->base_imponible,
-                'iva' => $budget->iva,
-                'name' => DocumentNumberGenerator::generate(
-                    Invoice::class,
-                    'name',
-                    'FA',
-                    $budget->company_id,
-                    $issueDate
-                ),
-            ]);
 
-            // Copiar los ítems del presupuesto a los ítems de la factura
-            $budgetItems = BudgetItem::where('budget_id', $budget->id)->get();
-            foreach ($budgetItems as $item) {
-                InvoiceItem::create([
-                    'invoice_id' => $invoice->id,
-                    'product_id' => $item->product_id,
-                    'quantity' => $item->quantity,
-                    'unit_price' => $item->unit_price,
-                    'discount' => $item->discount,
-                    'total' => $item->total,
+            $invoice = DB::transaction(function () use ($budget, $issueDate) {
+                $invoice = Invoice::create([
+                    'company_id' => $budget->company_id,
+                    'client_id' => $budget->client_id,
+                    'date' => $issueDate,
+                    'total' => $budget->total,
+                    'state' => 'pending',
+                    'monto_iva' => $budget->monto_iva,
+                    'base_imponible' => $budget->base_imponible,
+                    'iva' => $budget->iva,
+                    'name' => DocumentNumberGenerator::generate(
+                        Invoice::class,
+                        'name',
+                        'FA',
+                        $budget->company_id,
+                        $issueDate
+                    ),
                 ]);
-            }
+
+                // Copiar los ítems del presupuesto a los ítems de la factura
+                $budgetItems = BudgetItem::where('budget_id', $budget->id)->get();
+                foreach ($budgetItems as $item) {
+                    InvoiceItem::create([
+                        'invoice_id' => $invoice->id,
+                        'product_id' => $item->product_id,
+                        'quantity' => $item->quantity,
+                        'unit_price' => $item->unit_price,
+                        'discount' => $item->discount,
+                        'total' => $item->total,
+                    ]);
+                }
+
+                return $invoice;
+            });
             $InvoiceItem = InvoiceItem::where('invoice_id', $invoice->id)->get();
 
             //Comprobar si se ha creado la factura
@@ -475,36 +496,40 @@ class InvoiceController extends Controller
     {
         //crear nueva factura a partir de la que recivimos
         $copyDate = Carbon::parse($invoice->date);
-        $newInvoice= Invoice::create([
-                'name' => DocumentNumberGenerator::generate(
-                    Invoice::class,
-                    'name',
-                    'FA',
-                    $invoice->company_id,
-                    $copyDate
-                ),
-                'client_id'=>$invoice->client_id,
-                'date'=>$invoice->date,
-                'base_imponible'=>$invoice->base_imponible,
-                'iva'=>$invoice->iva,
-                'total'=>$invoice->total,
-                'state'=>$invoice->state,
-                'company_id'=>$invoice->company_id,
-                'monto_iva'=>$invoice->monto_iva
-            ]);
+        $newInvoice = DB::transaction(function () use ($invoice, $copyDate) {
+            $newInvoice = Invoice::create([
+                    'name' => DocumentNumberGenerator::generate(
+                        Invoice::class,
+                        'name',
+                        'FA',
+                        $invoice->company_id,
+                        $copyDate
+                    ),
+                    'client_id'=>$invoice->client_id,
+                    'date'=>$invoice->date,
+                    'base_imponible'=>$invoice->base_imponible,
+                    'iva'=>$invoice->iva,
+                    'total'=>$invoice->total,
+                    'state'=>$invoice->state,
+                    'company_id'=>$invoice->company_id,
+                    'monto_iva'=>$invoice->monto_iva
+                ]);
 
-        //copiar los items de la factura a la nueva factura
-        $invoiceItems = InvoiceItem::where('invoice_id', $invoice->id)->get();
-        foreach ($invoiceItems as $item) {
-            InvoiceItem::create([
-                'invoice_id' => $newInvoice->id,
-                'product_id' => $item->product_id,
-                'quantity' => $item->quantity,
-                'unit_price' => $item->unit_price,
-                'total' => $item->total,
-            ]);
+            //copiar los items de la factura a la nueva factura
+            $invoiceItems = InvoiceItem::where('invoice_id', $invoice->id)->get();
+            foreach ($invoiceItems as $item) {
+                InvoiceItem::create([
+                    'invoice_id' => $newInvoice->id,
+                    'product_id' => $item->product_id,
+                    'quantity' => $item->quantity,
+                    'unit_price' => $item->unit_price,
+                    'total' => $item->total,
+                ]);
 
-        }
+            }
+
+            return $newInvoice;
+        });
 
         if ($newInvoice->state == 'paid') {
             $this->createIncomeFromInvoice($newInvoice);
