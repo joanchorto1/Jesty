@@ -23,13 +23,6 @@ class DocumentNumberGenerator
         while ($attempts < 5) {
             try {
                 return DB::transaction(function () use ($modelClass, $numberColumn, $companyId, $prefix, $year, $yearSuffix, $pattern) {
-                    $counter = DB::table('document_number_counters')
-                        ->where('company_id', $companyId)
-                        ->where('year', $year)
-                        ->where('prefix', $prefix)
-                        ->lockForUpdate()
-                        ->first();
-
                     $latestDocument = $modelClass::where('company_id', $companyId)
                         ->where($numberColumn, 'like', $pattern . '%')
                         ->lockForUpdate()
@@ -42,28 +35,21 @@ class DocumentNumberGenerator
                         $lastDocumentSequence = (int) $matches[1];
                     }
 
-                    if (! $counter) {
-                        $nextSequence = $lastDocumentSequence + 1;
+                    $nextSequence = $lastDocumentSequence + 1;
 
-                        DB::table('document_number_counters')->insert([
-                            'company_id' => $companyId,
-                            'year' => $year,
-                            'prefix' => $prefix,
-                            'last_sequence' => $nextSequence,
-                            'created_at' => now(),
-                            'updated_at' => now(),
-                        ]);
-                    } else {
-                        $lastSequence = max($counter->last_sequence, $lastDocumentSequence);
-                        $nextSequence = $lastSequence + 1;
-
-                        DB::table('document_number_counters')
-                            ->where('id', $counter->id)
-                            ->update([
+                    DB::table('document_number_counters')
+                        ->updateOrInsert(
+                            [
+                                'company_id' => $companyId,
+                                'year' => $year,
+                                'prefix' => $prefix,
+                            ],
+                            [
                                 'last_sequence' => $nextSequence,
                                 'updated_at' => now(),
-                            ]);
-                    }
+                                'created_at' => now(),
+                            ]
+                        );
 
                     return sprintf('%s-%s-%04d', $prefix, $yearSuffix, $nextSequence);
                 });
