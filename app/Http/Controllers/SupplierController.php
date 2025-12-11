@@ -7,6 +7,7 @@ use App\Models\StockEntry;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class SupplierController extends Controller
@@ -33,10 +34,17 @@ class SupplierController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('suppliers')->where(fn ($query) => $query->where('company_id', Auth::user()->company_id)),
+            ],
             'email' => 'nullable|email',
             'phone' => 'nullable|string|max:255',
             'address' => 'nullable|string|max:255',
+        ], [
+            'name.unique' => 'Ya existe un proveedor con este nombre en la empresa.',
         ]);
 
         Supplier::create(array_merge($request->all(), [
@@ -58,10 +66,19 @@ class SupplierController extends Controller
     {
 
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('suppliers')
+                    ->where(fn ($query) => $query->where('company_id', $supplier->company_id))
+                    ->ignore($supplier->id),
+            ],
             'email' => 'nullable|email',
             'phone' => 'nullable|string|max:255',
             'address' => 'nullable|string|max:255',
+        ], [
+            'name.unique' => 'Ya existe un proveedor con este nombre en la empresa.',
         ]);
 
         $supplier->update($request->all());
