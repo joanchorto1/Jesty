@@ -29,7 +29,7 @@ const updateValue = (event) => {
 <template>
     <select
         ref="select"
-        class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+        class="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
         :value="modelValue"
         :disabled="disabled"
         @input="updateValue"

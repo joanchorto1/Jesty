@@ -1,9 +1,9 @@
 <template>
     <div
         :class="[
-            'rounded-2xl border shadow-lg transition-transform duration-200',
-            bordered ? 'border-white/15' : 'border-slate-200/50',
-            gradient ? 'bg-white/10 backdrop-blur text-white' : 'bg-white text-slate-900',
+            'rounded-2xl border transition-transform duration-200',
+            bordered ? 'border-slate-200' : 'border-slate-200',
+            gradient ? 'bg-slate-50 text-slate-900' : 'bg-white text-slate-900',
             padding,
         ]"
     >
@@ -48,7 +48,7 @@ const props = defineProps({
     },
 });
 
-const subtitleClass = computed(() => props.gradient ? 'text-fuchsia-200' : 'text-slate-500');
-const valueClass = computed(() => props.gradient ? 'text-white' : 'text-slate-900');
-const descriptionClass = computed(() => props.gradient ? 'text-fuchsia-200' : 'text-slate-500');
+const subtitleClass = computed(() => props.gradient ? 'text-slate-500' : 'text-slate-500');
+const valueClass = computed(() => props.gradient ? 'text-slate-900' : 'text-slate-900');
+const descriptionClass = computed(() => props.gradient ? 'text-slate-500' : 'text-slate-500');
 </script>
