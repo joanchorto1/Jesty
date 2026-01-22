@@ -6,11 +6,11 @@
     <title>Etiqueta de Producto</title>
     <style>
         @page {
-            size: 60mm 30mm; /* Tamaño de etiqueta (ajústalo según tu impresora) */
+            size: 60mm 30mm;
             margin: 0;
         }
         body {
-            font-family: Arial, sans-serif;
+            font-family: "Helvetica Neue", Arial, sans-serif;
             text-align: center;
             width: 55mm;
             height: 30mm;
@@ -20,28 +20,30 @@
             flex-direction: column;
             justify-content: center;
             align-content: center;
-
+            color: #111827;
+            background: #ffffff;
         }
         .container {
-            border: 1px dashed black; /* Guía de impresión (quitar en producción) */
-            padding: 2px;
+            border: 1px solid #e5e7eb;
+            padding: 4px;
         }
         h2 {
-            font-size: 12px;
+            font-size: 11px;
             margin: 0;
-            font-weight: bold;
+            font-weight: 600;
         }
         p {
-            font-size: 10px;
+            font-size: 9px;
             margin: 2px 0;
+            color: #6b7280;
         }
         .barcode {
-            margin-top: 3px;
+            margin-top: 4px;
             text-align: center;
         }
         .barcode img {
             width: 100%;
-            max-height: 20px; /* Ajustar la altura según necesidad */
+            max-height: 20px;
         }
     </style>
 </head>

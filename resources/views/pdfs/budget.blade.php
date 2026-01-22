@@ -14,9 +14,9 @@
         body {
             font-family: 'DejaVu Sans', Arial, sans-serif;
             font-size: 10px;
-            color: #2f3542;
-            background-color: #f5f6fa;
-            margin: 24px;
+            color: #111827;
+            background-color: #f9fafb;
+            margin: 32px;
         }
 
         header, footer {
@@ -28,20 +28,25 @@
             margin: 4px 0;
         }
 
+        h1 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
         .container {
             width: 100%;
             max-width: 850px;
             margin: 0 auto;
             background: #ffffff;
-            padding: 24px;
+            padding: 28px;
             border-radius: 12px;
-            box-shadow: 0 6px 24px rgba(15, 31, 53, 0.08);
+            border: 1px solid #e5e7eb;
         }
 
         .details {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 16px;
+            gap: 20px;
             margin-bottom: 24px;
         }
 
@@ -50,9 +55,8 @@
         }
 
         .panel {
-            border: 1px solid #e5e9f2;
-            border-left: 4px solid #2563eb;
-            padding: 16px;
+            border: 1px solid #e5e7eb;
+            padding: 14px;
             border-radius: 10px;
             background: #fff;
         }
@@ -60,10 +64,10 @@
         .panel-heading {
             font-weight: 600;
             margin-bottom: 8px;
-            color: #1f2937;
+            color: #6b7280;
             text-transform: uppercase;
-            letter-spacing: 0.08em;
-            font-size: 9px;
+            letter-spacing: 0.12em;
+            font-size: 8px;
         }
 
         table {
@@ -74,16 +78,16 @@
 
         th, td {
             padding: 10px 12px;
-            border-bottom: 1px solid #e5e9f2;
+            border-bottom: 1px solid #e5e7eb;
             text-align: left;
         }
 
         th {
             font-weight: 600;
-            font-size: 9px;
+            font-size: 8px;
             text-transform: uppercase;
-            letter-spacing: 0.06em;
-            color: #2563eb;
+            letter-spacing: 0.1em;
+            color: #6b7280;
             background: transparent;
         }
 
@@ -97,7 +101,7 @@
         }
 
         .totals table th {
-            color: #4b5563;
+            color: #6b7280;
             width: 55%;
         }
 
