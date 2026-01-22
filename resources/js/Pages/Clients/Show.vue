@@ -27,16 +27,16 @@
                 </div>
 
                 <div class="space-y-10">
-                <Panel title="Datos generales" description="Información de contacto y datos fiscales del cliente.">
-                    <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-6">
-                        <div v-for="detail in clientDetails" :key="detail.label" class="rounded-2xl border border-slate-100 bg-slate-50 px-5 py-4">
-                            <dt class="text-xs uppercase tracking-[0.25em] text-slate-400">{{ detail.label }}</dt>
-                            <dd class="mt-2 text-base font-medium text-slate-700">{{ detail.value || '—' }}</dd>
-                        </div>
-                    </dl>
-                </Panel>
+                    <Panel title="Datos generales" description="Información de contacto y datos fiscales del cliente.">
+                        <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-6">
+                            <div v-for="detail in clientDetails" :key="detail.label" class="rounded-2xl border border-slate-100 bg-slate-50 px-5 py-4">
+                                <dt class="text-xs uppercase tracking-[0.25em] text-slate-400">{{ detail.label }}</dt>
+                                <dd class="mt-2 text-base font-medium text-slate-700">{{ detail.value || '—' }}</dd>
+                            </div>
+                        </dl>
+                    </Panel>
 
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     <Panel title="Presupuestos" description="Filtra los presupuestos por estado o rango de fechas.">
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                             <div>
@@ -120,6 +120,7 @@
                             </template>
                         </DataTable>
                     </Panel>
+                    </div>
                 </div>
             </div>
         </div>
