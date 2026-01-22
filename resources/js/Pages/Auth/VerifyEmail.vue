@@ -23,21 +23,21 @@ const verificationLinkSent = computed(() => props.status === 'verification-link-
 
     <AuthenticationCard>
         <template #logo>
-            <div class="flex flex-col items-center gap-4 text-slate-200">
+            <div class="flex flex-col items-center gap-4 text-slate-700">
                 <AuthenticationCardLogo />
-                <p class="text-xs font-semibold uppercase tracking-[0.4em] text-sky-200/80">Verificació corporativa</p>
+                <p class="text-xs font-semibold uppercase tracking-[0.4em] text-slate-400">Verificació corporativa</p>
             </div>
         </template>
 
-        <div class="space-y-6 text-slate-200">
+        <div class="space-y-6 text-slate-700">
             <div class="space-y-3 text-center">
-                <h1 class="text-2xl font-semibold">Confirma el teu correu JCT</h1>
-                <p class="text-sm leading-relaxed text-slate-300">
+                <h1 class="text-2xl font-semibold text-slate-800">Confirma el teu correu JCT</h1>
+                <p class="text-sm leading-relaxed text-slate-500">
                     Hem enviat un enllaç de verificació al teu correu corporatiu. Revisa la safata d'entrada i segueix les instruccions per validar l'accés.
                 </p>
             </div>
 
-            <div v-if="verificationLinkSent" class="rounded-xl border border-sky-400/40 bg-sky-500/10 px-4 py-3 text-sm font-medium text-sky-200">
+            <div v-if="verificationLinkSent" class="rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm font-medium text-sky-700">
                 Hem reenviat l'enllaç de verificació a l'adreça registrada.
             </div>
 
@@ -49,7 +49,7 @@ const verificationLinkSent = computed(() => props.status === 'verification-link-
                 <div class="flex flex-wrap justify-center gap-4 text-sm font-medium">
                     <Link
                         :href="route('profile.show')"
-                        class="text-slate-200 underline-offset-4 transition hover:text-sky-200 hover:underline"
+                        class="text-slate-500 underline-offset-4 transition hover:text-sky-600 hover:underline"
                     >
                         Actualitzar dades de perfil
                     </Link>
@@ -58,7 +58,7 @@ const verificationLinkSent = computed(() => props.status === 'verification-link-
                         :href="route('logout')"
                         method="post"
                         as="button"
-                        class="text-slate-200 underline-offset-4 transition hover:text-sky-200 hover:underline"
+                        class="text-slate-500 underline-offset-4 transition hover:text-sky-600 hover:underline"
                     >
                         Tancar sessió
                     </Link>

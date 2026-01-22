@@ -9,9 +9,9 @@
                     </th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-slate-100 text-sm text-slate-600">
+            <tbody class="divide-y divide-slate-200 text-sm text-slate-600">
                 <template v-if="items.length">
-                    <tr v-for="item in items" :key="resolveKey(item)" class="hover:bg-slate-50/80 transition" tabindex="0">
+                    <tr v-for="item in items" :key="resolveKey(item)" class="transition hover:bg-slate-50" tabindex="0">
                         <slot name="row" :item="item" />
                     </tr>
                 </template>

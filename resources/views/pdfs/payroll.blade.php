@@ -8,27 +8,29 @@
         body {
             font-family: 'DejaVu Sans', Arial, sans-serif;
             margin: 0;
-            padding: 24px;
-            background-color: #f5f6fa;
-            color: #2f3542;
+            padding: 32px;
+            background-color: #f9fafb;
+            color: #111827;
+            line-height: 1.6;
         }
         .container {
-            width: 90%;
+            width: 100%;
+            max-width: 860px;
             margin: 0 auto;
             background: #fff;
             padding: 32px;
             border-radius: 12px;
-            box-shadow: 0 6px 24px rgba(15, 31, 53, 0.08);
+            border: 1px solid #e5e7eb;
         }
         .header, .footer {
             text-align: center;
-            margin: 24px 0;
+            margin: 20px 0;
         }
         .header h1 {
             margin: 0;
-            color: #1f2937;
-            font-size: 20px;
-            letter-spacing: 0.04em;
+            color: #111827;
+            font-size: 18px;
+            letter-spacing: 0.02em;
         }
         .header p {
             margin: 4px 0;
@@ -36,30 +38,30 @@
         }
         .section-title {
             margin-top: 24px;
-            padding-left: 12px;
-            border-left: 4px solid #2563eb;
-            font-size: 12px;
+            padding-left: 10px;
+            border-left: 2px solid #e5e7eb;
+            font-size: 10px;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.08em;
-            color: #1f2937;
+            color: #6b7280;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin: 16px 0 0;
+            margin: 12px 0 0;
         }
         table th, table td {
-            border-bottom: 1px solid #e5e9f2;
+            border-bottom: 1px solid #e5e7eb;
             padding: 10px 12px;
             text-align: left;
         }
         table th {
             font-weight: 600;
-            font-size: 10px;
+            font-size: 9px;
             text-transform: uppercase;
-            letter-spacing: 0.06em;
-            color: #2563eb;
+            letter-spacing: 0.08em;
+            color: #6b7280;
             background: transparent;
         }
         table tr:last-child td {
@@ -207,5 +209,3 @@
 </div>
 </body>
 </html>
-
-

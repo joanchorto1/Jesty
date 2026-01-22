@@ -1,10 +1,10 @@
 <template>
     <div :class="wrapperClass">
         <p v-if="eyebrow" class="text-xs uppercase tracking-[0.3em]" :class="eyebrowClass">{{ eyebrow }}</p>
-        <p class="text-3xl font-semibold mt-2">
+        <p class="mt-2 text-3xl font-semibold">
             <slot name="value">{{ value }}</slot>
         </p>
-        <p v-if="description || hasDescriptionSlot" class="text-sm mt-3" :class="descriptionClass">
+        <p v-if="description || hasDescriptionSlot" class="mt-3 text-sm" :class="descriptionClass">
             <slot name="description">{{ description }}</slot>
         </p>
     </div>
@@ -41,6 +41,7 @@ const variantStyles = {
     light: {
         wrapper: 'rounded-2xl border border-slate-200/80 bg-white/80 p-5 text-slate-800 shadow-sm',
         eyebrow: 'text-emerald-500',
+
         description: 'text-slate-500',
     },
 };

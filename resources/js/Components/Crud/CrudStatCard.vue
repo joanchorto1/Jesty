@@ -20,8 +20,8 @@ const props = defineProps({
 </script>
 
 <template>
-    <div class="flex items-center gap-5 rounded-3xl border border-slate-200/60 bg-white/80 p-5 shadow-sm backdrop-blur">
-        <div v-if="icon" class="flex h-12 w-12 items-center justify-center rounded-2xl" :class="iconBackground">
+    <div class="flex items-center gap-5 rounded-2xl border border-slate-200 bg-white p-5">
+        <div v-if="icon" class="flex h-11 w-11 items-center justify-center rounded-xl" :class="iconBackground">
             <component :is="icon" class="h-6 w-6" />
         </div>
         <div>

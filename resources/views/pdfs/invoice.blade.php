@@ -11,10 +11,10 @@
 
         body {
             margin: 0;
-            padding: 28px;
+            padding: 32px;
             font-family: 'Inter', 'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif;
-            background: #f8fafc;
-            color: #0f172a;
+            background: #f9fafb;
+            color: #111827;
             line-height: 1.6;
         }
 
@@ -40,23 +40,22 @@
             max-width: 960px;
             margin: 0 auto;
             background: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 24px;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
             padding: 32px;
-            box-shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
             page-break-inside: avoid;
         }
 
         header {
-            border-bottom: 1px solid #e2e8f0;
+            border-bottom: 1px solid #e5e7eb;
             padding-bottom: 16px;
         }
 
         h1 {
             margin: 0;
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 600;
-            color: #0f172a;
+            color: #111827;
         }
 
         .meta {
@@ -65,7 +64,7 @@
             gap: 12px;
             flex-wrap: wrap;
             font-size: 12px;
-            color: #475569;
+            color: #6b7280;
         }
 
         .meta span {
@@ -78,33 +77,32 @@
             display: grid;
             gap: 16px;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            margin-top: 32px;
+            margin-top: 28px;
             page-break-inside: avoid;
         }
 
         .card {
-            border: 1px solid #e2e8f0;
-            border-radius: 18px;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
             padding: 18px 20px;
-            box-shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
             page-break-inside: avoid;
         }
 
         .eyebrow {
             margin: 0;
-            font-size: 10px;
-            letter-spacing: 0.28em;
+            font-size: 9px;
+            letter-spacing: 0.2em;
             text-transform: uppercase;
-            color: #1d4ed8;
-            font-weight: 700;
+            color: #6b7280;
+            font-weight: 600;
         }
 
         .card ul {
             list-style: none;
             padding: 0;
             margin: 12px 0 0;
-            color: #475569;
-            font-size: 13px;
+            color: #6b7280;
+            font-size: 12px;
         }
 
         .card ul li + li {
@@ -112,27 +110,27 @@
         }
 
         .card .title {
-            font-size: 15px;
-            font-weight: 700;
-            color: #0f172a;
+            font-size: 14px;
+            font-weight: 600;
+            color: #111827;
             margin: 0 0 6px;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 28px;
-            border-radius: 16px;
+            margin-top: 24px;
+            border-radius: 12px;
             overflow: hidden;
             font-size: 12px;
             page-break-inside: auto;
         }
 
         thead {
-            background: #e2e8f0;
-            color: #1d4ed8;
+            background: #f3f4f6;
+            color: #6b7280;
             text-transform: uppercase;
-            letter-spacing: 0.2em;
+            letter-spacing: 0.16em;
             display: table-header-group;
         }
 
@@ -142,12 +140,12 @@
         }
 
         th {
-            font-size: 11px;
-            font-weight: 700;
+            font-size: 10px;
+            font-weight: 600;
         }
 
         tbody tr {
-            border-top: 1px solid #e2e8f0;
+            border-top: 1px solid #e5e7eb;
             page-break-inside: avoid;
         }
 
@@ -156,11 +154,11 @@
         }
 
         tbody tr:nth-child(even) {
-            background: #f8fafc;
+            background: #f9fafb;
         }
 
         td {
-            color: #334155;
+            color: #374151;
             vertical-align: top;
         }
 
@@ -173,16 +171,16 @@
         }
 
         .muted {
-            color: #94a3b8;
+            color: #9ca3af;
         }
 
         .subtotal {
-            font-weight: 700;
-            color: #0f172a;
+            font-weight: 600;
+            color: #111827;
         }
 
         .totals-grid {
-            margin-top: 28px;
+            margin-top: 24px;
             display: grid;
             gap: 16px;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -190,10 +188,9 @@
         }
 
         .totals-card {
-            border: 1px solid #e2e8f0;
-            border-radius: 18px;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
             padding: 20px;
-            box-shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
             height: 100%;
             page-break-inside: avoid;
         }
@@ -205,13 +202,13 @@
 
         .totals-card dt,
         .totals-card dd {
-            font-size: 13px;
+            font-size: 12px;
             margin: 0;
             padding: 8px 0;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-bottom: 1px solid #e2e8f0;
+            border-bottom: 1px solid #e5e7eb;
         }
 
         .totals-card dt:last-of-type,
@@ -220,51 +217,51 @@
         }
 
         .totals-card dd {
-            font-weight: 700;
-            color: #0f172a;
+            font-weight: 600;
+            color: #111827;
         }
 
         .badge {
             display: inline-block;
             padding: 6px 10px;
-            border-radius: 12px;
-            background: #eff6ff;
-            color: #1d4ed8;
+            border-radius: 999px;
+            background: #f3f4f6;
+            color: #111827;
             font-weight: 600;
-            font-size: 11px;
+            font-size: 10px;
         }
 
         .notes {
-            border: 1px dashed #cbd5e1;
-            border-radius: 16px;
+            border: 1px dashed #e5e7eb;
+            border-radius: 12px;
             padding: 18px 20px;
-            color: #475569;
-            font-size: 13px;
+            color: #6b7280;
+            font-size: 12px;
             line-height: 1.5;
             page-break-inside: avoid;
         }
 
         .notes h3 {
             margin: 0 0 8px;
-            font-size: 11px;
+            font-size: 10px;
             letter-spacing: 0.3em;
             text-transform: uppercase;
-            color: #94a3b8;
+            color: #9ca3af;
         }
 
         footer {
-            margin-top: 32px;
+            margin-top: 28px;
             padding-top: 16px;
-            border-top: 1px solid #e2e8f0;
+            border-top: 1px solid #e5e7eb;
             text-align: center;
             font-size: 11px;
-            color: #94a3b8;
+            color: #9ca3af;
         }
 
         .no-data {
             padding: 18px;
             text-align: center;
-            color: #94a3b8;
+            color: #9ca3af;
         }
     </style>
 </head>
@@ -345,12 +342,12 @@
     </section>
 
     <section>
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 28px;">
-            <p class="eyebrow" style="color: #64748b;">Detall de línies</p>
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 24px;">
+            <p class="eyebrow" style="color: #9ca3af;">Detall de línies</p>
             <span class="badge">{{ count($items) }} productes</span>
         </div>
 
-        <div style="border: 1px solid #e2e8f0; border-radius: 18px; overflow: hidden; margin-top: 12px;">
+        <div style="border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; margin-top: 12px;">
             <table>
                 <thead>
                     <tr>
@@ -366,7 +363,7 @@
                 @forelse($items as $item)
                     <tr>
                         <td>
-                            <div style="font-weight: 600; color: #0f172a;">{{ optional($item->product)->name ?? '—' }}</div>
+                            <div style="font-weight: 600; color: #111827;">{{ optional($item->product)->name ?? '—' }}</div>
                             @if(!empty($item->description))
                                 <div class="muted" style="font-size: 11px; margin-top: 4px;">{{ $item->description }}</div>
                             @endif
@@ -381,7 +378,7 @@
                             @endif
                         </td>
                         <td class="text-center">
-                            <div style="font-weight: 600; color: #0f172a;">{{ $formatRate($item->iva) }}</div>
+                            <div style="font-weight: 600; color: #111827;">{{ $formatRate($item->iva) }}</div>
                             <div class="muted" style="font-size: 11px;">{{ $formatCurrency(($item->total ?? 0) * ($item->iva ?? 0) / 100) }}</div>
                         </td>
                         <td class="text-right subtotal">{{ $formatCurrency($item->total) }}</td>
@@ -398,7 +395,7 @@
 
     <section class="totals-grid">
         <article class="totals-card">
-            <p class="eyebrow" style="color: #64748b;">Resum econòmic</p>
+            <p class="eyebrow" style="color: #9ca3af;">Resum econòmic</p>
             <dl>
                 <dt>Base imposable</dt>
                 <dd>{{ $formatCurrency($invoice->base_imponible ?? 0) }}</dd>
@@ -407,8 +404,8 @@
                 <dd style="border-bottom: none; justify-content: flex-start; display: block; padding: 0;">
                     @if(count($taxBreakdown))
                         @foreach($taxBreakdown as $tier)
-                            <div style="margin: 10px 0; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 12px; background: #f8fafc;">
-                                <div style="display: flex; justify-content: space-between; font-weight: 700; color: #0f172a;">
+                            <div style="margin: 10px 0; padding: 10px 12px; border: 1px solid #e5e7eb; border-radius: 12px; background: #f9fafb;">
+                                <div style="display: flex; justify-content: space-between; font-weight: 600; color: #111827;">
                                     <span>IVA {{ $formatRate($tier['rate']) }}</span>
                                     <span>{{ $formatCurrency($tier['tax']) }}</span>
                                 </div>
@@ -422,11 +419,11 @@
 
                 @if(($retencionIrpf ?? 0) > 0)
                     <dt>Retenció IRPF ({{ $formatRate($irpfRate) }})</dt>
-                    <dd style="color: #e11d48;">− {{ $formatCurrency($retencionIrpf) }}</dd>
+                    <dd style="color: #9ca3af;">− {{ $formatCurrency($retencionIrpf) }}</dd>
                 @endif
 
-                <dt style="border-bottom: none; font-size: 15px; font-weight: 700;">Total a pagar</dt>
-                <dd style="border-bottom: none; font-size: 15px;">{{ $formatCurrency($invoice->total ?? $totalFinal) }}</dd>
+                <dt style="border-bottom: none; font-size: 14px; font-weight: 600;">Total a pagar</dt>
+                <dd style="border-bottom: none; font-size: 14px;">{{ $formatCurrency($invoice->total ?? $totalFinal) }}</dd>
             </dl>
         </article>
 

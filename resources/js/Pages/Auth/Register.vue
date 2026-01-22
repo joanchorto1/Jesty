@@ -1,102 +1,100 @@
 <template>
-    <div class="flex items-center justify-center min-h-screen py-10 bg-gradient-to-bl from-cyan-400 via-blue-500 to-blue-800">
-        <div class="w-full max-w-5xl p-8 bg-white rounded-xl shadow-lg">
-            <h1 class="mb-8 text-3xl font-extrabold text-center text-blue-600">Registro de Compañía</h1>
-            <form @submit.prevent="submitForm">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <!-- Datos de la Compañía -->
-                    <div>
-                        <h2 class="mb-6 text-xl font-bold text-gray-700">Datos de la Compañía</h2>
-                        <div v-for="(field, key) in companyFields" :key="key" class="mb-6">
-                            <label :for="key" class="block text-sm font-semibold text-gray-600">{{ field.label }}</label>
-                            <input
-                                v-model="form[key]"
-                                :type="field.type"
-                                :id="key"
-                                :placeholder="field.placeholder"
-                                class="w-full px-5 py-3 mt-2 text-sm border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
-                                :required="field.required"
-                            />
+    <div class="min-h-screen bg-slate-50 px-6 py-12">
+        <div class="mx-auto w-full max-w-6xl">
+            <Panel
+                title="Registro de Compañía"
+                description="Completa la informació per crear l'espai corporatiu i activar el pla."
+                :headerBorder="false"
+                class="p-8 sm:p-10"
+            >
+                <form @submit.prevent="submitForm" class="space-y-10">
+                    <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
+                        <div class="rounded-2xl border border-slate-100 bg-slate-50/80 p-6">
+                            <h2 class="mb-6 text-lg font-semibold text-slate-700">Datos de la Compañía</h2>
+                            <div v-for="(field, key) in companyFields" :key="key" class="mb-5">
+                                <InputLabel :for="key" :value="field.label" />
+                                <TextInput
+                                    v-model="form[key]"
+                                    :type="field.type"
+                                    :id="key"
+                                    :placeholder="field.placeholder"
+                                    class="mt-2 block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 shadow-sm placeholder-slate-400 focus:border-sky-500 focus:ring-sky-500"
+                                    :required="field.required"
+                                />
+                            </div>
                         </div>
 
-                    </div>
-
-
-
-                    <!-- Datos del Usuario -->
-                    <div>
-                        <h2 class="mb-6 text-xl font-bold text-gray-700">Datos del Usuario</h2>
-                        <div v-for="(field, key) in userFields" :key="key" class="mb-6">
-                            <label :for="key" class="block text-sm font-semibold text-gray-600">{{ field.label }}</label>
-                            <input
-                                v-model="form[key]"
-                                :type="field.type"
-                                :id="key"
-                                :placeholder="field.placeholder"
-                                class="w-full px-5 py-3 mt-2 text-sm border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
-                                :required="field.required"
-                            />
+                        <div class="rounded-2xl border border-slate-100 bg-slate-50/80 p-6">
+                            <h2 class="mb-6 text-lg font-semibold text-slate-700">Datos del Usuario</h2>
+                            <div v-for="(field, key) in userFields" :key="key" class="mb-5">
+                                <InputLabel :for="key" :value="field.label" />
+                                <TextInput
+                                    v-model="form[key]"
+                                    :type="field.type"
+                                    :id="key"
+                                    :placeholder="field.placeholder"
+                                    class="mt-2 block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 shadow-sm placeholder-slate-400 focus:border-sky-500 focus:ring-sky-500"
+                                    :required="field.required"
+                                />
+                            </div>
                         </div>
                     </div>
-                </div>
 
-            <!--Seleccion del plan-->
-
-                <div class="mb-6">
-                    <h2 class="mb-6 text-xl font-bold text-gray-700">Selecciona un Plan</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div
-                            v-for="plan in props.plans"
-                            :key="plan.id"
-                            class="bg-white shadow-md rounded-lg p-6 relative"
-                            :class="{ 'border-4 border-blue-500': form.plan_id === plan.id }"
-                        >
-                            <h2 class="text-xl text-blue-600 font-semibold mb-4">{{ plan.name }}</h2>
-                            <p class="text-gray-600 mb-2">Precio: {{ plan.price }} €/ mes</p>
-                            <p class="text-gray-500 text-sm mb-4">{{ plan.description }}</p>
-                            <h3 class="text-lg font-semibold mb-2">Características</h3>
-                            <ul class="mb-6">
-                                <li v-for="feature in feturesByPlan(plan)" :key="feature.id" class="text-gray-700 flex items-center gap-2">
-                                    <p>✔</p> {{ feature.name }}
-                                </li>
-                            </ul>
-                            <button
-                                v-if="form.plan_id !== plan.id"
-                                @click="selectPlan(plan.id)"
-                                type="button"
-                                class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+                    <div class="space-y-6">
+                        <div>
+                            <h2 class="text-lg font-semibold text-slate-700">Selecciona un Plan</h2>
+                            <p class="mt-1 text-sm text-slate-500">Escull el paquet que millor s'adapti a la teva organització.</p>
+                        </div>
+                        <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+                            <div
+                                v-for="plan in props.plans"
+                                :key="plan.id"
+                                class="relative rounded-2xl border border-slate-100 bg-white p-6 shadow-sm transition hover:border-sky-200 hover:shadow-md"
+                                :class="{ 'border-sky-200 ring-2 ring-sky-500': form.plan_id === plan.id }"
                             >
-                                Seleccionar
-                            </button>
-                            <span
-                                v-else
-                                class="absolute top-2 right-2 bg-green-100 text-green-600 px-2 py-1 rounded text-sm"
-                            >
-                                Plan actual
-                            </span>
+                                <h3 class="text-lg font-semibold text-slate-800 mb-2">{{ plan.name }}</h3>
+                                <p class="text-sm text-slate-500 mb-1">Precio: <span class="font-semibold text-slate-700">{{ plan.price }} €</span> / mes</p>
+                                <p class="text-sm text-slate-500 mb-4">{{ plan.description }}</p>
+                                <h4 class="text-sm font-semibold text-slate-600 mb-2">Características</h4>
+                                <ul class="mb-6 space-y-2 text-sm text-slate-600">
+                                    <li v-for="feature in feturesByPlan(plan)" :key="feature.id" class="flex items-center gap-2">
+                                        <span class="text-sky-500">✔</span>
+                                        <span>{{ feature.name }}</span>
+                                    </li>
+                                </ul>
+                                <SecondaryButton
+                                    v-if="form.plan_id !== plan.id"
+                                    @click="selectPlan(plan.id)"
+                                    type="button"
+                                    class="w-full justify-center"
+                                >
+                                    Seleccionar
+                                </SecondaryButton>
+                                <span
+                                    v-else
+                                    class="absolute top-4 right-4 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700"
+                                >
+                                    Plan actual
+                                </span>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Resumen del Pago -->
-                <div class="mt-6">
-                    <p class="text-lg font-semibold text-gray-800">Total a Pagar: <span class="text-blue-600">{{ price }}€</span></p>
-                </div>
+                    <div class="flex flex-col items-start gap-4 border-t border-slate-100 pt-6 md:flex-row md:items-center md:justify-between">
+                        <p class="text-base font-semibold text-slate-700">
+                            Total a Pagar: <span class="text-sky-600">{{ price }}€</span>
+                        </p>
+                        <PrimaryButton type="submit" class="w-full justify-center md:w-auto">
+                            Registrarse y Pagar
+                        </PrimaryButton>
+                    </div>
+                </form>
+            </Panel>
 
-                <!-- Botón de envío -->
-                <div class="mt-8">
-                    <button
-                        type="submit"
-                        class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg"
-                    >
-                        Registrarse y Pagar
-                    </button>
-                </div>
-            </form>
-
-            <div class="mt-10">
-                <NavLink :href="route('login')" class="text-sm text-gray-400">Ya tengo una cuenta, quiero iniciar sesion.</NavLink>
-
+            <div class="mt-6 text-center">
+                <NavLink :href="route('login')" class="text-sm text-slate-500 hover:text-sky-600">
+                    Ya tengo una cuenta, quiero iniciar sesion.
+                </NavLink>
             </div>
         </div>
     </div>
@@ -104,9 +102,14 @@
 
 
 <script setup>
-import {reactive, ref, onMounted} from 'vue';
+import { reactive, ref } from 'vue';
 import { loadStripe } from '@stripe/stripe-js';
-import NavLink from "../../Components/NavLink.vue";
+import InputLabel from '@/Components/InputLabel.vue';
+import NavLink from '@/Components/NavLink.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
+import TextInput from '@/Components/TextInput.vue';
+import Panel from '@/Components/UI/Panel.vue';
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
@@ -162,10 +165,6 @@ const updatePlanPrice = () => {
     const selectedPlan = props.plans.find(plan => plan.id === parseInt(form.plan_id));
     price.value = selectedPlan ? selectedPlan.price : 0;
 };
-
-onMounted(() => {
-
-});
 
 // Método para seleccionar un plan
 const selectPlan = (planId) => {
