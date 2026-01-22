@@ -35,62 +35,49 @@
             </div>
         </transition>
 
-        <div class="min-h-screen bg-slate-900">
-            <div class="bg-gradient-to-r from-blue-600 via-indigo-600 to-slate-900 pb-20">
-                <div class="max-w-7xl mx-auto px-6 pt-12">
-                    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-                        <div>
-                            <p class="text-sm uppercase tracking-widest text-blue-200">Facturación</p>
-                            <h1 class="text-3xl sm:text-4xl font-semibold text-white mt-2">Resumen de presupuestos</h1>
-                            <p class="text-sm text-blue-100 mt-3 max-w-2xl">Controla el rendimiento comercial y haz seguimiento de los presupuestos para convertir más oportunidades en ventas.</p>
-                        </div>
-                        <NavLink :href="route('budgets.create')" class="inline-flex items-center gap-2 rounded-2xl bg-white/15 px-5 py-3 text-sm font-semibold text-white shadow-lg ring-1 ring-white/20 hover:bg-white/25 transition">
+        <div class="min-h-screen bg-slate-100/80 py-12">
+            <div class="mx-auto flex max-w-7xl flex-col gap-10 px-6">
+                <CrudPageHeader
+                    title="Resumen de presupuestos"
+                    description="Controla el rendimiento comercial y haz seguimiento de los presupuestos para convertir más oportunidades en ventas."
+                    :icon="MenuBudgetIcon"
+                >
+                    <template #actions>
+                        <NavLink :href="route('budgets.create')" class="inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800">
                             <AddIcon class="w-5 h-5" />
                             Nuevo presupuesto
                         </NavLink>
-                    </div>
+                    </template>
+                </CrudPageHeader>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 mt-10">
-                        <div class="bg-white/10 backdrop-blur rounded-2xl p-5 text-white shadow-lg">
-                            <p class="text-xs uppercase tracking-widest text-blue-200">Presupuestos activos</p>
-                            <p class="text-3xl font-semibold mt-2">{{ filteredBudgets.length }}</p>
-                            <p class="text-sm text-blue-100 mt-3">{{ budgets.length }} totales registrados</p>
-                        </div>
-                        <div class="bg-white/10 backdrop-blur rounded-2xl p-5 text-white shadow-lg">
-                            <p class="text-xs uppercase tracking-widest text-blue-200">Clientes</p>
-                            <p class="text-3xl font-semibold mt-2">{{ clients.length }}</p>
-                            <p class="text-sm text-blue-100 mt-3">Relacionados con presupuestos</p>
-                        </div>
-                        <div class="bg-white/10 backdrop-blur rounded-2xl p-5 text-white shadow-lg">
-                            <p class="text-xs uppercase tracking-widest text-blue-200">Tasa de conversión</p>
-                            <p class="text-3xl font-semibold mt-2">{{ PrecentAcceptedBudgets }}%</p>
-                            <p class="text-sm text-blue-100 mt-3">Presupuestos aceptados frente al total</p>
-                        </div>
-                        <div class="bg-white/10 backdrop-blur rounded-2xl p-5 text-white shadow-lg">
-                            <p class="text-xs uppercase tracking-widest text-blue-200">Importe filtrado</p>
-                            <p class="text-3xl font-semibold mt-2">{{ formatCurrency(filteredBudgetsTotal) }}</p>
-                            <p class="text-sm text-blue-100 mt-3">Suma de los presupuestos visibles</p>
-                        </div>
-                    </div>
+                <div class="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
+                    <CrudStatCard label="Presupuestos activos" :value="filteredBudgets.length" :icon="MenuBudgetIcon" icon-background="bg-sky-500/10 text-sky-600">
+                        <template #description>
+                            <p class="text-xs text-slate-500">{{ budgets.length }} totales registrados</p>
+                        </template>
+                    </CrudStatCard>
+                    <CrudStatCard label="Clientes" :value="clients.length" :icon="InfoIcon" icon-background="bg-indigo-500/10 text-indigo-600">
+                        <template #description>
+                            <p class="text-xs text-slate-500">Relacionados con presupuestos</p>
+                        </template>
+                    </CrudStatCard>
+                    <CrudStatCard label="Tasa de conversión" :value="`${PrecentAcceptedBudgets}%`" :icon="AddIcon" icon-background="bg-emerald-500/10 text-emerald-600">
+                        <template #description>
+                            <p class="text-xs text-slate-500">Presupuestos aceptados frente al total</p>
+                        </template>
+                    </CrudStatCard>
+                    <CrudStatCard label="Importe filtrado" :value="formatCurrency(filteredBudgetsTotal)" :icon="EditIcon" icon-background="bg-amber-500/10 text-amber-600">
+                        <template #description>
+                            <p class="text-xs text-slate-500">Suma de los presupuestos visibles</p>
+                        </template>
+                    </CrudStatCard>
                 </div>
-            </div>
 
-            <div class="max-w-7xl mx-auto px-6 -mt-16 pb-16 space-y-10">
-                <div class="bg-white rounded-3xl shadow-xl p-6">
-                    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 border-b border-slate-100 pb-5">
-                        <div>
-                            <h2 class="text-xl font-semibold text-slate-800">Filtros inteligentes</h2>
-                            <p class="text-sm text-slate-500 mt-1">Refina la información por estado, cliente o periodo de tiempo.</p>
-                        </div>
-                        <button @click="clearFilters" class="inline-flex items-center justify-center gap-2 rounded-xl border border-transparent bg-rose-500 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-rose-600 transition">
-                            Limpiar filtros
-                        </button>
-                    </div>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 pt-6">
+                <CrudFilterBar>
+                    <div class="grid flex-1 grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
                         <div class="space-y-2">
                             <label class="text-xs font-semibold uppercase tracking-widest text-slate-500">Estado</label>
-                            <select v-model="filters.state" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm text-slate-600 focus:border-blue-400 focus:ring focus:ring-blue-200/40">
+                            <select v-model="filters.state" class="w-full rounded-2xl border border-slate-200/70 bg-white/80 px-4 py-2 text-sm text-slate-700 shadow-sm focus:border-blue-400 focus:ring focus:ring-blue-200/40">
                                 <option value="">Todos</option>
                                 <option value="accepted">Aceptado</option>
                                 <option value="in_process">En proceso</option>
@@ -100,7 +87,7 @@
 
                         <div class="space-y-2">
                             <label class="text-xs font-semibold uppercase tracking-widest text-slate-500">Cliente</label>
-                            <select v-model="filters.client_id" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm text-slate-600 focus:border-blue-400 focus:ring focus:ring-blue-200/40">
+                            <select v-model="filters.client_id" class="w-full rounded-2xl border border-slate-200/70 bg-white/80 px-4 py-2 text-sm text-slate-700 shadow-sm focus:border-blue-400 focus:ring focus:ring-blue-200/40">
                                 <option value="">Todos</option>
                                 <option v-for="client in clients" :key="client.id" :value="client.id">{{ client.name }}</option>
                             </select>
@@ -108,79 +95,68 @@
 
                         <div class="space-y-2">
                             <label class="text-xs font-semibold uppercase tracking-widest text-slate-500">Fecha inicio</label>
-                            <input v-model="filters.start_date" type="date" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm text-slate-600 focus:border-blue-400 focus:ring focus:ring-blue-200/40"/>
+                            <input v-model="filters.start_date" type="date" class="w-full rounded-2xl border border-slate-200/70 bg-white/80 px-4 py-2 text-sm text-slate-700 shadow-sm focus:border-blue-400 focus:ring focus:ring-blue-200/40"/>
                         </div>
 
                         <div class="space-y-2">
                             <label class="text-xs font-semibold uppercase tracking-widest text-slate-500">Fecha fin</label>
-                            <input v-model="filters.end_date" type="date" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm text-slate-600 focus:border-blue-400 focus:ring focus:ring-blue-200/40"/>
+                            <input v-model="filters.end_date" type="date" class="w-full rounded-2xl border border-slate-200/70 bg-white/80 px-4 py-2 text-sm text-slate-700 shadow-sm focus:border-blue-400 focus:ring focus:ring-blue-200/40"/>
                         </div>
                     </div>
-                </div>
 
-                <div class="bg-white rounded-3xl shadow-xl">
-                    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 border-b border-slate-100 px-6 py-5">
-                        <div>
-                            <h2 class="text-xl font-semibold text-slate-800">Listado de presupuestos</h2>
-                            <p class="text-sm text-slate-500 mt-1">Consulta el detalle de cada propuesta y gestiona su ciclo de venta.</p>
-                        </div>
-                        <NavLink :href="route('budgets.create')" class="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 transition">
-                            <AddIcon class="w-5 h-5" />
-                            Nuevo presupuesto
-                        </NavLink>
-                    </div>
+                    <template #actions>
+                        <button @click="clearFilters" class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 shadow-sm transition hover:bg-slate-50">
+                            Limpiar filtros
+                        </button>
+                    </template>
+                </CrudFilterBar>
 
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-slate-100 text-left">
-                            <thead>
-                                <tr class="text-xs uppercase tracking-widest text-slate-400">
-                                    <th class="px-6 py-3">Identificador</th>
-                                    <th class="px-6 py-3">Cliente</th>
-                                    <th class="px-6 py-3">Fecha</th>
-                                    <th class="px-6 py-3">Estado</th>
-                                    <th class="px-6 py-3">Total</th>
-                                    <th class="px-6 py-3 text-right">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-100 text-sm text-slate-600">
-                                <tr v-for="budget in filteredBudgets" :key="budget.id" class="hover:bg-slate-50/70 transition">
-                                    <td class="px-6 py-4 font-medium text-slate-700">{{ budget.name }}</td>
-                                    <td class="px-6 py-4">{{ getClientName(budget.client_id) || '—' }}</td>
-                                    <td class="px-6 py-4">{{ formatDate(budget.date) }}</td>
-                                    <td class="px-6 py-4">
-                                        <span
-                                            :class="[statusBadgeClasses(budget.state), 'cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 transition']"
-                                            role="button"
-                                            tabindex="0"
-                                            @click="openBudgetStatusModal(budget)"
-                                            @keydown.enter.prevent="openBudgetStatusModal(budget)"
-                                            @keydown.space.prevent="openBudgetStatusModal(budget)"
-                                        >
-                                            {{ statusCopy(budget.state) }}
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4 font-semibold text-slate-700">{{ formatCurrency(budget.total) }}</td>
-                                    <td class="px-6 py-4">
-                                        <div class="flex items-center justify-end gap-3 text-slate-400">
-                                            <NavLink :href="route('budgets.show', budget.id)" class="hover:text-blue-500 transition" title="Ver detalles">
-                                                <InfoIcon class="w-5 h-5"/>
-                                            </NavLink>
-                                            <NavLink :href="route('budgets.edit', budget.id)" class="hover:text-amber-500 transition" title="Editar">
-                                                <EditIcon class="w-5 h-5"/>
-                                            </NavLink>
-                                            <button @click="deleteBudget(budget.id)" class="hover:text-rose-500 transition" title="Eliminar">
-                                                <DeleteIcon class="w-5 h-5"/>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr v-if="filteredBudgets.length === 0">
-                                    <td colspan="6" class="px-6 py-12 text-center text-sm text-slate-400">No hay presupuestos que coincidan con los filtros seleccionados.</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                <CrudTable>
+                    <template #head>
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-widest text-slate-400">Identificador</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-widest text-slate-400">Cliente</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-widest text-slate-400">Fecha</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-widest text-slate-400">Estado</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-widest text-slate-400">Total</th>
+                            <th class="px-6 py-3 text-right text-xs font-semibold uppercase tracking-widest text-slate-400">Acciones</th>
+                        </tr>
+                    </template>
+                    <tr v-for="budget in filteredBudgets" :key="budget.id" class="hover:bg-slate-50/70 transition">
+                        <td class="px-6 py-4 text-sm font-medium text-slate-700">{{ budget.name }}</td>
+                        <td class="px-6 py-4 text-sm text-slate-600">{{ getClientName(budget.client_id) || '—' }}</td>
+                        <td class="px-6 py-4 text-sm text-slate-600">{{ formatDate(budget.date) }}</td>
+                        <td class="px-6 py-4 text-sm">
+                            <span
+                                :class="[statusBadgeClasses(budget.state), 'cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 transition']"
+                                role="button"
+                                tabindex="0"
+                                @click="openBudgetStatusModal(budget)"
+                                @keydown.enter.prevent="openBudgetStatusModal(budget)"
+                                @keydown.space.prevent="openBudgetStatusModal(budget)"
+                            >
+                                {{ statusCopy(budget.state) }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-sm font-semibold text-slate-700">{{ formatCurrency(budget.total) }}</td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center justify-end gap-3 text-slate-500">
+                                <NavLink :href="route('budgets.show', budget.id)" class="hover:text-blue-500 transition" title="Ver detalles">
+                                    <InfoIcon class="w-5 h-5"/>
+                                </NavLink>
+                                <NavLink :href="route('budgets.edit', budget.id)" class="hover:text-amber-500 transition" title="Editar">
+                                    <EditIcon class="w-5 h-5"/>
+                                </NavLink>
+                                <button @click="deleteBudget(budget.id)" class="hover:text-rose-500 transition" title="Eliminar">
+                                    <DeleteIcon class="w-5 h-5"/>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr v-if="filteredBudgets.length === 0">
+                        <td colspan="6" class="px-6 py-12 text-center text-sm text-slate-400">No hay presupuestos que coincidan con los filtros seleccionados.</td>
+                    </tr>
+                </CrudTable>
             </div>
         </div>
 
@@ -206,11 +182,16 @@
 import { Inertia } from '@inertiajs/inertia';
 import { router, useForm } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
+import CrudFilterBar from '@/Components/Crud/CrudFilterBar.vue';
+import CrudPageHeader from '@/Components/Crud/CrudPageHeader.vue';
+import CrudStatCard from '@/Components/Crud/CrudStatCard.vue';
+import CrudTable from '@/Components/Crud/CrudTable.vue';
 import NavLink from "@/Components/NavLink.vue";
 import InfoIcon from "@/Components/Icons/InfoIcon.vue";
 import EditIcon from "@/Components/Icons/EditIcon.vue";
 import DeleteIcon from "@/Components/Icons/DeleteIcon.vue";
 import AddIcon from "@/Components/Icons/AddIcon.vue";
+import MenuBudgetIcon from "@/Components/Icons/MenuBudgetIcon.vue";
 import StatusUpdateModal from '@/Components/StatusUpdateModal.vue';
 import { computed, reactive, ref } from 'vue';
 

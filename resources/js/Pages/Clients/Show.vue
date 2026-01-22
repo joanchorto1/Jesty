@@ -1,34 +1,32 @@
 <template>
     <AppLayout>
-        <div class="min-h-screen bg-slate-950">
-            <div class="bg-gradient-to-r from-emerald-600 via-blue-700 to-slate-900 pb-24">
-                <div class="max-w-6xl mx-auto px-6 pt-10">
-                    <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
-                        <div>
-                            <p class="text-emerald-200 text-sm uppercase tracking-widest">Ficha de cliente</p>
-                            <h1 class="text-3xl sm:text-4xl font-semibold text-white">{{ client.name }}</h1>
-                            <p class="text-sm text-emerald-200 mt-2">Visualiza la información clave y el historial de presupuestos y facturas.</p>
-                        </div>
+        <div class="min-h-screen bg-slate-100/80 py-12">
+            <div class="mx-auto flex max-w-6xl flex-col gap-10 px-6">
+                <CrudPageHeader
+                    :title="client.name"
+                    description="Visualiza la información clave y el historial de presupuestos y facturas."
+                    accent="from-emerald-500 to-sky-500"
+                >
+                    <template #actions>
                         <div class="flex flex-wrap gap-3">
-                            <NavLink :href="route('clients.edit', client.id)" class="inline-flex items-center gap-2 rounded-xl bg-white/10 px-4 py-2 text-sm font-semibold text-white shadow ring-1 ring-white/20 hover:bg-white/20 transition">
+                            <NavLink :href="route('clients.edit', client.id)" class="inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800">
                                 Editar cliente
                             </NavLink>
-                            <NavLink :href="route('clients.index')" class="inline-flex items-center gap-2 rounded-xl bg-white/10 px-4 py-2 text-sm font-semibold text-white shadow ring-1 ring-white/20 hover:bg-white/20 transition">
+                            <NavLink :href="route('clients.index')" class="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-600 shadow-sm transition hover:bg-slate-50">
                                 Volver al listado
                             </NavLink>
                         </div>
-                    </div>
+                    </template>
+                </CrudPageHeader>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mt-10">
-                        <SummaryCard eyebrow="Presupuestos" :value="filteredBudgets.length" :description="`Importe total €${totalBudgetAmount}`" />
-                        <SummaryCard eyebrow="Facturas" :value="filteredInvoices.length" :description="`Importe total €${totalInvoiceAmount}`" />
-                        <SummaryCard eyebrow="Estado del cliente" :value="statusCopy(client.status)" description="Situación actual" />
-                        <SummaryCard eyebrow="Última actividad" :value="lastActivity" description="Último documento registrado" />
-                    </div>
+                <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+                    <SummaryCard eyebrow="Presupuestos" :value="filteredBudgets.length" :description="`Importe total €${totalBudgetAmount}`" />
+                    <SummaryCard eyebrow="Facturas" :value="filteredInvoices.length" :description="`Importe total €${totalInvoiceAmount}`" />
+                    <SummaryCard eyebrow="Estado del cliente" :value="statusCopy(client.status)" description="Situación actual" />
+                    <SummaryCard eyebrow="Última actividad" :value="lastActivity" description="Último documento registrado" />
                 </div>
-            </div>
 
-            <div class="max-w-6xl mx-auto px-6 -mt-16 pb-16 space-y-10">
+                <div class="space-y-10">
                 <Panel title="Datos generales" description="Información de contacto y datos fiscales del cliente.">
                     <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-6">
                         <div v-for="detail in clientDetails" :key="detail.label" class="rounded-2xl border border-slate-100 bg-slate-50 px-5 py-4">
@@ -131,6 +129,7 @@
 <script setup>
 import { computed, ref } from 'vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
+import CrudPageHeader from '@/Components/Crud/CrudPageHeader.vue';
 import NavLink from '@/Components/NavLink.vue';
 import SummaryCard from '@/Components/UI/SummaryCard.vue';
 import Panel from '@/Components/UI/Panel.vue';

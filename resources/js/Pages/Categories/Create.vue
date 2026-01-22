@@ -1,26 +1,27 @@
 <template>
     <AppLayout title="Crear categoría">
-        <div class="min-h-screen bg-slate-950">
-            <FinancePageHeader
-                eyebrow="Catálogo"
-                title="Nueva categoría contable"
-                description="Clasifica gastos o ingresos bajo etiquetas consistentes para facilitar la elaboración de informes."
-                :metrics-columns="3"
-            >
-                <template #metrics>
-                    <FinanceSummaryCard label="Nombre" :value="form.name || 'Sin definir'" :helper="`${form.name.length} caracteres`" />
-                    <FinanceSummaryCard label="Descripción" :value="`${descriptionLength} car.`" :helper="descriptionLength ? 'Texto preparado' : 'Añade una descripción'" />
-                    <FinanceSummaryCard label="Estado" value="Borrador" helper="Pendiente de guardar" />
-                </template>
-            </FinancePageHeader>
+        <div class="min-h-screen bg-slate-100/80 py-12">
+            <div class="mx-auto flex max-w-4xl flex-col gap-10 px-6">
+                <CrudPageHeader
+                    title="Nueva categoría contable"
+                    description="Clasifica gastos o ingresos bajo etiquetas consistentes para facilitar la elaboración de informes."
+                />
 
-            <main class="max-w-4xl mx-auto px-6 -mt-16 pb-16 space-y-10">
-                <section class="rounded-3xl border border-white/10 bg-white/95 p-8 shadow-xl">
-                    <header class="mb-8 border-b border-slate-200 pb-4">
-                        <h2 class="text-xl font-semibold text-slate-800">Datos de la categoría</h2>
-                        <p class="mt-1 text-sm text-slate-500">Define un nombre representativo y una descripción clara para que el equipo contable identifique fácilmente la categoría.</p>
-                    </header>
+                <div class="grid gap-6 md:grid-cols-3">
+                    <CrudStatCard label="Nombre" :value="form.name || 'Sin definir'" icon-background="bg-sky-500/10 text-sky-600" />
+                    <CrudStatCard label="Descripción" :value="`${descriptionLength} car.`" icon-background="bg-indigo-500/10 text-indigo-600">
+                        <template #description>
+                            <p class="text-xs text-slate-500">{{ descriptionLength ? 'Texto preparado' : 'Añade una descripción' }}</p>
+                        </template>
+                    </CrudStatCard>
+                    <CrudStatCard label="Estado" value="Borrador" icon-background="bg-amber-500/10 text-amber-600">
+                        <template #description>
+                            <p class="text-xs text-slate-500">Pendiente de guardar</p>
+                        </template>
+                    </CrudStatCard>
+                </div>
 
+                <Panel title="Datos de la categoría" description="Define un nombre representativo y una descripción clara para que el equipo contable identifique fácilmente la categoría.">
                     <form @submit.prevent="submit" class="grid grid-cols-1 gap-6">
                         <div>
                             <InputLabel for="name" value="Nombre" />
@@ -46,8 +47,8 @@
                             </NavLink>
                         </div>
                     </form>
-                </section>
-            </main>
+                </Panel>
+            </div>
         </div>
     </AppLayout>
 </template>
@@ -56,8 +57,9 @@
 import { computed } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import FinancePageHeader from '@/Components/Finance/FinancePageHeader.vue';
-import FinanceSummaryCard from '@/Components/Finance/FinanceSummaryCard.vue';
+import CrudPageHeader from '@/Components/Crud/CrudPageHeader.vue';
+import CrudStatCard from '@/Components/Crud/CrudStatCard.vue';
+import Panel from '@/Components/UI/Panel.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import TextareaInput from '@/Components/TextareaInput.vue';

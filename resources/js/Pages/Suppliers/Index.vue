@@ -3,6 +3,10 @@ import { computed, reactive } from 'vue';
 import { Inertia } from '@inertiajs/inertia';
 import { Link } from '@inertiajs/inertia-vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
+import CrudFilterBar from '@/Components/Crud/CrudFilterBar.vue';
+import CrudPageHeader from '@/Components/Crud/CrudPageHeader.vue';
+import CrudStatCard from '@/Components/Crud/CrudStatCard.vue';
+import CrudTable from '@/Components/Crud/CrudTable.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import SelectInput from '@/Components/SelectInput.vue';
@@ -12,11 +16,6 @@ import AddIcon from '@/Components/Icons/AddIcon.vue';
 import EditIcon from '@/Components/Icons/EditIcon.vue';
 import DeleteIcon from '@/Components/Icons/DeleteIcon.vue';
 import InfoIcon from '@/Components/Icons/InfoIcon.vue';
-import InventoryFilterBar from '@/Components/Inventory/InventoryFilterBar.vue';
-import InventoryResponsiveTable from '@/Components/Inventory/InventoryResponsiveTable.vue';
-import InventoryStatusBadge from '@/Components/Inventory/InventoryStatusBadge.vue';
-import InventorySummaryCard from '@/Components/Inventory/InventorySummaryCard.vue';
-import { inventoryPalette, inventoryTypography } from '@/Components/Inventory/inventoryTheme';
 
 const props = defineProps({
     suppliers: {
@@ -63,61 +62,47 @@ const deleteSupplier = (supplierId) => {
     }
 };
 
-const palette = inventoryPalette;
-const typography = inventoryTypography;
+const contactStatusBadge = (supplier) =>
+    supplier.email
+        ? 'inline-flex items-center rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700'
+        : 'inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-500';
 </script>
 
 <template>
     <AppLayout title="Proveïdors">
-        <div :class="['min-h-screen pb-16', palette.background]">
-            <div :class="['bg-gradient-to-r', palette.gradient, 'pb-24']">
-                <div class="mx-auto flex max-w-7xl flex-col gap-10 px-6 pt-10">
-                    <div class="flex flex-col gap-6 text-white md:flex-row md:items-center md:justify-between">
-                        <div class="flex items-center gap-4">
-                            <div class="flex h-16 w-16 items-center justify-center rounded-3xl bg-white/10">
-                                <MenuBillingIcon class="h-8 w-8 text-white" />
-                            </div>
-                            <div class="space-y-2">
-                                <p :class="typography.heroKicker">Xarxa de proveïdors</p>
-                                <h1 :class="typography.heroTitle">Sincronitza relacions clau</h1>
-                                <p :class="typography.heroSubtitle">
-                                    Mantén la relació comercial alineada amb la resta de departaments i detecta ràpidament punts de millora.
-                                </p>
-                            </div>
-                        </div>
-                        <div class="flex justify-end">
-                            <Link
-                                :href="route('suppliers.create')"
-                                class="inline-flex items-center gap-2 rounded-full bg-white/10 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-amber-900/10 transition hover:bg-white/20"
-                            >
-                                <AddIcon class="h-5 w-5" />
-                                Nou proveïdor
-                            </Link>
-                        </div>
-                    </div>
+        <div class="min-h-screen bg-slate-100/80 py-12">
+            <div class="mx-auto flex max-w-7xl flex-col gap-10 px-6">
+                <CrudPageHeader
+                    title="Xarxa de proveïdors"
+                    description="Mantén la relació comercial alineada amb la resta de departaments i detecta ràpidament punts de millora."
+                    :icon="MenuBillingIcon"
+                >
+                    <template #actions>
+                        <Link
+                            :href="route('suppliers.create')"
+                            class="inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800"
+                        >
+                            <AddIcon class="h-5 w-5" />
+                            Nou proveïdor
+                        </Link>
+                    </template>
+                </CrudPageHeader>
 
-                    <div class="grid gap-6 md:grid-cols-3">
-                        <InventorySummaryCard label="Total proveïdors" :value="totalSuppliers">
-                            <template #icon>
-                                <MenuBillingIcon class="h-6 w-6" />
-                            </template>
-                        </InventorySummaryCard>
-                        <InventorySummaryCard label="Amb correu" :value="suppliersWithEmail" description="Contacte immediat">
-                            <template #icon>
-                                <AddIcon class="h-6 w-6" />
-                            </template>
-                        </InventorySummaryCard>
-                        <InventorySummaryCard label="Sense telèfon" :value="suppliersWithoutPhone" description="Requereix seguiment">
-                            <template #icon>
-                                <InfoIcon class="h-6 w-6" />
-                            </template>
-                        </InventorySummaryCard>
-                    </div>
+                <div class="grid gap-6 md:grid-cols-3">
+                    <CrudStatCard label="Total proveïdors" :value="totalSuppliers" :icon="MenuBillingIcon" />
+                    <CrudStatCard label="Amb correu" :value="suppliersWithEmail" :icon="AddIcon" icon-background="bg-emerald-500/10 text-emerald-600">
+                        <template #description>
+                            <p class="text-xs text-slate-500">Contacte immediat</p>
+                        </template>
+                    </CrudStatCard>
+                    <CrudStatCard label="Sense telèfon" :value="suppliersWithoutPhone" :icon="InfoIcon" icon-background="bg-amber-500/10 text-amber-600">
+                        <template #description>
+                            <p class="text-xs text-slate-500">Requereix seguiment</p>
+                        </template>
+                    </CrudStatCard>
                 </div>
-            </div>
 
-            <div class="mx-auto flex max-w-7xl flex-col gap-8 px-6 -mt-16">
-                <InventoryFilterBar :columns="2">
+                <CrudFilterBar>
                     <div class="flex flex-1 flex-col gap-2">
                         <InputLabel for="supplier-search" value="Cerca" />
                         <TextInput
@@ -143,9 +128,9 @@ const typography = inventoryTypography;
                             Netejar filtres
                         </SecondaryButton>
                     </template>
-                </InventoryFilterBar>
+                </CrudFilterBar>
 
-                <InventoryResponsiveTable :is-empty="!filteredSuppliers.length">
+                <CrudTable>
                     <template #head>
                         <tr>
                             <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Nom</th>
@@ -161,27 +146,27 @@ const typography = inventoryTypography;
                         <td class="px-6 py-4 text-sm text-slate-500">{{ supplier.email || '—' }}</td>
                         <td class="px-6 py-4 text-sm text-slate-500">{{ supplier.phone || '—' }}</td>
                         <td class="px-6 py-4 text-sm">
-                            <InventoryStatusBadge :status="supplier.email ? 'active' : 'inactive'">
+                            <span :class="contactStatusBadge(supplier)">
                                 {{ supplier.email ? 'Contacte directe' : 'Sense correu' }}
-                            </InventoryStatusBadge>
+                            </span>
                         </td>
                         <td class="px-6 py-4">
                             <div class="flex items-center justify-end gap-2">
                                 <Link
                                     :href="route('suppliers.show', supplier.id)"
-                                    class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-900/20 text-white transition hover:bg-slate-900/40"
+                                    class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-600 transition hover:bg-slate-100"
                                 >
                                     <InfoIcon class="h-5 w-5" />
                                 </Link>
                                 <Link
                                     :href="route('suppliers.edit', supplier.id)"
-                                    class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-amber-500/10 text-amber-600 transition hover:bg-amber-500/20"
+                                    class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-amber-200 text-amber-600 transition hover:bg-amber-50"
                                 >
                                     <EditIcon class="h-5 w-5" />
                                 </Link>
                                 <button
                                     type="button"
-                                    class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-rose-500/10 text-rose-600 transition hover:bg-rose-500/20"
+                                    class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-rose-200 text-rose-600 transition hover:bg-rose-50"
                                     @click="deleteSupplier(supplier.id)"
                                 >
                                     <DeleteIcon class="h-5 w-5" />
@@ -190,10 +175,12 @@ const typography = inventoryTypography;
                         </td>
                     </tr>
 
-                    <template #empty>
-                        Cap proveïdor compleix els filtres actuals.
-                    </template>
-                </InventoryResponsiveTable>
+                    <tr v-if="!filteredSuppliers.length">
+                        <td colspan="5" class="px-6 py-10 text-center text-sm text-slate-400">
+                            Cap proveïdor compleix els filtres actuals.
+                        </td>
+                    </tr>
+                </CrudTable>
             </div>
         </div>
     </AppLayout>

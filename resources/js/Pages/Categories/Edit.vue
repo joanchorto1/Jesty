@@ -1,26 +1,27 @@
 <template>
     <AppLayout title="Editar categoría">
-        <div class="min-h-screen bg-slate-950">
-            <FinancePageHeader
-                eyebrow="Catálogo"
-                :title="`Editar ${form.name || 'categoría'}`"
-                description="Mantén tus etiquetas contables coherentes para comparar periodos y realizar auditorías con facilidad."
-                :metrics-columns="3"
-            >
-                <template #metrics>
-                    <FinanceSummaryCard label="Nombre" :value="form.name || 'Sin definir'" :helper="`${form.name.length} caracteres`" />
-                    <FinanceSummaryCard label="Descripción" :value="`${descriptionLength} car.`" :helper="descriptionLength ? 'Actualizada' : 'Añade contexto'" />
-                    <FinanceSummaryCard label="Creación" :value="formatDate(category.created_at)" :helper="`Última actualización: ${formatDate(category.updated_at)}`" />
-                </template>
-            </FinancePageHeader>
+        <div class="min-h-screen bg-slate-100/80 py-12">
+            <div class="mx-auto flex max-w-4xl flex-col gap-10 px-6">
+                <CrudPageHeader
+                    :title="`Editar ${form.name || 'categoría'}`"
+                    description="Mantén tus etiquetas contables coherentes para comparar periodos y realizar auditorías con facilidad."
+                />
 
-            <main class="max-w-4xl mx-auto px-6 -mt-16 pb-16 space-y-10">
-                <section class="rounded-3xl border border-white/10 bg-white/95 p-8 shadow-xl">
-                    <header class="mb-8 border-b border-slate-200 pb-4">
-                        <h2 class="text-xl font-semibold text-slate-800">Datos de la categoría</h2>
-                        <p class="mt-1 text-sm text-slate-500">Los cambios se verán reflejados en el resto de vistas contables que utilizan esta categoría.</p>
-                    </header>
+                <div class="grid gap-6 md:grid-cols-3">
+                    <CrudStatCard label="Nombre" :value="form.name || 'Sin definir'" icon-background="bg-sky-500/10 text-sky-600" />
+                    <CrudStatCard label="Descripción" :value="`${descriptionLength} car.`" icon-background="bg-indigo-500/10 text-indigo-600">
+                        <template #description>
+                            <p class="text-xs text-slate-500">{{ descriptionLength ? 'Actualizada' : 'Añade contexto' }}</p>
+                        </template>
+                    </CrudStatCard>
+                    <CrudStatCard label="Creación" :value="formatDate(category.created_at)" icon-background="bg-emerald-500/10 text-emerald-600">
+                        <template #description>
+                            <p class="text-xs text-slate-500">Última actualización: {{ formatDate(category.updated_at) }}</p>
+                        </template>
+                    </CrudStatCard>
+                </div>
 
+                <Panel title="Datos de la categoría" description="Los cambios se verán reflejados en el resto de vistas contables que utilizan esta categoría.">
                     <form @submit.prevent="submit" class="grid grid-cols-1 gap-6">
                         <div>
                             <InputLabel for="name" value="Nombre" />
@@ -46,8 +47,8 @@
                             </NavLink>
                         </div>
                     </form>
-                </section>
-            </main>
+                </Panel>
+            </div>
         </div>
     </AppLayout>
 </template>
@@ -56,8 +57,9 @@
 import { computed } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import FinancePageHeader from '@/Components/Finance/FinancePageHeader.vue';
-import FinanceSummaryCard from '@/Components/Finance/FinanceSummaryCard.vue';
+import CrudPageHeader from '@/Components/Crud/CrudPageHeader.vue';
+import CrudStatCard from '@/Components/Crud/CrudStatCard.vue';
+import Panel from '@/Components/UI/Panel.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import TextareaInput from '@/Components/TextareaInput.vue';
