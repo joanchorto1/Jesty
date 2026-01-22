@@ -1,19 +1,19 @@
 <template>
     <AppLayout>
         <div class="min-h-screen bg-slate-950">
-            <div class="bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 pb-24">
+            <div class="bg-gradient-to-r from-emerald-600 via-sky-600 to-indigo-700 pb-24">
                 <div class="max-w-7xl mx-auto px-6 pt-10">
                     <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
                         <div class="space-y-2">
-                            <p class="text-blue-200 text-sm uppercase tracking-widest">Panel del administrador</p>
+                            <p class="text-emerald-100 text-sm uppercase tracking-widest">Panel administrador Jesty</p>
                             <h1 class="text-3xl sm:text-4xl font-semibold text-white">{{ company.name }}</h1>
-                            <p class="text-sm text-blue-200">Gestiona la cuenta, usuarios y configuración corporativa desde un único lugar.</p>
+                            <p class="text-sm text-emerald-100">Gestiona cuenta, equipo y configuración corporativa con el estilo Jesty.</p>
                         </div>
                         <div class="flex flex-wrap gap-4">
-                            <NavLink :href="route('companies.edit', company.id)" class="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white hover:bg-white/20 transition">
+                            <NavLink :href="route('companies.edit', company.id)" class="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-emerald-500/20 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-500/30 transition">
                                 <EditIcon class="w-4 h-4" /> Editar compañía
                             </NavLink>
-                            <NavLink :href="route('email-configurations.edit', emailConfig.id)" v-if="emailConfig" class="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white hover:bg-white/20 transition">
+                            <NavLink :href="route('email-configurations.edit', emailConfig.id)" v-if="emailConfig" class="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-emerald-500/20 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-500/30 transition">
                                 <EditIcon class="w-4 h-4" /> Editar correo
                             </NavLink>
                         </div>
@@ -22,24 +22,24 @@
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mt-10">
                         <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
-                            <p class="text-xs uppercase tracking-[0.3em] text-blue-200">Usuarios</p>
+                            <p class="text-xs uppercase tracking-[0.3em] text-emerald-100">Usuarios</p>
                             <p class="text-3xl font-semibold mt-2">{{ totalUsers }}</p>
-                            <p class="text-sm text-blue-200 mt-3">{{ activeRoles }} roles disponibles</p>
+                            <p class="text-sm text-emerald-100 mt-3">{{ activeRoles }} roles disponibles</p>
                         </div>
                         <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
-                            <p class="text-xs uppercase tracking-[0.3em] text-blue-200">Plan actual</p>
+                            <p class="text-xs uppercase tracking-[0.3em] text-emerald-100">Plan actual</p>
                             <p class="text-3xl font-semibold mt-2">{{ plan.name }}</p>
-                            <p class="text-sm text-blue-200 mt-3">{{ plan.description }}</p>
+                            <p class="text-sm text-emerald-100 mt-3">{{ plan.description }}</p>
                         </div>
                         <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
-                            <p class="text-xs uppercase tracking-[0.3em] text-blue-200">Características activas</p>
+                            <p class="text-xs uppercase tracking-[0.3em] text-emerald-100">Características activas</p>
                             <p class="text-3xl font-semibold mt-2">{{ features.length }}</p>
-                            <p class="text-sm text-blue-200 mt-3">{{ highlightedFeature }}</p>
+                            <p class="text-sm text-emerald-100 mt-3">{{ highlightedFeature }}</p>
                         </div>
                         <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
-                            <p class="text-xs uppercase tracking-[0.3em] text-blue-200">Estado de correo</p>
+                            <p class="text-xs uppercase tracking-[0.3em] text-emerald-100">Estado de correo</p>
                             <p class="text-3xl font-semibold mt-2">{{ emailConfig ? 'Configurado' : 'Pendiente' }}</p>
-                            <p class="text-sm text-blue-200 mt-3">{{ emailConfig ? emailConfig.from_email : 'Sin configuración SMTP' }}</p>
+                            <p class="text-sm text-emerald-100 mt-3">{{ emailConfig ? emailConfig.from_email : 'Sin configuración SMTP' }}</p>
                         </div>
 
                     </div>
@@ -54,7 +54,7 @@
                                     <h2 class="text-xl font-semibold text-slate-800">Resumen corporativo</h2>
                                     <p class="text-sm text-slate-500 mt-1">Información clave de la empresa y del plan contratado.</p>
                                 </div>
-                                <NavLink :href="route('company.changePlan', company)" class="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition">
+                                <NavLink :href="route('company.changePlan', company)" class="inline-flex items-center gap-2 rounded-lg border border-emerald-200 px-4 py-2 text-sm font-semibold text-emerald-700 hover:bg-emerald-50 transition">
                                     <EditIcon class="w-4 h-4" /> Gestionar plan
                                 </NavLink>
                             </div>
@@ -71,7 +71,7 @@
                                         <p class="text-xs uppercase tracking-widest text-slate-400">Claves API</p>
                                         <p class="mt-2 text-xs text-slate-500 break-all">Public: {{ company.public_key ?? 'No generada' }}</p>
                                         <p class="mt-2 text-xs text-slate-500 break-all">Private: {{ company.private_key ?? 'No generada' }}</p>
-                                        <NavLink :href="route('companies.showKeys', company.id)" class="mt-4 inline-flex items-center gap-2 rounded-lg bg-slate-900 px-3 py-2 text-xs font-semibold text-white hover:bg-slate-700 transition">
+                                        <NavLink :href="route('companies.showKeys', company.id)" class="mt-4 inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-3 py-2 text-xs font-semibold text-white hover:bg-emerald-700 transition">
                                             Gestionar claves
                                         </NavLink>
                                     </div>
@@ -84,9 +84,9 @@
                                         <p class="text-lg font-semibold text-slate-800 mt-4">{{ plan.price }} €/mes</p>
                                         <ul class="mt-3 space-y-2 text-xs text-slate-500">
                                             <li v-for="feature in displayedFeatures" :key="feature.id" class="flex items-center gap-2">
-                                                <span class="h-1.5 w-1.5 rounded-full bg-blue-500"></span>{{ feature.name }}
+                                                <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>{{ feature.name }}
                                             </li>
-                                            <li v-if="features.length > 4" class="text-blue-600 font-medium">+ {{ features.length - 4 }} características más</li>
+                                            <li v-if="features.length > 4" class="text-emerald-600 font-medium">+ {{ features.length - 4 }} características más</li>
                                         </ul>
                                     </div>
                                     <div class="rounded-2xl border border-slate-200/80 bg-white/70 p-4">
@@ -125,7 +125,7 @@
                             <p class="text-sm text-slate-500">Organiza los permisos del equipo y asigna accesos clave.</p>
                             <ul class="mt-4 space-y-3 text-sm text-slate-600 max-h-72 overflow-y-auto pr-2">
                                 <li v-for="role in roles" :key="role.id" class="flex items-start gap-3 rounded-2xl border border-slate-200/80 bg-white/70 p-3">
-                                    <span class="mt-1 h-2 w-2 rounded-full bg-indigo-500"></span>
+                                    <span class="mt-1 h-2 w-2 rounded-full bg-emerald-500"></span>
                                     <div>
                                         <p class="font-semibold text-slate-700">{{ role.name }}</p>
                                         <p class="text-xs text-slate-500">Usuarios asignados: {{ usersAssignedToRole(role.id) }}</p>
@@ -141,11 +141,11 @@
                                 <p class="text-sm text-slate-500">Simplifica la gestión del equipo y la compañía.</p>
                             </div>
                             <div class="grid grid-cols-1 gap-3 text-sm">
-                                <NavLink :href="route('users.create')" class="flex items-center justify-between rounded-2xl border border-slate-200 px-4 py-3 font-semibold text-slate-700 hover:bg-slate-50 transition">
+                                <NavLink :href="route('users.create')" class="flex items-center justify-between rounded-2xl border border-emerald-200 px-4 py-3 font-semibold text-emerald-700 hover:bg-emerald-50 transition">
                                     Invitar nuevo usuario
                                     <AddIcon class="w-4 h-4" />
                                 </NavLink>
-                                <NavLink :href="route('roles.create')" class="flex items-center justify-between rounded-2xl border border-slate-200 px-4 py-3 font-semibold text-slate-700 hover:bg-slate-50 transition">
+                                <NavLink :href="route('roles.create')" class="flex items-center justify-between rounded-2xl border border-emerald-200 px-4 py-3 font-semibold text-emerald-700 hover:bg-emerald-50 transition">
                                     Crear rol personalizado
                                     <AddIcon class="w-4 h-4" />
                                 </NavLink>
@@ -206,7 +206,7 @@ const usersByRoleChart = computed(() => {
         datasets: [
             {
                 label: 'Usuarios',
-                backgroundColor: ['#6366F1', '#10B981', '#F59E0B', '#F97316', '#EC4899'],
+                backgroundColor: ['#34D399', '#38BDF8', '#6366F1', '#F59E0B', '#F472B6'],
                 data: Object.values(roleCounts),
             },
         ],

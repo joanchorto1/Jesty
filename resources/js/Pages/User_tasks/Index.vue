@@ -4,11 +4,11 @@
             <template #header>
                 <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
                     <div class="space-y-2">
-                        <p class="text-blue-200 text-sm uppercase tracking-widest">Tareas</p>
-                        <h1 class="text-3xl sm:text-4xl font-semibold text-white">Gestión de tareas</h1>
-                        <p class="text-sm text-blue-200">Controla el flujo de trabajo del equipo y consulta el estado de las asignaciones.</p>
+                        <p class="text-emerald-100 text-sm uppercase tracking-widest">Jesty · Tareas</p>
+                        <h1 class="text-3xl sm:text-4xl font-semibold text-white">Gestión de tareas Jesty</h1>
+                        <p class="text-sm text-emerald-100">Sigue el flujo de trabajo del equipo y prioriza acciones con claridad.</p>
                     </div>
-                    <NavLink :href="route('user_tasks.adminCreate')" class="inline-flex items-center gap-2 rounded-xl bg-white/10 px-4 py-2 text-sm font-semibold text-white shadow ring-1 ring-white/20 transition hover:bg-white/20">
+                    <NavLink :href="route('user_tasks.adminCreate')" class="inline-flex items-center gap-2 rounded-xl bg-emerald-500/20 px-4 py-2 text-sm font-semibold text-white shadow ring-1 ring-white/20 transition hover:bg-emerald-500/30">
                         Nueva tarea
                     </NavLink>
                 </div>
@@ -22,7 +22,7 @@
 
             <AdminPanel title="Listado de tareas" description="Revisa los detalles y aplica acciones rápidas sobre cada registro.">
                 <AdminTable>
-                    <thead class="bg-slate-50 text-xs font-semibold uppercase tracking-wider text-slate-500">
+                    <thead class="bg-emerald-50/60 text-xs font-semibold uppercase tracking-wider text-slate-500">
                         <tr>
                             <th scope="col" class="px-6 py-3">Tarea</th>
                             <th scope="col" class="px-6 py-3">Descripción</th>

@@ -1,37 +1,37 @@
 <template>
     <AppLayout>
-        <div class="min-h-screen bg-slate-900">
-            <div class="bg-gradient-to-r from-blue-600 via-indigo-600 to-slate-900 pb-24">
+        <div class="min-h-screen bg-slate-950">
+            <div class="bg-gradient-to-r from-emerald-600 via-sky-600 to-indigo-700 pb-24">
                 <div class="max-w-7xl mx-auto px-6 pt-10">
                     <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
                         <div>
-                            <p class="text-blue-200 text-sm uppercase tracking-widest">Panel personal</p>
-                            <h1 class="text-3xl sm:text-4xl font-semibold text-white mt-2">Hola {{ user.name }}, esto es lo que está pasando hoy</h1>
+                            <p class="text-emerald-100 text-sm uppercase tracking-widest">Panel personal Jesty</p>
+                            <h1 class="text-3xl sm:text-4xl font-semibold text-white mt-2">Hola {{ user.name }}, tu día en Jesty está listo</h1>
                         </div>
-                        <NavLink :href="route('user_tasks.create')" class="inline-flex items-center justify-center rounded-xl border border-white/20 bg-white/10 px-5 py-3 text-sm font-semibold text-white hover:bg-white/20 transition">
-                            Crear nueva tarea
+                        <NavLink :href="route('user_tasks.create')" class="inline-flex items-center justify-center rounded-xl border border-white/20 bg-emerald-500/20 px-5 py-3 text-sm font-semibold text-white hover:bg-emerald-500/30 transition">
+                            Crear tarea Jesty
                         </NavLink>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mt-10">
                         <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
-                            <p class="text-xs uppercase tracking-widest text-blue-200">Tareas abiertas</p>
+                            <p class="text-xs uppercase tracking-widest text-emerald-100">Tareas abiertas</p>
                             <p class="text-3xl font-semibold mt-2">{{ openTasks }}</p>
-                            <p class="text-sm text-blue-200 mt-3">{{ inProgressTasks }} en progreso • {{ pendingTasks }} pendientes</p>
+                            <p class="text-sm text-emerald-100 mt-3">{{ inProgressTasks }} en progreso • {{ pendingTasks }} pendientes</p>
                         </div>
                         <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
-                            <p class="text-xs uppercase tracking-widest text-blue-200">Entregas de hoy</p>
+                            <p class="text-xs uppercase tracking-widest text-emerald-100">Entregas de hoy</p>
                             <p class="text-3xl font-semibold mt-2">{{ tasksDueToday }}</p>
-                            <p class="text-sm text-blue-200 mt-3">{{ overdueTasks }} atrasadas sin finalizar</p>
+                            <p class="text-sm text-emerald-100 mt-3">{{ overdueTasks }} atrasadas sin finalizar</p>
                         </div>
                         <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
-                            <p class="text-xs uppercase tracking-widest text-blue-200">Tareas finalizadas</p>
+                            <p class="text-xs uppercase tracking-widest text-emerald-100">Tareas finalizadas</p>
                             <p class="text-3xl font-semibold mt-2">{{ completedTasks }}</p>
-                            <p class="text-sm text-blue-200 mt-3">{{ completionRate }}% de avance</p>
+                            <p class="text-sm text-emerald-100 mt-3">{{ completionRate }}% de avance</p>
                         </div>
                         <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
-                            <p class="text-xs uppercase tracking-widest text-blue-200">Alertas</p>
+                            <p class="text-xs uppercase tracking-widest text-emerald-100">Alertas</p>
                             <p class="text-3xl font-semibold mt-2">{{ unreadNotifications }}</p>
-                            <p class="text-sm text-blue-200 mt-3">Notificaciones pendientes por revisar</p>
+                            <p class="text-sm text-emerald-100 mt-3">Notificaciones pendientes por revisar</p>
                         </div>
                     </div>
                 </div>
@@ -43,11 +43,11 @@
                         <div class="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-sm">
                             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 border-b border-slate-200/70 pb-5">
                                 <div>
-                                    <h2 class="text-xl font-semibold text-slate-800">Agenda y prioridades</h2>
-                                    <p class="text-sm text-slate-500 mt-1">Consulta tu calendario y organiza tus próximos compromisos</p>
+                                    <h2 class="text-xl font-semibold text-slate-800">Agenda y prioridades Jesty</h2>
+                                    <p class="text-sm text-slate-500 mt-1">Visualiza tu calendario y organiza los próximos hitos.</p>
                                 </div>
                                 <div class="flex items-center gap-4 text-sm text-slate-500">
-                                    <div class="flex items-center gap-2"><span class="inline-block h-2 w-2 rounded-full bg-blue-500"></span>En curso</div>
+                                    <div class="flex items-center gap-2"><span class="inline-block h-2 w-2 rounded-full bg-sky-500"></span>En curso</div>
                                     <div class="flex items-center gap-2"><span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>Completadas</div>
                                 </div>
                             </div>
@@ -59,7 +59,7 @@
                                     <h3 class="text-sm font-semibold text-slate-600 mb-3">Próximas entregas</h3>
                                     <ul class="flex-1 space-y-3 overflow-y-auto pr-2">
                                         <li v-for="task in upcomingTasks" :key="`upcoming-${task.id}`" class="flex items-start gap-3 rounded-2xl border border-slate-200/70 bg-white/70 p-4">
-                                            <div :class="['mt-1 h-2.5 w-2.5 rounded-full', task.status === 'completed' ? 'bg-emerald-500' : task.status === 'in_progress' ? 'bg-blue-500' : 'bg-amber-500']"></div>
+                                            <div :class="['mt-1 h-2.5 w-2.5 rounded-full', task.status === 'completed' ? 'bg-emerald-500' : task.status === 'in_progress' ? 'bg-sky-500' : 'bg-amber-500']"></div>
                                             <div>
                                                 <p class="text-sm font-semibold text-slate-700">{{ task.title }}</p>
                                                 <p class="text-xs text-slate-500 mt-1">Entrega {{ formatDate(task.due_date) }}</p>
@@ -75,8 +75,8 @@
                         <div class="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-sm">
                             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 border-b border-slate-200/70 pb-5">
                                 <div>
-                                    <h2 class="text-xl font-semibold text-slate-800">Panel de tareas</h2>
-                                    <p class="text-sm text-slate-500 mt-1">Gestiona tus pendientes, cambia estados y mantén el foco</p>
+                                    <h2 class="text-xl font-semibold text-slate-800">Panel de tareas Jesty</h2>
+                                    <p class="text-sm text-slate-500 mt-1">Gestiona tus pendientes, cambia estados y mantén el foco.</p>
                                 </div>
                             </div>
                             <div class="overflow-x-auto pt-6">
@@ -101,12 +101,12 @@
                                             </td>
                                             <td class="py-4">
                                                 <div class="flex items-center justify-end gap-3 text-slate-500">
-                                                    <NavLink :href="route('user_tasks.show', task.id)" class="hover:text-blue-500 transition"><InfoIcon class="w-5 h-5" title="Ver detalle"/></NavLink>
+                                                    <NavLink :href="route('user_tasks.show', task.id)" class="hover:text-emerald-500 transition"><InfoIcon class="w-5 h-5" title="Ver detalle"/></NavLink>
                                                     <NavLink :href="route('user_tasks.edit', task.id)" class="hover:text-amber-500 transition"><EditIcon class="w-5 h-5" title="Editar"/></NavLink>
                                                     <NavLink v-if="task.status !== 'completed'" :href="route('user_tasks.mark_as_completed', task.id)" class="hover:text-emerald-500 transition" title="Marcar como finalizada">
                                                         <MenuCategoryIcon class="w-5 h-5" />
                                                     </NavLink>
-                                                    <NavLink v-if="task.status !== 'in_progress'" :href="route('user_tasks.mark_as_in_progress', task.id)" class="hover:text-blue-500 transition" title="Marcar como en progreso">
+                                                    <NavLink v-if="task.status !== 'in_progress'" :href="route('user_tasks.mark_as_in_progress', task.id)" class="hover:text-sky-500 transition" title="Marcar como en progreso">
                                                         <MenuProductIcon class="w-5 h-5" />
                                                     </NavLink>
                                                     <button @click="deleteTask(task.id)" class="hover:text-rose-500 transition" title="Eliminar">
@@ -126,8 +126,8 @@
 
                     <div class="space-y-6">
                         <div class="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-sm">
-                            <h2 class="text-xl font-semibold text-slate-800">Resumen visual</h2>
-                            <p class="text-sm text-slate-500 mb-4">Estado de tus tareas y carga mensual</p>
+                            <h2 class="text-xl font-semibold text-slate-800">Resumen visual Jesty</h2>
+                            <p class="text-sm text-slate-500 mb-4">Estado de tus tareas y carga mensual.</p>
                             <div class="space-y-8">
                                 <div>
                                     <p class="text-xs uppercase tracking-widest text-slate-400 mb-3">Distribución por estado</p>
@@ -141,8 +141,8 @@
                         </div>
 
                         <div class="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-sm">
-                            <h2 class="text-xl font-semibold text-slate-800">Notificaciones</h2>
-                            <p class="text-sm text-slate-500 mb-4">Actualizaciones relevantes para mantenerte al día</p>
+                            <h2 class="text-xl font-semibold text-slate-800">Notificaciones Jesty</h2>
+                            <p class="text-sm text-slate-500 mb-4">Actualizaciones relevantes para mantenerte al día.</p>
                             <ul class="space-y-4 max-h-80 overflow-y-auto pr-2">
                                 <li v-for="notification in notifications" :key="notification.id" class="rounded-2xl border border-slate-200/70 bg-white/70 p-4">
                                     <div class="flex items-start justify-between gap-3">
@@ -150,7 +150,7 @@
                                             <p class="text-sm font-semibold text-slate-700">{{ notification.title }}</p>
                                             <p class="text-xs text-slate-500 mt-1">{{ notification.message }}</p>
                                         </div>
-                                        <NavLink :href="route('user-notifications.markAsRead', notification.id)" class="text-xs font-semibold text-blue-600 hover:text-blue-800 transition">Marcar como leído</NavLink>
+                                        <NavLink :href="route('user-notifications.markAsRead', notification.id)" class="text-xs font-semibold text-emerald-600 hover:text-emerald-800 transition">Marcar como leído</NavLink>
                                     </div>
                                 </li>
                                 <li v-if="notifications.length === 0" class="text-sm text-slate-400">No tienes notificaciones pendientes.</li>
@@ -225,7 +225,7 @@ const taskStatusChart = computed(() => {
         datasets: [
             {
                 label: 'Tareas',
-                backgroundColor: ['#6366F1', '#34D399', '#F59E0B', '#38BDF8', '#EC4899'],
+                backgroundColor: ['#34D399', '#38BDF8', '#6366F1', '#F59E0B', '#F472B6'],
                 data: data.length ? data : [1],
             },
         ],
@@ -247,8 +247,8 @@ const taskMonthlyChart = computed(() => {
         datasets: [
             {
                 label: 'Tareas programadas',
-                backgroundColor: 'rgba(59, 130, 246, 0.45)',
-                borderColor: 'rgba(59, 130, 246, 1)',
+                backgroundColor: 'rgba(16, 185, 129, 0.45)',
+                borderColor: 'rgba(16, 185, 129, 1)',
                 borderWidth: 1,
                 data: Object.values(monthlyTotals),
             },
@@ -287,7 +287,7 @@ function statusBadgeClasses(status) {
         case 'completed':
             return 'inline-flex items-center rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700';
         case 'in_progress':
-            return 'inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700';
+            return 'inline-flex items-center rounded-full bg-sky-100 px-3 py-1 text-xs font-semibold text-sky-700';
         case 'pending':
             return 'inline-flex items-center rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700';
         default:

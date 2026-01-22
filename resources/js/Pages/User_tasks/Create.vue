@@ -3,9 +3,9 @@
         <AdminPage>
             <template #header>
                 <div class="space-y-3">
-                    <p class="text-blue-200 text-sm uppercase tracking-widest">Tareas</p>
-                    <h1 class="text-3xl sm:text-4xl font-semibold text-white">Crear tarea personal</h1>
-                    <p class="text-sm text-blue-200 max-w-2xl">Registra una nueva tarea para organizar tu trabajo pendiente.</p>
+                    <p class="text-emerald-100 text-sm uppercase tracking-widest">Jesty · Tareas</p>
+                    <h1 class="text-3xl sm:text-4xl font-semibold text-white">Crear tarea personal en Jesty</h1>
+                    <p class="text-sm text-emerald-100 max-w-2xl">Planifica tu próxima acción con el estilo claro y ágil de Jesty.</p>
                 </div>
             </template>
 
@@ -24,8 +24,8 @@
                         <input id="due_date" v-model="form.due_date" type="date" :class="inputClasses" required />
                     </div>
                     <div class="flex justify-end gap-3">
-                        <NavLink :href="route('user_tasks.index')" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-50">Cancelar</NavLink>
-                        <button type="submit" class="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-slate-700 transition">
+                        <NavLink :href="route('user_tasks.index')" class="inline-flex items-center gap-2 rounded-xl border border-emerald-200 px-4 py-2 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-50">Cancelar</NavLink>
+                        <button type="submit" class="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-emerald-700 transition">
                             Crear tarea
                         </button>
                     </div>
@@ -43,7 +43,7 @@ import NavLink from "@/Components/NavLink.vue";
 import AdminPage from "@/Components/Dashboard/AdminPage.vue";
 import AdminPanel from "@/Components/Dashboard/AdminPanel.vue";
 
-const inputClasses = 'w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/40 focus:outline-none transition';
+const inputClasses = 'w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/40 focus:outline-none transition';
 
 const form = reactive({
     title: '',

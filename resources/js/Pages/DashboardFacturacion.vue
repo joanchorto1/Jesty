@@ -1,38 +1,38 @@
 <template>
     <AppLayout>
         <div class="min-h-screen bg-slate-950">
-            <div class="bg-gradient-to-r from-indigo-700 via-sky-700 to-emerald-700 pb-24">
+            <div class="bg-gradient-to-r from-emerald-600 via-sky-600 to-indigo-700 pb-24">
                 <div class="max-w-7xl mx-auto px-6 pt-10">
                     <div class="space-y-2">
-                        <p class="text-sky-200 text-sm uppercase tracking-widest">Performance de facturación</p>
+                        <p class="text-emerald-100 text-sm uppercase tracking-widest">Jesty · Facturación</p>
                         <h1 class="text-3xl sm:text-4xl font-semibold text-white">Control total de presupuestos e ingresos</h1>
-                        <p class="text-sm text-sky-200">Identifica tendencias, clientes clave y oportunidades para acelerar los cobros.</p>
+                        <p class="text-sm text-emerald-100">Detecta tendencias, clientes clave y oportunidades para acelerar los cobros.</p>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-6 mt-10">
                         <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm xl:col-span-1">
-                            <p class="text-xs uppercase tracking-[0.3em] text-sky-200">Presupuestos</p>
+                            <p class="text-xs uppercase tracking-[0.3em] text-emerald-100">Presupuestos</p>
                             <p class="text-3xl font-semibold mt-2">{{ totalBudgets }}</p>
-                            <p class="text-sm text-sky-200 mt-3">Importe medio €{{ averageBudget }}</p>
+                            <p class="text-sm text-emerald-100 mt-3">Importe medio €{{ averageBudget }}</p>
                         </div>
                         <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm xl:col-span-1">
-                            <p class="text-xs uppercase tracking-[0.3em] text-sky-200">Facturas</p>
+                            <p class="text-xs uppercase tracking-[0.3em] text-emerald-100">Facturas</p>
                             <p class="text-3xl font-semibold mt-2">{{ totalInvoices }}</p>
-                            <p class="text-sm text-sky-200 mt-3">Ticket medio €{{ averageInvoice }}</p>
+                            <p class="text-sm text-emerald-100 mt-3">Ticket medio €{{ averageInvoice }}</p>
                         </div>
                         <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm xl:col-span-1">
-                            <p class="text-xs uppercase tracking-[0.3em] text-sky-200">Clientes</p>
+                            <p class="text-xs uppercase tracking-[0.3em] text-emerald-100">Clientes</p>
                             <p class="text-3xl font-semibold mt-2">{{ totalClients }}</p>
-                            <p class="text-sm text-sky-200 mt-3">Top cliente {{ topClientName }}</p>
+                            <p class="text-sm text-emerald-100 mt-3">Top cliente {{ topClientName }}</p>
                         </div>
                         <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm xl:col-span-1">
-                            <p class="text-xs uppercase tracking-[0.3em] text-sky-200">Cobros pendientes</p>
+                            <p class="text-xs uppercase tracking-[0.3em] text-emerald-100">Cobros pendientes</p>
                             <p class="text-3xl font-semibold mt-2">€{{ outstandingAmount }}</p>
-                            <p class="text-sm text-sky-200 mt-3">{{ outstandingInvoices }} facturas en trámite</p>
+                            <p class="text-sm text-emerald-100 mt-3">{{ outstandingInvoices }} facturas en trámite</p>
                         </div>
                         <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm xl:col-span-1">
-                            <p class="text-xs uppercase tracking-[0.3em] text-sky-200">Cobrado</p>
+                            <p class="text-xs uppercase tracking-[0.3em] text-emerald-100">Cobrado</p>
                             <p class="text-3xl font-semibold mt-2">€{{ totalIncome }}</p>
-                            <p class="text-sm text-sky-200 mt-3">{{ paidPercentage }}% facturas cobradas</p>
+                            <p class="text-sm text-emerald-100 mt-3">{{ paidPercentage }}% facturas cobradas</p>
                         </div>
                     </div>
                 </div>
@@ -63,7 +63,7 @@
                                 <h2 class="text-xl font-semibold text-slate-800">Presupuestos recientes</h2>
                                 <p class="text-sm text-slate-500">Últimas propuestas emitidas y su valor estimado.</p>
                             </div>
-                            <NavLink href="/budgets" class="text-sm font-semibold text-blue-600 hover:text-blue-800">Ver todos</NavLink>
+                            <NavLink href="/budgets" class="text-sm font-semibold text-emerald-600 hover:text-emerald-800">Ver todos</NavLink>
                         </div>
                         <ul class="divide-y divide-slate-200/70 text-sm text-slate-600">
                             <li v-for="budget in recentBudgets" :key="budget.id" class="flex items-center justify-between py-4">
@@ -92,7 +92,7 @@
                                 <h2 class="text-xl font-semibold text-slate-800">Facturas recientes</h2>
                                 <p class="text-sm text-slate-500">Seguimiento de cobros generados en las últimas semanas.</p>
                             </div>
-                            <NavLink href="/invoices" class="text-sm font-semibold text-blue-600 hover:text-blue-800">Ver todos</NavLink>
+                            <NavLink href="/invoices" class="text-sm font-semibold text-emerald-600 hover:text-emerald-800">Ver todos</NavLink>
                         </div>
                         <ul class="divide-y divide-slate-200/70 text-sm text-slate-600">
                             <li v-for="invoice in recentInvoices" :key="invoice.id" class="flex items-center justify-between py-4">
@@ -191,7 +191,7 @@ const budgetClientData = computed(() => {
         datasets: [
             {
                 label: 'Presupuestos',
-                backgroundColor: ['#38BDF8', '#22D3EE', '#818CF8', '#C4B5FD', '#FECACA'],
+                backgroundColor: ['#34D399', '#38BDF8', '#6366F1', '#A855F7', '#F59E0B'],
                 data: Object.values(clientTotals),
             },
         ],
@@ -211,8 +211,8 @@ const invoiceMonthlyData = computed(() => {
         datasets: [
             {
                 label: 'Facturación',
-                backgroundColor: 'rgba(59, 130, 246, 0.35)',
-                borderColor: 'rgba(59, 130, 246, 1)',
+                backgroundColor: 'rgba(16, 185, 129, 0.35)',
+                borderColor: 'rgba(16, 185, 129, 1)',
                 borderWidth: 2,
                 fill: false,
                 tension: 0.4,
@@ -233,7 +233,7 @@ const invoiceStatusChart = computed(() => {
         labels: Object.keys(statuses),
         datasets: [
             {
-                backgroundColor: ['#34D399', '#FBBF24', '#F87171', '#A5B4FC'],
+                backgroundColor: ['#34D399', '#F59E0B', '#F87171', '#6366F1'],
                 data: Object.values(statuses),
             },
         ],
@@ -268,15 +268,15 @@ const budgetVsInvoiceChart = computed(() => {
         datasets: [
             {
                 label: 'Presupuestos',
-                backgroundColor: 'rgba(129, 140, 248, 0.6)',
+                backgroundColor: 'rgba(99, 102, 241, 0.6)',
                 borderColor: 'rgba(99, 102, 241, 1)',
                 borderWidth: 1,
                 data: budgetTotals,
             },
             {
                 label: 'Facturación',
-                backgroundColor: 'rgba(20, 184, 166, 0.6)',
-                borderColor: 'rgba(13, 148, 136, 1)',
+                backgroundColor: 'rgba(16, 185, 129, 0.6)',
+                borderColor: 'rgba(16, 185, 129, 1)',
                 borderWidth: 1,
                 data: invoiceTotals,
             },
