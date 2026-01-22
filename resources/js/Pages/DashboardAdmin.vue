@@ -1,52 +1,48 @@
 <template>
     <AppLayout>
-        <div class="min-h-screen bg-slate-950">
-            <div class="bg-gradient-to-r from-emerald-600 via-sky-600 to-indigo-700 pb-24">
-                <div class="max-w-7xl mx-auto px-6 pt-10">
-                    <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
-                        <div class="space-y-2">
-                            <p class="text-emerald-100 text-sm uppercase tracking-widest">Panel administrador Jesty</p>
-                            <h1 class="text-3xl sm:text-4xl font-semibold text-white">{{ company.name }}</h1>
-                            <p class="text-sm text-emerald-100">Gestiona cuenta, equipo y configuración corporativa con el estilo Jesty.</p>
-                        </div>
+        <div class="min-h-screen bg-slate-100/80 py-12">
+            <div class="mx-auto flex max-w-7xl flex-col gap-10 px-6">
+                <CrudPageHeader
+                    :title="company.name"
+                    description="Gestiona cuenta, equipo y configuración corporativa con el estilo Jesty."
+                >
+                    <template #actions>
                         <div class="flex flex-wrap gap-4">
-                            <NavLink :href="route('companies.edit', company.id)" class="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-emerald-500/20 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-500/30 transition">
+                            <NavLink :href="route('companies.edit', company.id)" class="inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800">
                                 <EditIcon class="w-4 h-4" /> Editar compañía
                             </NavLink>
-                            <NavLink :href="route('email-configurations.edit', emailConfig.id)" v-if="emailConfig" class="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-emerald-500/20 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-500/30 transition">
+                            <NavLink :href="route('email-configurations.edit', emailConfig.id)" v-if="emailConfig" class="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50">
                                 <EditIcon class="w-4 h-4" /> Editar correo
                             </NavLink>
                         </div>
+                    </template>
+                </CrudPageHeader>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+                    <div class="rounded-2xl border border-slate-200/80 bg-white/80 p-5 text-slate-800 shadow-sm">
+                        <p class="text-xs uppercase tracking-[0.3em] text-emerald-500">Usuarios</p>
+                        <p class="text-3xl font-semibold mt-2">{{ totalUsers }}</p>
+                        <p class="text-sm text-slate-500 mt-3">{{ activeRoles }} roles disponibles</p>
+                    </div>
+                    <div class="rounded-2xl border border-slate-200/80 bg-white/80 p-5 text-slate-800 shadow-sm">
+                        <p class="text-xs uppercase tracking-[0.3em] text-emerald-500">Plan actual</p>
+                        <p class="text-3xl font-semibold mt-2">{{ plan.name }}</p>
+                        <p class="text-sm text-slate-500 mt-3">{{ plan.description }}</p>
+                    </div>
+                    <div class="rounded-2xl border border-slate-200/80 bg-white/80 p-5 text-slate-800 shadow-sm">
+                        <p class="text-xs uppercase tracking-[0.3em] text-emerald-500">Características activas</p>
+                        <p class="text-3xl font-semibold mt-2">{{ features.length }}</p>
+                        <p class="text-sm text-slate-500 mt-3">{{ highlightedFeature }}</p>
+                    </div>
+                    <div class="rounded-2xl border border-slate-200/80 bg-white/80 p-5 text-slate-800 shadow-sm">
+                        <p class="text-xs uppercase tracking-[0.3em] text-emerald-500">Estado de correo</p>
+                        <p class="text-3xl font-semibold mt-2">{{ emailConfig ? 'Configurado' : 'Pendiente' }}</p>
+                        <p class="text-sm text-slate-500 mt-3">{{ emailConfig ? emailConfig.from_email : 'Sin configuración SMTP' }}</p>
                     </div>
 
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mt-10">
-                        <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
-                            <p class="text-xs uppercase tracking-[0.3em] text-emerald-100">Usuarios</p>
-                            <p class="text-3xl font-semibold mt-2">{{ totalUsers }}</p>
-                            <p class="text-sm text-emerald-100 mt-3">{{ activeRoles }} roles disponibles</p>
-                        </div>
-                        <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
-                            <p class="text-xs uppercase tracking-[0.3em] text-emerald-100">Plan actual</p>
-                            <p class="text-3xl font-semibold mt-2">{{ plan.name }}</p>
-                            <p class="text-sm text-emerald-100 mt-3">{{ plan.description }}</p>
-                        </div>
-                        <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
-                            <p class="text-xs uppercase tracking-[0.3em] text-emerald-100">Características activas</p>
-                            <p class="text-3xl font-semibold mt-2">{{ features.length }}</p>
-                            <p class="text-sm text-emerald-100 mt-3">{{ highlightedFeature }}</p>
-                        </div>
-                        <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
-                            <p class="text-xs uppercase tracking-[0.3em] text-emerald-100">Estado de correo</p>
-                            <p class="text-3xl font-semibold mt-2">{{ emailConfig ? 'Configurado' : 'Pendiente' }}</p>
-                            <p class="text-sm text-emerald-100 mt-3">{{ emailConfig ? emailConfig.from_email : 'Sin configuración SMTP' }}</p>
-                        </div>
-
-                    </div>
                 </div>
-            </div>
-            <div class="max-w-7xl mx-auto px-6 -mt-16 pb-16 space-y-8">
-                <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                <div class="space-y-8">
+                    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
                     <div class="space-y-6 xl:col-span-2">
                         <div class="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-sm">
                             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 border-b border-slate-200/70 pb-5">
@@ -160,6 +156,7 @@
                             <button @click="deleteCompany" class="w-full rounded-2xl bg-rose-600 px-4 py-3 text-sm font-semibold text-white shadow hover:bg-rose-700 transition">Eliminar empresa</button>
                         </div>
                     </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -175,6 +172,7 @@ import EditIcon from "@/Components/Icons/EditIcon.vue";
 import AddIcon from "@/Components/Icons/AddIcon.vue";
 import PieChart from '@/Components/PieChart.vue';
 import BarChart from '@/Components/BarChart.vue';
+import CrudPageHeader from '@/Components/Crud/CrudPageHeader.vue';
 
 const props = defineProps({
     company: Object,

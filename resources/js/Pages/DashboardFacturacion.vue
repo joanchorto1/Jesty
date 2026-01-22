@@ -1,44 +1,40 @@
 <template>
     <AppLayout>
-        <div class="min-h-screen bg-slate-950">
-            <div class="bg-gradient-to-r from-emerald-600 via-sky-600 to-indigo-700 pb-24">
-                <div class="max-w-7xl mx-auto px-6 pt-10">
-                    <div class="space-y-2">
-                        <p class="text-emerald-100 text-sm uppercase tracking-widest">Jesty · Facturación</p>
-                        <h1 class="text-3xl sm:text-4xl font-semibold text-white">Control total de presupuestos e ingresos</h1>
-                        <p class="text-sm text-emerald-100">Detecta tendencias, clientes clave y oportunidades para acelerar los cobros.</p>
+        <div class="min-h-screen bg-slate-100/80 py-12">
+            <div class="mx-auto flex max-w-7xl flex-col gap-10 px-6">
+                <CrudPageHeader
+                    title="Control total de presupuestos e ingresos"
+                    description="Detecta tendencias, clientes clave y oportunidades para acelerar los cobros."
+                />
+
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-6">
+                    <div class="rounded-2xl border border-slate-200/80 bg-white/80 p-5 text-slate-800 shadow-sm xl:col-span-1">
+                        <p class="text-xs uppercase tracking-[0.3em] text-emerald-500">Presupuestos</p>
+                        <p class="text-3xl font-semibold mt-2">{{ totalBudgets }}</p>
+                        <p class="text-sm text-slate-500 mt-3">Importe medio €{{ averageBudget }}</p>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-6 mt-10">
-                        <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm xl:col-span-1">
-                            <p class="text-xs uppercase tracking-[0.3em] text-emerald-100">Presupuestos</p>
-                            <p class="text-3xl font-semibold mt-2">{{ totalBudgets }}</p>
-                            <p class="text-sm text-emerald-100 mt-3">Importe medio €{{ averageBudget }}</p>
-                        </div>
-                        <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm xl:col-span-1">
-                            <p class="text-xs uppercase tracking-[0.3em] text-emerald-100">Facturas</p>
-                            <p class="text-3xl font-semibold mt-2">{{ totalInvoices }}</p>
-                            <p class="text-sm text-emerald-100 mt-3">Ticket medio €{{ averageInvoice }}</p>
-                        </div>
-                        <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm xl:col-span-1">
-                            <p class="text-xs uppercase tracking-[0.3em] text-emerald-100">Clientes</p>
-                            <p class="text-3xl font-semibold mt-2">{{ totalClients }}</p>
-                            <p class="text-sm text-emerald-100 mt-3">Top cliente {{ topClientName }}</p>
-                        </div>
-                        <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm xl:col-span-1">
-                            <p class="text-xs uppercase tracking-[0.3em] text-emerald-100">Cobros pendientes</p>
-                            <p class="text-3xl font-semibold mt-2">€{{ outstandingAmount }}</p>
-                            <p class="text-sm text-emerald-100 mt-3">{{ outstandingInvoices }} facturas en trámite</p>
-                        </div>
-                        <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm xl:col-span-1">
-                            <p class="text-xs uppercase tracking-[0.3em] text-emerald-100">Cobrado</p>
-                            <p class="text-3xl font-semibold mt-2">€{{ totalIncome }}</p>
-                            <p class="text-sm text-emerald-100 mt-3">{{ paidPercentage }}% facturas cobradas</p>
-                        </div>
+                    <div class="rounded-2xl border border-slate-200/80 bg-white/80 p-5 text-slate-800 shadow-sm xl:col-span-1">
+                        <p class="text-xs uppercase tracking-[0.3em] text-emerald-500">Facturas</p>
+                        <p class="text-3xl font-semibold mt-2">{{ totalInvoices }}</p>
+                        <p class="text-sm text-slate-500 mt-3">Ticket medio €{{ averageInvoice }}</p>
+                    </div>
+                    <div class="rounded-2xl border border-slate-200/80 bg-white/80 p-5 text-slate-800 shadow-sm xl:col-span-1">
+                        <p class="text-xs uppercase tracking-[0.3em] text-emerald-500">Clientes</p>
+                        <p class="text-3xl font-semibold mt-2">{{ totalClients }}</p>
+                        <p class="text-sm text-slate-500 mt-3">Top cliente {{ topClientName }}</p>
+                    </div>
+                    <div class="rounded-2xl border border-slate-200/80 bg-white/80 p-5 text-slate-800 shadow-sm xl:col-span-1">
+                        <p class="text-xs uppercase tracking-[0.3em] text-emerald-500">Cobros pendientes</p>
+                        <p class="text-3xl font-semibold mt-2">€{{ outstandingAmount }}</p>
+                        <p class="text-sm text-slate-500 mt-3">{{ outstandingInvoices }} facturas en trámite</p>
+                    </div>
+                    <div class="rounded-2xl border border-slate-200/80 bg-white/80 p-5 text-slate-800 shadow-sm xl:col-span-1">
+                        <p class="text-xs uppercase tracking-[0.3em] text-emerald-500">Cobrado</p>
+                        <p class="text-3xl font-semibold mt-2">€{{ totalIncome }}</p>
+                        <p class="text-sm text-slate-500 mt-3">{{ paidPercentage }}% facturas cobradas</p>
                     </div>
                 </div>
-            </div>
 
-            <div class="max-w-7xl mx-auto px-6 -mt-16 pb-16 space-y-8">
                 <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
                     <div class="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-sm">
                         <h2 class="text-xl font-semibold text-slate-800">Distribución de presupuestos</h2>
@@ -129,6 +125,7 @@ import PieChart from '@/Components/PieChart.vue';
 import LineChart from '@/Components/LineChart.vue';
 import DoughnutChart from '@/Components/DoughnutChart.vue';
 import NavLink from "@/Components/NavLink.vue";
+import CrudPageHeader from '@/Components/Crud/CrudPageHeader.vue';
 
 const props = defineProps({
     budgets: Array,

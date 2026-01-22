@@ -1,39 +1,35 @@
 <template>
     <AppLayout>
-        <div class="min-h-screen bg-slate-950">
-            <div class="bg-gradient-to-r from-emerald-600 via-sky-600 to-indigo-700 pb-24">
-                <div class="max-w-7xl mx-auto px-6 pt-10">
-                    <div class="space-y-2">
-                        <p class="text-emerald-100 text-sm uppercase tracking-widest">Jesty · RRHH</p>
-                        <h1 class="text-3xl sm:text-4xl font-semibold text-white">Radiografía del equipo humano</h1>
-                        <p class="text-sm text-emerald-100">Analiza la composición, crecimiento y distribución de tu organización.</p>
+        <div class="min-h-screen bg-slate-100/80 py-12">
+            <div class="mx-auto flex max-w-7xl flex-col gap-10 px-6">
+                <CrudPageHeader
+                    title="Radiografía del equipo humano"
+                    description="Analiza la composición, crecimiento y distribución de tu organización."
+                />
+
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+                    <div class="rounded-2xl border border-slate-200/80 bg-white/80 p-5 text-slate-800 shadow-sm">
+                        <p class="text-xs uppercase tracking-[0.3em] text-emerald-500">Empleados</p>
+                        <p class="text-3xl font-semibold mt-2">{{ totalEmployees }}</p>
+                        <p class="text-sm text-slate-500 mt-3">{{ headcountGrowth }}% crecimiento anual</p>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mt-10">
-                        <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
-                            <p class="text-xs uppercase tracking-[0.3em] text-emerald-100">Empleados</p>
-                            <p class="text-3xl font-semibold mt-2">{{ totalEmployees }}</p>
-                            <p class="text-sm text-emerald-100 mt-3">{{ headcountGrowth }}% crecimiento anual</p>
-                        </div>
-                        <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
-                            <p class="text-xs uppercase tracking-[0.3em] text-emerald-100">Departamentos</p>
-                            <p class="text-3xl font-semibold mt-2">{{ totalDepartments }}</p>
-                            <p class="text-sm text-emerald-100 mt-3">{{ averageTeamSize }} personas promedio</p>
-                        </div>
-                        <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
-                            <p class="text-xs uppercase tracking-[0.3em] text-emerald-100">Salario medio</p>
-                            <p class="text-3xl font-semibold mt-2">€{{ averageSalary.toFixed(2) }}</p>
-                            <p class="text-sm text-emerald-100 mt-3">Brecha interdepartamental {{ salaryVariance }}%</p>
-                        </div>
-                        <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
-                            <p class="text-xs uppercase tracking-[0.3em] text-emerald-100">Activos</p>
-                            <p class="text-3xl font-semibold mt-2">{{ totalEmployeesActive }}</p>
-                            <p class="text-sm text-emerald-100 mt-3">{{ inactiveEmployees }} en pausa</p>
-                        </div>
+                    <div class="rounded-2xl border border-slate-200/80 bg-white/80 p-5 text-slate-800 shadow-sm">
+                        <p class="text-xs uppercase tracking-[0.3em] text-emerald-500">Departamentos</p>
+                        <p class="text-3xl font-semibold mt-2">{{ totalDepartments }}</p>
+                        <p class="text-sm text-slate-500 mt-3">{{ averageTeamSize }} personas promedio</p>
+                    </div>
+                    <div class="rounded-2xl border border-slate-200/80 bg-white/80 p-5 text-slate-800 shadow-sm">
+                        <p class="text-xs uppercase tracking-[0.3em] text-emerald-500">Salario medio</p>
+                        <p class="text-3xl font-semibold mt-2">€{{ averageSalary.toFixed(2) }}</p>
+                        <p class="text-sm text-slate-500 mt-3">Brecha interdepartamental {{ salaryVariance }}%</p>
+                    </div>
+                    <div class="rounded-2xl border border-slate-200/80 bg-white/80 p-5 text-slate-800 shadow-sm">
+                        <p class="text-xs uppercase tracking-[0.3em] text-emerald-500">Activos</p>
+                        <p class="text-3xl font-semibold mt-2">{{ totalEmployeesActive }}</p>
+                        <p class="text-sm text-slate-500 mt-3">{{ inactiveEmployees }} en pausa</p>
                     </div>
                 </div>
-            </div>
 
-            <div class="max-w-7xl mx-auto px-6 -mt-16 pb-16 space-y-8">
                 <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
                     <div class="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-sm">
                         <h2 class="text-xl font-semibold text-slate-800">Empleados por departamento</h2>
@@ -91,6 +87,7 @@ import { computed } from 'vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import BarChart from '@/Components/BarChart.vue';
 import PieChart from '@/Components/PieChart.vue';
+import CrudPageHeader from '@/Components/Crud/CrudPageHeader.vue';
 
 const props = defineProps({
     employees: Array,

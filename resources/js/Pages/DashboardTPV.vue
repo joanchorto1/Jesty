@@ -1,28 +1,23 @@
 <template>
     <AppLayout>
-        <div class="min-h-screen bg-slate-950">
-            <div class="bg-gradient-to-r from-emerald-600 via-sky-600 to-indigo-700 pb-24">
-                <div class="max-w-7xl mx-auto px-6 pt-10">
-                    <div class="space-y-2">
-                        <p class="text-emerald-100 text-sm uppercase tracking-widest">Jesty · TPV</p>
-                        <h1 class="text-3xl sm:text-4xl font-semibold text-white">Actividad en punto de venta</h1>
-                        <p class="text-sm text-emerald-100">Monitoriza ventas, tickets y categorías para optimizar tu estrategia comercial.</p>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-6 mt-10">
-                        <KpiCard
-                            v-for="card in kpiCards"
-                            :key="card.key"
-                            gradient
-                            bordered
-                            :subtitle="card.subtitle"
-                            :value="card.value"
-                            :description="card.description"
-                        />
-                    </div>
-                </div>
-            </div>
+        <div class="min-h-screen bg-slate-100/80 py-12">
+            <div class="mx-auto flex max-w-7xl flex-col gap-10 px-6">
+                <CrudPageHeader
+                    title="Actividad en punto de venta"
+                    description="Monitoriza ventas, tickets y categorías para optimizar tu estrategia comercial."
+                />
 
-            <div class="max-w-7xl mx-auto px-6 -mt-16 pb-16 space-y-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-6">
+                    <KpiCard
+                        v-for="card in kpiCards"
+                        :key="card.key"
+                        :bordered="false"
+                        :subtitle="card.subtitle"
+                        :value="card.value"
+                        :description="card.description"
+                    />
+                </div>
+
                 <section class="sr-only" aria-label="Documentación visual del panel TPV">
                     <h2 class="text-base font-semibold">Resumen de elementos visuales</h2>
                     <p>{{ visualDocumentation.summary }}</p>
@@ -98,6 +93,7 @@ import PieChart from '@/Components/PieChart.vue';
 import LineChart from '@/Components/LineChart.vue';
 import AreaChart from '@/Components/AreaChart.vue';
 import KpiCard from '@/Components/KpiCard.vue';
+import CrudPageHeader from '@/Components/Crud/CrudPageHeader.vue';
 
 const props = defineProps({
     tickets: Array,
