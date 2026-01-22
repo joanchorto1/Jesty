@@ -1,40 +1,36 @@
 <template>
     <AppLayout>
-        <div :class="['min-h-screen', palette.background]">
-            <div :class="['bg-gradient-to-r', palette.gradient, layout.heroWrapper]">
-                <div :class="layout.heroContainer">
-                    <div class="space-y-2 text-white">
-                        <p :class="typography.heroKicker">Jesty · Inventari</p>
-                        <h1 :class="typography.heroTitle">Visió global del catàleg de productes</h1>
-                        <p :class="typography.heroSubtitle">Controla categories, estoc i rendiment amb la nova experiència Jesty.</p>
-                    </div>
-                    <div :class="layout.kpiGrid">
-                        <InventoryKpiCard label="Categories" :value="totalCategories">
-                            <template #subtitle>
-                                {{ averageProductsPerCategory }} productes per categoria
-                            </template>
-                        </InventoryKpiCard>
-                        <InventoryKpiCard label="Productes" :value="totalProducts">
-                            <template #subtitle>
-                                {{ activeProducts }} actius
-                            </template>
-                        </InventoryKpiCard>
-                        <InventoryKpiCard label="Estoc disponible" :value="totalStock">
-                            <template #subtitle>
-                                {{ lowStockProducts.length }} productes en alerta
-                            </template>
-                        </InventoryKpiCard>
-                        <InventoryKpiCard label="Preu mitjà" :value="`€${averagePrice}`">
-                            <template #subtitle>
-                                Top vendes {{ topSellingProduct }}
-                            </template>
-                        </InventoryKpiCard>
-                    </div>
-                </div>
-            </div>
+        <div class="min-h-screen bg-slate-100/80 py-12">
+            <div class="mx-auto flex max-w-7xl flex-col gap-10 px-6">
+                <CrudPageHeader
+                    title="Visió global del catàleg de productes"
+                    description="Controla categories, estoc i rendiment amb la nova experiència Jesty."
+                />
 
-            <div :class="layout.bodyWrapper">
-                <div :class="layout.sectionGrid">
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+                    <InventoryKpiCard label="Categories" :value="totalCategories">
+                        <template #subtitle>
+                            {{ averageProductsPerCategory }} productes per categoria
+                        </template>
+                    </InventoryKpiCard>
+                    <InventoryKpiCard label="Productes" :value="totalProducts">
+                        <template #subtitle>
+                            {{ activeProducts }} actius
+                        </template>
+                    </InventoryKpiCard>
+                    <InventoryKpiCard label="Estoc disponible" :value="totalStock">
+                        <template #subtitle>
+                            {{ lowStockProducts.length }} productes en alerta
+                        </template>
+                    </InventoryKpiCard>
+                    <InventoryKpiCard label="Preu mitjà" :value="`€${averagePrice}`">
+                        <template #subtitle>
+                            Top vendes {{ topSellingProduct }}
+                        </template>
+                    </InventoryKpiCard>
+                </div>
+
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
                     <InventoryChartCard title="Quantitat per categoria" subtitle="Visualitza com es distribueix el catàleg.">
                         <BarChart :data="productsByCategoryData" />
                     </InventoryChartCard>
@@ -43,7 +39,7 @@
                     </InventoryChartCard>
                 </div>
 
-                <div :class="layout.sectionGrid">
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
                     <InventoryChartCard title="Rendiment per categoria" subtitle="Vendes estimades segons la demanda registrada.">
                         <RadarChart :data="categorySalesRadar" />
                     </InventoryChartCard>
@@ -78,16 +74,12 @@ import RadarChart from '@/Components/RadarChart.vue';
 import InventoryKpiCard from '@/Components/Inventory/InventoryKpiCard.vue';
 import InventoryChartCard from '@/Components/Inventory/InventoryChartCard.vue';
 import InventoryStatusBadge from '@/Components/Inventory/InventoryStatusBadge.vue';
-import { inventoryLayout, inventoryTypography, inventoryPalette } from '@/Components/Inventory/inventoryTheme';
+import CrudPageHeader from '@/Components/Crud/CrudPageHeader.vue';
 
 const props = defineProps({
     categories: Array,
     products: Array,
 });
-
-const layout = inventoryLayout;
-const typography = inventoryTypography;
-const palette = inventoryPalette;
 
 const totalCategories = computed(() => props.categories.length);
 const totalProducts = computed(() => props.products.length);

@@ -1,43 +1,41 @@
 <template>
     <AppLayout>
-        <div class="min-h-screen bg-slate-950">
-            <div class="bg-gradient-to-r from-emerald-600 via-sky-600 to-indigo-700 pb-24">
-                <div class="max-w-7xl mx-auto px-6 pt-10">
-                    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-                        <div>
-                            <p class="text-emerald-100 text-sm uppercase tracking-widest">Panel personal Jesty</p>
-                            <h1 class="text-3xl sm:text-4xl font-semibold text-white mt-2">Hola {{ user.name }}, tu día en Jesty está listo</h1>
-                        </div>
-                        <NavLink :href="route('user_tasks.create')" class="inline-flex items-center justify-center rounded-xl border border-white/20 bg-emerald-500/20 px-5 py-3 text-sm font-semibold text-white hover:bg-emerald-500/30 transition">
+        <div class="min-h-screen bg-slate-100/80 py-12">
+            <div class="mx-auto flex max-w-7xl flex-col gap-10 px-6">
+                <CrudPageHeader
+                    :title="`Hola ${user.name}, tu día en Jesty está listo`"
+                    description="Panel personal Jesty con todas las prioridades y métricas clave al instante."
+                >
+                    <template #actions>
+                        <NavLink :href="route('user_tasks.create')" class="inline-flex items-center justify-center rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800">
                             Crear tarea Jesty
                         </NavLink>
+                    </template>
+                </CrudPageHeader>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+                    <div class="rounded-2xl border border-slate-200/80 bg-white/80 p-5 text-slate-800 shadow-sm">
+                        <p class="text-xs uppercase tracking-widest text-emerald-500">Tareas abiertas</p>
+                        <p class="text-3xl font-semibold mt-2">{{ openTasks }}</p>
+                        <p class="text-sm text-slate-500 mt-3">{{ inProgressTasks }} en progreso • {{ pendingTasks }} pendientes</p>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mt-10">
-                        <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
-                            <p class="text-xs uppercase tracking-widest text-emerald-100">Tareas abiertas</p>
-                            <p class="text-3xl font-semibold mt-2">{{ openTasks }}</p>
-                            <p class="text-sm text-emerald-100 mt-3">{{ inProgressTasks }} en progreso • {{ pendingTasks }} pendientes</p>
-                        </div>
-                        <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
-                            <p class="text-xs uppercase tracking-widest text-emerald-100">Entregas de hoy</p>
-                            <p class="text-3xl font-semibold mt-2">{{ tasksDueToday }}</p>
-                            <p class="text-sm text-emerald-100 mt-3">{{ overdueTasks }} atrasadas sin finalizar</p>
-                        </div>
-                        <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
-                            <p class="text-xs uppercase tracking-widest text-emerald-100">Tareas finalizadas</p>
-                            <p class="text-3xl font-semibold mt-2">{{ completedTasks }}</p>
-                            <p class="text-sm text-emerald-100 mt-3">{{ completionRate }}% de avance</p>
-                        </div>
-                        <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
-                            <p class="text-xs uppercase tracking-widest text-emerald-100">Alertas</p>
-                            <p class="text-3xl font-semibold mt-2">{{ unreadNotifications }}</p>
-                            <p class="text-sm text-emerald-100 mt-3">Notificaciones pendientes por revisar</p>
-                        </div>
+                    <div class="rounded-2xl border border-slate-200/80 bg-white/80 p-5 text-slate-800 shadow-sm">
+                        <p class="text-xs uppercase tracking-widest text-emerald-500">Entregas de hoy</p>
+                        <p class="text-3xl font-semibold mt-2">{{ tasksDueToday }}</p>
+                        <p class="text-sm text-slate-500 mt-3">{{ overdueTasks }} atrasadas sin finalizar</p>
+                    </div>
+                    <div class="rounded-2xl border border-slate-200/80 bg-white/80 p-5 text-slate-800 shadow-sm">
+                        <p class="text-xs uppercase tracking-widest text-emerald-500">Tareas finalizadas</p>
+                        <p class="text-3xl font-semibold mt-2">{{ completedTasks }}</p>
+                        <p class="text-sm text-slate-500 mt-3">{{ completionRate }}% de avance</p>
+                    </div>
+                    <div class="rounded-2xl border border-slate-200/80 bg-white/80 p-5 text-slate-800 shadow-sm">
+                        <p class="text-xs uppercase tracking-widest text-emerald-500">Alertas</p>
+                        <p class="text-3xl font-semibold mt-2">{{ unreadNotifications }}</p>
+                        <p class="text-sm text-slate-500 mt-3">Notificaciones pendientes por revisar</p>
                     </div>
                 </div>
-            </div>
 
-            <div class="max-w-7xl mx-auto px-6 -mt-16 pb-16 space-y-8">
                 <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
                     <div class="xl:col-span-2 space-y-6">
                         <div class="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-sm">
@@ -168,6 +166,7 @@ import { computed } from 'vue';
 import Calendar from '@/Components/Calendar.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import NavLink from "../Components/NavLink.vue";
+import CrudPageHeader from '@/Components/Crud/CrudPageHeader.vue';
 import { Inertia } from "@inertiajs/inertia";
 import InfoIcon from "@/Components/Icons/InfoIcon.vue";
 import EditIcon from "@/Components/Icons/EditIcon.vue";

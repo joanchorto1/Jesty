@@ -1,39 +1,35 @@
 <template>
     <AppLayout>
-        <div class="min-h-screen bg-slate-950">
-            <div class="bg-gradient-to-r from-emerald-600 via-sky-600 to-indigo-700 pb-24">
-                <div class="max-w-7xl mx-auto px-6 pt-10">
-                    <div class="space-y-2">
-                        <p class="text-emerald-100 text-sm uppercase tracking-widest">Jesty · Contabilidad</p>
-                        <h1 class="text-3xl sm:text-4xl font-semibold text-white">Resumen contable integral</h1>
-                        <p class="text-sm text-emerald-100">Comprende la evolución de ingresos, gastos y rentabilidad en un vistazo.</p>
+        <div class="min-h-screen bg-slate-100/80 py-12">
+            <div class="mx-auto flex max-w-7xl flex-col gap-10 px-6">
+                <CrudPageHeader
+                    title="Resumen contable integral"
+                    description="Comprende la evolución de ingresos, gastos y rentabilidad en un vistazo."
+                />
+
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+                    <div class="rounded-2xl border border-slate-200/80 bg-white/80 p-5 text-slate-800 shadow-sm">
+                        <p class="text-xs uppercase tracking-[0.3em] text-emerald-500">Ingresos</p>
+                        <p class="text-3xl font-semibold mt-2">€{{ totalIncomes }}</p>
+                        <p class="text-sm text-slate-500 mt-3">Promedio mensual €{{ averageIncome }}</p>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mt-10">
-                        <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
-                            <p class="text-xs uppercase tracking-[0.3em] text-emerald-100">Ingresos</p>
-                            <p class="text-3xl font-semibold mt-2">€{{ totalIncomes }}</p>
-                            <p class="text-sm text-emerald-100 mt-3">Promedio mensual €{{ averageIncome }}</p>
-                        </div>
-                        <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
-                            <p class="text-xs uppercase tracking-[0.3em] text-emerald-100">Gastos</p>
-                            <p class="text-3xl font-semibold mt-2">€{{ totalExpenses }}</p>
-                            <p class="text-sm text-emerald-100 mt-3">Coste medio €{{ averageExpense }}</p>
-                        </div>
-                        <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
-                            <p class="text-xs uppercase tracking-[0.3em] text-emerald-100">Beneficio neto</p>
-                            <p class="text-3xl font-semibold mt-2">€{{ profit }}</p>
-                            <p class="text-sm text-emerald-100 mt-3">Margen {{ profitMargin }}%</p>
-                        </div>
-                        <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
-                            <p class="text-xs uppercase tracking-[0.3em] text-emerald-100">Transacciones</p>
-                            <p class="text-3xl font-semibold mt-2">{{ totalTransactions }}</p>
-                            <p class="text-sm text-emerald-100 mt-3">{{ incomes.length }} ingresos • {{ expenses.length }} gastos</p>
-                        </div>
+                    <div class="rounded-2xl border border-slate-200/80 bg-white/80 p-5 text-slate-800 shadow-sm">
+                        <p class="text-xs uppercase tracking-[0.3em] text-emerald-500">Gastos</p>
+                        <p class="text-3xl font-semibold mt-2">€{{ totalExpenses }}</p>
+                        <p class="text-sm text-slate-500 mt-3">Coste medio €{{ averageExpense }}</p>
+                    </div>
+                    <div class="rounded-2xl border border-slate-200/80 bg-white/80 p-5 text-slate-800 shadow-sm">
+                        <p class="text-xs uppercase tracking-[0.3em] text-emerald-500">Beneficio neto</p>
+                        <p class="text-3xl font-semibold mt-2">€{{ profit }}</p>
+                        <p class="text-sm text-slate-500 mt-3">Margen {{ profitMargin }}%</p>
+                    </div>
+                    <div class="rounded-2xl border border-slate-200/80 bg-white/80 p-5 text-slate-800 shadow-sm">
+                        <p class="text-xs uppercase tracking-[0.3em] text-emerald-500">Transacciones</p>
+                        <p class="text-3xl font-semibold mt-2">{{ totalTransactions }}</p>
+                        <p class="text-sm text-slate-500 mt-3">{{ incomes.length }} ingresos • {{ expenses.length }} gastos</p>
                     </div>
                 </div>
-            </div>
 
-            <div class="max-w-7xl mx-auto px-6 -mt-16 pb-16 space-y-8">
                 <div class="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-sm">
                     <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 border-b border-slate-200/70 pb-5">
                         <div>
@@ -87,6 +83,7 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 import BarChart from '@/Components/BarChart.vue';
 import LineChart from '@/Components/LineChart.vue';
 import AreaChart from '@/Components/AreaChart.vue';
+import CrudPageHeader from '@/Components/Crud/CrudPageHeader.vue';
 
 const props = defineProps({
     incomes: Array,

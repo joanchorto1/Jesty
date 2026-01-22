@@ -1,32 +1,29 @@
 <template>
     <AppLayout>
-        <div class="min-h-screen bg-slate-950">
-            <div class="bg-gradient-to-r from-emerald-600 via-sky-600 to-indigo-700 pb-24">
-                <div class="max-w-7xl mx-auto px-6 pt-10">
-                    <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
-                        <div>
-                            <p class="text-emerald-100 text-sm uppercase tracking-widest">Jesty · Clientes</p>
-                            <h1 class="text-3xl sm:text-4xl font-semibold text-white">Visión 360º de tu cartera</h1>
-                            <p class="text-sm text-emerald-100 mt-2">Segmenta, analiza y decide con una vista clara de tus relaciones comerciales.</p>
-                        </div>
-                        <NavLink :href="route('clients.create')" class="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-emerald-500/20 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-500/30 transition">
+        <div class="min-h-screen bg-slate-100/80 py-12">
+            <div class="mx-auto flex max-w-7xl flex-col gap-10 px-6">
+                <CrudPageHeader
+                    title="Visión 360º de tu cartera"
+                    description="Segmenta, analiza y decide con una vista clara de tus relaciones comerciales."
+                >
+                    <template #actions>
+                        <NavLink :href="route('clients.create')" class="inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800">
                             <AddIcon class="w-4 h-4" /> Nuevo cliente
                         </NavLink>
-                    </div>
+                    </template>
+                </CrudPageHeader>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mt-10">
-                        <SummaryCard
-                            v-for="card in summaryCards"
-                            :key="card.eyebrow"
-                            :eyebrow="card.eyebrow"
-                            :value="card.value"
-                            :description="card.description"
-                        />
-                    </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+                    <SummaryCard
+                        v-for="card in summaryCards"
+                        :key="card.eyebrow"
+                        :eyebrow="card.eyebrow"
+                        :value="card.value"
+                        :description="card.description"
+                        variant="light"
+                    />
                 </div>
-            </div>
 
-            <div class="max-w-7xl mx-auto px-6 -mt-16 pb-16 space-y-8">
                 <Panel title="Filtrado inteligente" description="Encuentra el cliente ideal combinando filtros avanzados.">
                     <template #actions>
                         <button @click="clearFilters" class="inline-flex items-center gap-2 rounded-lg border border-emerald-200 px-4 py-2 text-sm font-semibold text-emerald-700 hover:bg-emerald-50 transition">
@@ -130,6 +127,7 @@ import BarChart from '@/Components/BarChart.vue';
 import SummaryCard from '@/Components/UI/SummaryCard.vue';
 import Panel from '@/Components/UI/Panel.vue';
 import DataTable from '@/Components/UI/DataTable.vue';
+import CrudPageHeader from '@/Components/Crud/CrudPageHeader.vue';
 
 const props = defineProps({
     clients: {
