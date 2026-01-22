@@ -1,52 +1,62 @@
 <template>
     <AppLayout>
-        <div class="min-h-screen bg-slate-950 print:bg-white">
-            <FinancePageHeader
-                eyebrow="Control financiero"
-                title="Gastos operativos"
-                description="Visualiza los gastos con filtros dinámicos, gráficas comparables y tarjetas en línea con el panel contable."
-            >
-                <template #actions>
-                    <NavLink
-                        :href="route('expenses.create')"
-                        class="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
-                    >
-                        <AddIcon class="h-4 w-4" />
-                        <span>Registrar gasto</span>
-                    </NavLink>
-                    <button
-                        type="button"
-                        @click="printPage"
-                        class="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
-                    >
-                        Imprimir informe
-                    </button>
-                </template>
-
-                <template #metrics>
-                    <FinanceSummaryCard label="Gasto total" :value="formatCurrency(totalGrossAmount)" :helper="totalGrossHelper" />
-                    <FinanceSummaryCard label="Base imponible" :value="formatCurrency(totalNetAmount)" :helper="totalNetHelper" />
-                    <FinanceSummaryCard label="Ticket medio" :value="formatCurrency(averageGrossAmount)" :helper="averageHelper" />
-                    <FinanceSummaryCard label="Mayor gasto" :value="formatCurrency(highestExpenseGross)" :helper="highestExpenseHelper" />
-                </template>
-            </FinancePageHeader>
-
-            <main class="max-w-7xl mx-auto px-6 -mt-16 pb-16 space-y-10 print:mt-0 print:space-y-6 print:px-0">
-                <section class="bg-white rounded-3xl shadow-xl p-6 print:shadow-none print:rounded-none print:border print:border-slate-200 print:p-4">
-                    <header class="flex flex-col gap-2 border-b border-slate-100 pb-4 sm:flex-row sm:items-end sm:justify-between">
-                        <div>
-                            <h2 class="text-xl font-semibold text-slate-800">Filtrar gastos</h2>
-                            <p class="text-sm text-slate-500">Combina filtros para focalizar tus análisis. Las gráficas y totales se recalculan al instante.</p>
+        <div class="min-h-screen bg-slate-100/80 py-12 print:bg-white">
+            <div class="mx-auto flex max-w-7xl flex-col gap-10 px-6 print:px-0">
+                <CrudPageHeader
+                    title="Gastos operativos"
+                    description="Visualiza los gastos con filtros dinámicos, gráficas comparables y tarjetas en línea con el panel contable."
+                    :icon="MenuExpenseIcon"
+                >
+                    <template #actions>
+                        <div class="flex flex-wrap gap-3">
+                            <NavLink
+                                :href="route('expenses.create')"
+                                class="inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800"
+                            >
+                                <AddIcon class="h-4 w-4" />
+                                <span>Registrar gasto</span>
+                            </NavLink>
+                            <button
+                                type="button"
+                                @click="printPage"
+                                class="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-600 shadow-sm transition hover:bg-slate-50"
+                            >
+                                Imprimir informe
+                            </button>
                         </div>
-                        <button
-                            type="button"
-                            class="inline-flex items-center gap-2 rounded-xl bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-600 transition hover:bg-rose-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-200"
-                            @click="resetFilters"
-                        >
-                            Limpiar filtros
-                        </button>
-                    </header>
-                    <div class="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-6">
+                    </template>
+                </CrudPageHeader>
+
+                <div class="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
+                    <CrudStatCard label="Gasto total" :value="formatCurrency(totalGrossAmount)" :icon="MenuExpenseIcon">
+                        <template #description>
+                            <p class="text-xs text-slate-500">{{ totalGrossHelper }}</p>
+                        </template>
+                    </CrudStatCard>
+                    <CrudStatCard label="Base imponible" :value="formatCurrency(totalNetAmount)" :icon="MenuExpenseIcon" icon-background="bg-indigo-500/10 text-indigo-600">
+                        <template #description>
+                            <p class="text-xs text-slate-500">{{ totalNetHelper }}</p>
+                        </template>
+                    </CrudStatCard>
+                    <CrudStatCard label="Ticket medio" :value="formatCurrency(averageGrossAmount)" :icon="MenuExpenseIcon" icon-background="bg-emerald-500/10 text-emerald-600">
+                        <template #description>
+                            <p class="text-xs text-slate-500">{{ averageHelper }}</p>
+                        </template>
+                    </CrudStatCard>
+                    <CrudStatCard label="Mayor gasto" :value="formatCurrency(highestExpenseGross)" :icon="MenuExpenseIcon" icon-background="bg-amber-500/10 text-amber-600">
+                        <template #description>
+                            <p class="text-xs text-slate-500">{{ highestExpenseHelper }}</p>
+                        </template>
+                    </CrudStatCard>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <h2 class="text-lg font-semibold text-slate-800">Filtrar gastos</h2>
+                        <p class="text-sm text-slate-500">Combina filtros para focalizar tus análisis. Las gráficas y totales se recalculan al instante.</p>
+                    </div>
+                    <CrudFilterBar>
+                        <div class="grid flex-1 grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-6">
                         <label class="flex flex-col text-sm font-medium text-slate-600">
                             Periodo
                             <select
@@ -139,7 +149,7 @@
                             </select>
                         </label>
 
-                        <label class="flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-600">
+                        <label class="flex items-center gap-3 rounded-2xl border border-slate-200/70 bg-white/80 px-4 py-3 text-sm font-medium text-slate-600 shadow-sm">
                             <input
                                 type="checkbox"
                                 v-model="showRecurringOnly"
@@ -148,7 +158,17 @@
                             Solo recurrentes
                         </label>
                     </div>
-                </section>
+                        <template #actions>
+                            <button
+                                type="button"
+                                class="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-600 transition hover:bg-slate-50"
+                                @click="resetFilters"
+                            >
+                                Limpiar filtros
+                            </button>
+                        </template>
+                    </CrudFilterBar>
+                </div>
 
                 <section class="grid grid-cols-1 gap-8 xl:grid-cols-2">
                     <article class="bg-white rounded-3xl shadow-xl p-6 print:shadow-none print:rounded-none print:border print:border-slate-200 print:p-4">
@@ -178,85 +198,83 @@
                     </article>
                 </section>
 
-                <section class="bg-white rounded-3xl shadow-xl p-6 print:shadow-none print:rounded-none print:border print:border-slate-200 print:p-0">
-                    <header class="flex flex-col gap-3 border-b border-slate-100 pb-4 sm:flex-row sm:items-center sm:justify-between">
+                <div class="space-y-4">
+                    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                         <div>
-                            <h2 class="text-xl font-semibold text-slate-800">Relación detallada de gastos</h2>
+                            <h2 class="text-lg font-semibold text-slate-800">Relación detallada de gastos</h2>
                             <p class="text-sm text-slate-500">Información preparada para manejar grandes volúmenes y exportar en papel.</p>
                         </div>
                         <div class="text-right text-sm text-slate-500">
                             {{ filteredCountMessage }}
                         </div>
-                    </header>
-                    <div class="mt-6 overflow-x-auto print:overflow-visible">
-                        <table class="min-w-full divide-y divide-slate-200 text-sm text-slate-600">
-                            <thead class="bg-slate-50/80 text-left text-xs font-semibold uppercase tracking-widest text-slate-500">
-                                <tr>
-                                    <th scope="col" class="px-4 py-3">Identificador</th>
-                                    <th scope="col" class="px-4 py-3">Nombre</th>
-                                    <th scope="col" class="px-4 py-3">Descripción</th>
-                                    <th scope="col" class="px-4 py-3 text-right">Base imponible</th>
-                                    <th scope="col" class="px-4 py-3 text-right">IVA</th>
-                                    <th scope="col" class="px-4 py-3 text-right">Total</th>
-                                    <th scope="col" class="px-4 py-3">Fecha</th>
-                                    <th scope="col" class="px-4 py-3">Método</th>
-                                    <th scope="col" class="px-4 py-3">Categoría</th>
-                                    <th scope="col" class="px-4 py-3 text-center print:hidden">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-100">
-                                <tr
-                                    v-for="expense in visibleExpenses"
-                                    :key="expense.id"
-                                    class="bg-white/60 transition hover:bg-rose-50/60"
-                                >
-                                    <td class="px-4 py-3 font-medium text-slate-700">{{ expense.id }}</td>
-                                    <td class="px-4 py-3">
-                                        <div class="flex flex-col gap-1">
-                                            <div class="flex items-center gap-2">
-                                                <span>{{ expense.name }}</span>
-                                                <span
-                                                    v-if="expense.is_recurring"
-                                                    class="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-700"
-                                                >
-                                                    Recurrente
-                                                </span>
-                                            </div>
-                                            <p
-                                                v-if="expense.is_recurring && expense.next_run_at"
-                                                class="text-xs text-slate-500"
-                                            >
-                                                Próxima ejecución: {{ formatDate(expense.next_run_at) }} · {{ recurringStatusLabel(expense.recurring_status) }}
-                                            </p>
-                                        </div>
-                                    </td>
-                                    <td class="px-4 py-3 max-w-xs truncate" :title="expense.description">{{ expense.description || '—' }}</td>
-                                    <td class="px-4 py-3 text-right">{{ formatCurrency(expense.amount ?? 0) }}</td>
-                                    <td class="px-4 py-3 text-right">{{ formatCurrency(taxAmount(expense)) }}</td>
-                                    <td class="px-4 py-3 text-right">{{ formatCurrency(grossAmount(expense)) }}</td>
-                                    <td class="px-4 py-3 whitespace-nowrap">{{ formatDate(expense.date) }}</td>
-                                    <td class="px-4 py-3">{{ paymentMethodName(expense.payment_method_id) }}</td>
-                                    <td class="px-4 py-3">{{ categoryName(expense.expense_category_id) }}</td>
-                                    <td class="px-4 py-3 text-center print:hidden">
-                                        <div class="flex justify-center gap-3">
-                                            <NavLink :href="route('expenses.show', expense.id)" class="text-slate-500 hover:text-slate-700" title="Ver detalle">
-                                                <InfoIcon class="w-5 h-5" />
-                                            </NavLink>
-                                            <NavLink :href="route('expenses.edit', expense.id)" class="text-emerald-600 hover:text-emerald-800" title="Editar">
-                                                <EditIcon class="w-5 h-5" />
-                                            </NavLink>
-                                            <button
-                                                type="button"
-                                                @click="deleteExpense(expense.id)"
-                                                class="text-rose-500 hover:text-rose-700"
-                                                title="Eliminar"
-                                            >
-                                                <DeleteIcon class="w-5 h-5" />
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
+                    </div>
+                    <CrudTable>
+                        <template #head>
+                            <tr>
+                                <th scope="col" class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-widest text-slate-500">Identificador</th>
+                                <th scope="col" class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-widest text-slate-500">Nombre</th>
+                                <th scope="col" class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-widest text-slate-500">Descripción</th>
+                                <th scope="col" class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-widest text-slate-500">Base imponible</th>
+                                <th scope="col" class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-widest text-slate-500">IVA</th>
+                                <th scope="col" class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-widest text-slate-500">Total</th>
+                                <th scope="col" class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-widest text-slate-500">Fecha</th>
+                                <th scope="col" class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-widest text-slate-500">Método</th>
+                                <th scope="col" class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-widest text-slate-500">Categoría</th>
+                                <th scope="col" class="px-4 py-3 text-center text-xs font-semibold uppercase tracking-widest text-slate-500 print:hidden">Acciones</th>
+                            </tr>
+                        </template>
+                        <tr
+                            v-for="expense in visibleExpenses"
+                            :key="expense.id"
+                            class="bg-white/60 transition hover:bg-rose-50/60"
+                        >
+                            <td class="px-4 py-3 font-medium text-slate-700">{{ expense.id }}</td>
+                            <td class="px-4 py-3">
+                                <div class="flex flex-col gap-1">
+                                    <div class="flex items-center gap-2">
+                                        <span>{{ expense.name }}</span>
+                                        <span
+                                            v-if="expense.is_recurring"
+                                            class="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-700"
+                                        >
+                                            Recurrente
+                                        </span>
+                                    </div>
+                                    <p
+                                        v-if="expense.is_recurring && expense.next_run_at"
+                                        class="text-xs text-slate-500"
+                                    >
+                                        Próxima ejecución: {{ formatDate(expense.next_run_at) }} · {{ recurringStatusLabel(expense.recurring_status) }}
+                                    </p>
+                                </div>
+                            </td>
+                            <td class="px-4 py-3 max-w-xs truncate" :title="expense.description">{{ expense.description || '—' }}</td>
+                            <td class="px-4 py-3 text-right">{{ formatCurrency(expense.amount ?? 0) }}</td>
+                            <td class="px-4 py-3 text-right">{{ formatCurrency(taxAmount(expense)) }}</td>
+                            <td class="px-4 py-3 text-right">{{ formatCurrency(grossAmount(expense)) }}</td>
+                            <td class="px-4 py-3 whitespace-nowrap">{{ formatDate(expense.date) }}</td>
+                            <td class="px-4 py-3">{{ paymentMethodName(expense.payment_method_id) }}</td>
+                            <td class="px-4 py-3">{{ categoryName(expense.expense_category_id) }}</td>
+                            <td class="px-4 py-3 text-center print:hidden">
+                                <div class="flex justify-center gap-3">
+                                    <NavLink :href="route('expenses.show', expense.id)" class="text-slate-500 hover:text-slate-700" title="Ver detalle">
+                                        <InfoIcon class="w-5 h-5" />
+                                    </NavLink>
+                                    <NavLink :href="route('expenses.edit', expense.id)" class="text-emerald-600 hover:text-emerald-800" title="Editar">
+                                        <EditIcon class="w-5 h-5" />
+                                    </NavLink>
+                                    <button
+                                        type="button"
+                                        @click="deleteExpense(expense.id)"
+                                        class="text-rose-500 hover:text-rose-700"
+                                        title="Eliminar"
+                                    >
+                                        <DeleteIcon class="w-5 h-5" />
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <template #footer>
                             <tfoot class="bg-slate-50/80 text-xs uppercase tracking-widest text-slate-500">
                                 <tr>
                                     <td class="px-4 py-3" colspan="3">Totales</td>
@@ -266,10 +284,10 @@
                                     <td class="px-4 py-3" colspan="4"></td>
                                 </tr>
                             </tfoot>
-                        </table>
-                    </div>
-                </section>
-            </main>
+                        </template>
+                    </CrudTable>
+                </div>
+            </div>
         </div>
     </AppLayout>
 </template>
@@ -278,8 +296,10 @@
 import { computed, ref, watch } from 'vue';
 import { Inertia } from '@inertiajs/inertia';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import FinancePageHeader from '@/Components/Finance/FinancePageHeader.vue';
-import FinanceSummaryCard from '@/Components/Finance/FinanceSummaryCard.vue';
+import CrudFilterBar from '@/Components/Crud/CrudFilterBar.vue';
+import CrudPageHeader from '@/Components/Crud/CrudPageHeader.vue';
+import CrudStatCard from '@/Components/Crud/CrudStatCard.vue';
+import CrudTable from '@/Components/Crud/CrudTable.vue';
 import BarChart from '@/Components/BarChart.vue';
 import DoughnutChart from '@/Components/DoughnutChart.vue';
 import NavLink from '@/Components/NavLink.vue';
@@ -287,6 +307,7 @@ import InfoIcon from '@/Components/Icons/InfoIcon.vue';
 import EditIcon from '@/Components/Icons/EditIcon.vue';
 import DeleteIcon from '@/Components/Icons/DeleteIcon.vue';
 import AddIcon from '@/Components/Icons/AddIcon.vue';
+import MenuExpenseIcon from '@/Components/Icons/MenuExpenseIcon.vue';
 
 const props = defineProps({
     expenses: {

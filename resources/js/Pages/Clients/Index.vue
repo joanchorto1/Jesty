@@ -1,54 +1,68 @@
 <template>
     <AppLayout>
-        <div class="min-h-screen bg-slate-950">
-            <div class="bg-gradient-to-r from-emerald-600 via-blue-700 to-slate-900 pb-24">
-                <div class="max-w-7xl mx-auto px-6 pt-10">
-                    <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
-                        <div>
-                            <p class="text-emerald-200 text-sm uppercase tracking-widest">Gestión de clientes</p>
-                            <h1 class="text-3xl sm:text-4xl font-semibold text-white">Clientes de la compañía</h1>
-                            <p class="text-sm text-emerald-200 mt-2">Consulta, filtra y administra tu cartera de clientes desde un único lugar.</p>
-                        </div>
+        <div class="min-h-screen bg-slate-100/80 py-12">
+            <div class="mx-auto flex max-w-7xl flex-col gap-10 px-6">
+                <CrudPageHeader
+                    title="Clientes de la compañía"
+                    description="Consulta, filtra y administra tu cartera de clientes desde un único lugar."
+                    :icon="DashboardIcon"
+                    accent="from-emerald-500 to-sky-500"
+                >
+                    <template #actions>
                         <div class="flex flex-wrap gap-3">
-                            <NavLink :href="route('clients.create')" class="inline-flex items-center gap-2 rounded-xl bg-white/10 px-4 py-2 text-sm font-semibold text-white shadow ring-1 ring-white/20 hover:bg-white/20 transition">
+                            <NavLink :href="route('clients.create')" class="inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800">
                                 <AddIcon class="w-4 h-4" /> Nuevo cliente
                             </NavLink>
-                            <NavLink :href="route('dashboard.clients')" class="inline-flex items-center gap-2 rounded-xl bg-white/10 px-4 py-2 text-sm font-semibold text-white shadow ring-1 ring-white/20 hover:bg-white/20 transition">
+                            <NavLink :href="route('dashboard.clients')" class="inline-flex items-center gap-2 rounded-2xl border border-white/40 bg-white/10 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-white/20">
                                 <DashboardIcon class="w-4 h-4" /> Ver dashboard
                             </NavLink>
                         </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 mt-10">
-                        <SummaryCard v-for="card in summaryCards" :key="card.eyebrow" :eyebrow="card.eyebrow" :value="card.value" :description="card.description" />
-                    </div>
-                </div>
-            </div>
-
-            <div class="max-w-7xl mx-auto px-6 -mt-16 pb-16 space-y-10">
-                <Panel title="Filtros" description="Refina la lista aplicando varios criterios.">
-                    <template #actions>
-                        <button @click="resetFilters" class="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition">
-                            Reiniciar filtros
-                        </button>
                     </template>
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                        <div v-for="field in filterFields" :key="field.id">
-                            <label :for="field.id" class="block text-xs font-semibold uppercase tracking-widest text-slate-400">{{ field.label }}</label>
-                            <component
-                                :is="field.component"
-                                :id="field.id"
-                                v-model="field.model.value"
-                                v-bind="field.props"
-                                class="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-200"
-                            >
-                                <option v-for="option in field.options" :key="option.value" :value="option.value">
-                                    {{ option.label }}
-                                </option>
-                            </component>
-                        </div>
+                </CrudPageHeader>
+
+                <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
+                    <CrudStatCard
+                        v-for="card in summaryCards"
+                        :key="card.eyebrow"
+                        :label="card.eyebrow"
+                        :value="card.value"
+                        icon-background="bg-emerald-500/10 text-emerald-600"
+                    >
+                        <template #description>
+                            <p class="text-xs text-slate-500">{{ card.description }}</p>
+                        </template>
+                    </CrudStatCard>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <h2 class="text-lg font-semibold text-slate-800">Filtros</h2>
+                        <p class="text-sm text-slate-500">Refina la lista aplicando varios criterios.</p>
                     </div>
-                </Panel>
+                    <CrudFilterBar>
+                        <div class="grid flex-1 grid-cols-1 gap-6 md:grid-cols-4">
+                            <div v-for="field in filterFields" :key="field.id">
+                                <label :for="field.id" class="block text-xs font-semibold uppercase tracking-widest text-slate-400">{{ field.label }}</label>
+                                <component
+                                    :is="field.component"
+                                    :id="field.id"
+                                    v-model="field.model.value"
+                                    v-bind="field.props"
+                                    class="mt-2 w-full rounded-2xl border border-slate-200/70 bg-white/80 px-4 py-2 text-sm text-slate-700 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-200"
+                                >
+                                    <option v-for="option in field.options" :key="option.value" :value="option.value">
+                                        {{ option.label }}
+                                    </option>
+                                </component>
+                            </div>
+                        </div>
+                        <template #actions>
+                            <button @click="resetFilters" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition">
+                                Reiniciar filtros
+                            </button>
+                        </template>
+                    </CrudFilterBar>
+                </div>
 
                 <Panel title="Listado de clientes" description="Accede rápidamente al detalle, edición y eliminación." :header-border="true">
                     <DataTable
@@ -91,8 +105,10 @@
 import { computed, ref } from 'vue';
 import { Inertia } from '@inertiajs/inertia';
 import AppLayout from '@/Layouts/AppLayout.vue';
+import CrudFilterBar from '@/Components/Crud/CrudFilterBar.vue';
+import CrudPageHeader from '@/Components/Crud/CrudPageHeader.vue';
+import CrudStatCard from '@/Components/Crud/CrudStatCard.vue';
 import NavLink from '@/Components/NavLink.vue';
-import SummaryCard from '@/Components/UI/SummaryCard.vue';
 import Panel from '@/Components/UI/Panel.vue';
 import DataTable from '@/Components/UI/DataTable.vue';
 import InfoIcon from '@/Components/Icons/InfoIcon.vue';

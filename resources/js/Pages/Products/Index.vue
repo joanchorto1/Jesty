@@ -3,6 +3,10 @@ import { computed, reactive } from 'vue';
 import { Inertia } from '@inertiajs/inertia';
 import { Link } from '@inertiajs/inertia-vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
+import CrudFilterBar from '@/Components/Crud/CrudFilterBar.vue';
+import CrudPageHeader from '@/Components/Crud/CrudPageHeader.vue';
+import CrudStatCard from '@/Components/Crud/CrudStatCard.vue';
+import CrudTable from '@/Components/Crud/CrudTable.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import SelectInput from '@/Components/SelectInput.vue';
@@ -12,11 +16,6 @@ import AddProductIcon from '@/Components/Icons/AddProductIcon.vue';
 import EditIcon from '@/Components/Icons/EditIcon.vue';
 import DeleteIcon from '@/Components/Icons/DeleteIcon.vue';
 import MenuExpenseIcon from '@/Components/Icons/MenuExpenseIcon.vue';
-import InventoryFilterBar from '@/Components/Inventory/InventoryFilterBar.vue';
-import InventoryResponsiveTable from '@/Components/Inventory/InventoryResponsiveTable.vue';
-import InventoryStatusBadge from '@/Components/Inventory/InventoryStatusBadge.vue';
-import InventorySummaryCard from '@/Components/Inventory/InventorySummaryCard.vue';
-import { inventoryPalette, inventoryTypography } from '@/Components/Inventory/inventoryTheme';
 
 const props = defineProps({
     products: {
@@ -77,66 +76,47 @@ const downloadLabel = (labelPath) => {
 const categoryName = (categoryId) =>
     props.categories.find((category) => Number(category.id) === Number(categoryId))?.name ?? '—';
 
-const palette = inventoryPalette;
-const typography = inventoryTypography;
-
-const stockStatus = (product) => (Number(product.stock) > 0 ? 'in_stock' : 'out_of_stock');
+const stockBadgeClasses = (product) =>
+    Number(product.stock) > 0
+        ? 'inline-flex items-center rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700'
+        : 'inline-flex items-center rounded-full bg-rose-100 px-3 py-1 text-xs font-semibold text-rose-600';
 </script>
 
 <template>
     <AppLayout title="Catàleg de productes">
-        <div :class="['min-h-screen pb-16', palette.background]">
-            <div :class="['bg-gradient-to-r', palette.gradient, 'pb-24']">
-                <div class="mx-auto flex max-w-7xl flex-col gap-10 px-6 pt-10">
-                    <div class="flex flex-col gap-6 text-white md:flex-row md:items-center md:justify-between">
-                        <div class="flex items-center gap-4">
-                            <div class="flex h-16 w-16 items-center justify-center rounded-3xl bg-white/10">
-                                <MenuProductIcon class="h-8 w-8 text-white" />
-                            </div>
-                            <div class="space-y-2">
-                                <p :class="typography.heroKicker">Catàleg de productes</p>
-                                <h1 :class="typography.heroTitle">Control integral del portfoli</h1>
-                                <p :class="typography.heroSubtitle">
-                                    Consulta, filtra i gestiona els productes disponibles per a la venda i el control d'estoc.
-                                </p>
-                            </div>
-                        </div>
-                        <div class="flex justify-end">
-                            <Link
-                                :href="route('products.create')"
-                                class="inline-flex items-center gap-2 rounded-full bg-white/10 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-amber-900/10 transition hover:bg-white/20"
-                            >
-                                <AddProductIcon class="h-5 w-5" />
-                                Nou producte
-                            </Link>
-                        </div>
-                    </div>
+        <div class="min-h-screen bg-slate-100/80 py-12">
+            <div class="mx-auto flex max-w-7xl flex-col gap-10 px-6">
+                <CrudPageHeader
+                    title="Catàleg de productes"
+                    description="Consulta, filtra i gestiona els productes disponibles per a la venda i el control d'estoc."
+                    :icon="MenuProductIcon"
+                >
+                    <template #actions>
+                        <Link
+                            :href="route('products.create')"
+                            class="inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800"
+                        >
+                            <AddProductIcon class="h-5 w-5" />
+                            Nou producte
+                        </Link>
+                    </template>
+                </CrudPageHeader>
 
-                    <div class="grid gap-6 md:grid-cols-3">
-                        <InventorySummaryCard label="Total de productes" :value="totalProducts">
-                            <template #icon>
-                                <MenuProductIcon class="h-6 w-6" />
-                            </template>
-                        </InventorySummaryCard>
-                        <InventorySummaryCard label="En estoc" :value="inStock">
-                            <template #icon>
-                                <AddProductIcon class="h-6 w-6" />
-                            </template>
-                            <template #description>
-                                Disponibles immediatament
-                            </template>
-                        </InventorySummaryCard>
-                        <InventorySummaryCard label="Sense estoc" :value="outOfStock" description="Revisa les reposicions pendents">
-                            <template #icon>
-                                <MenuExpenseIcon class="h-6 w-6" />
-                            </template>
-                        </InventorySummaryCard>
-                    </div>
+                <div class="grid gap-6 md:grid-cols-3">
+                    <CrudStatCard label="Total de productes" :value="totalProducts" :icon="MenuProductIcon" />
+                    <CrudStatCard label="En estoc" :value="inStock" :icon="AddProductIcon" icon-background="bg-emerald-500/10 text-emerald-600">
+                        <template #description>
+                            <p class="text-xs text-slate-500">Disponibles immediatament</p>
+                        </template>
+                    </CrudStatCard>
+                    <CrudStatCard label="Sense estoc" :value="outOfStock" :icon="MenuExpenseIcon" icon-background="bg-rose-500/10 text-rose-600">
+                        <template #description>
+                            <p class="text-xs text-slate-500">Revisa les reposicions pendents</p>
+                        </template>
+                    </CrudStatCard>
                 </div>
-            </div>
 
-            <div class="mx-auto flex max-w-7xl flex-col gap-8 px-6 -mt-16">
-                <InventoryFilterBar>
+                <CrudFilterBar>
                     <div class="flex flex-1 flex-col gap-2">
                         <InputLabel for="search" value="Cerca" />
                         <TextInput
@@ -172,9 +152,9 @@ const stockStatus = (product) => (Number(product.stock) > 0 ? 'in_stock' : 'out_
                             Netejar filtres
                         </SecondaryButton>
                     </template>
-                </InventoryFilterBar>
+                </CrudFilterBar>
 
-                <InventoryResponsiveTable :is-empty="!filteredProducts.length">
+                <CrudTable>
                     <template #head>
                         <tr>
                             <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Nom</th>
@@ -190,21 +170,21 @@ const stockStatus = (product) => (Number(product.stock) > 0 ? 'in_stock' : 'out_
                         <td class="px-6 py-4 text-sm text-slate-500">{{ categoryName(product.category_id) }}</td>
                         <td class="px-6 py-4 text-sm text-slate-500">{{ Number(product.price).toFixed(2) }}</td>
                         <td class="px-6 py-4 text-sm font-semibold">
-                            <InventoryStatusBadge :status="stockStatus(product)">
+                            <span :class="stockBadgeClasses(product)">
                                 {{ Number(product.stock ?? 0) }}
-                            </InventoryStatusBadge>
+                            </span>
                         </td>
                         <td class="px-6 py-4">
                             <div class="flex items-center justify-end gap-2">
                                 <Link
                                     :href="route('products.edit', product.id)"
-                                    class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-amber-500/10 text-amber-600 transition hover:bg-amber-500/20"
+                                    class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-amber-200 text-amber-600 transition hover:bg-amber-50"
                                 >
                                     <EditIcon class="h-5 w-5" />
                                 </Link>
                                 <button
                                     type="button"
-                                    class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-900/20 text-white transition hover:bg-slate-900/40"
+                                    class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-600 transition hover:bg-slate-100"
                                     @click="downloadLabel(product.label_path)"
                                     :title="product.label_path ? 'Descarregar etiqueta' : 'Sense etiqueta disponible'"
                                 >
@@ -212,7 +192,7 @@ const stockStatus = (product) => (Number(product.stock) > 0 ? 'in_stock' : 'out_
                                 </button>
                                 <button
                                     type="button"
-                                    class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-rose-500/10 text-rose-600 transition hover:bg-rose-500/20"
+                                    class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-rose-200 text-rose-600 transition hover:bg-rose-50"
                                     @click="deleteProduct(product.id)"
                                 >
                                     <DeleteIcon class="h-5 w-5" />
@@ -221,10 +201,12 @@ const stockStatus = (product) => (Number(product.stock) > 0 ? 'in_stock' : 'out_
                         </td>
                     </tr>
 
-                    <template #empty>
-                        Cap resultat coincideix amb els filtres actuals.
-                    </template>
-                </InventoryResponsiveTable>
+                    <tr v-if="!filteredProducts.length">
+                        <td colspan="5" class="px-6 py-10 text-center text-sm text-slate-400">
+                            Cap resultat coincideix amb els filtres actuals.
+                        </td>
+                    </tr>
+                </CrudTable>
             </div>
         </div>
     </AppLayout>

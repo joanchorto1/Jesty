@@ -3,19 +3,18 @@ import { computed, reactive } from 'vue';
 import { Inertia } from '@inertiajs/inertia';
 import { Link } from '@inertiajs/inertia-vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
+import CrudFilterBar from '@/Components/Crud/CrudFilterBar.vue';
+import CrudPageHeader from '@/Components/Crud/CrudPageHeader.vue';
+import CrudStatCard from '@/Components/Crud/CrudStatCard.vue';
+import CrudTable from '@/Components/Crud/CrudTable.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
-import InventoryFilterBar from '@/Components/Inventory/InventoryFilterBar.vue';
-import InventoryResponsiveTable from '@/Components/Inventory/InventoryResponsiveTable.vue';
-import InventoryStatusBadge from '@/Components/Inventory/InventoryStatusBadge.vue';
-import InventorySummaryCard from '@/Components/Inventory/InventorySummaryCard.vue';
 import MenuProductIcon from '@/Components/Icons/MenuProductIcon.vue';
 import AddIcon from '@/Components/Icons/AddIcon.vue';
 import EditIcon from '@/Components/Icons/EditIcon.vue';
 import DeleteIcon from '@/Components/Icons/DeleteIcon.vue';
 import InfoIcon from '@/Components/Icons/InfoIcon.vue';
-import { inventoryPalette, inventoryTypography } from '@/Components/Inventory/inventoryTheme';
 
 const props = defineProps({
     categories: Array,
@@ -49,61 +48,43 @@ const deleteCategory = (id) => {
     }
 };
 
-const palette = inventoryPalette;
-const typography = inventoryTypography;
+const descriptionBadgeClass = (category) =>
+    category.description
+        ? 'inline-flex items-center rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700'
+        : 'inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-500';
 </script>
 
 <template>
     <AppLayout>
-        <div :class="['min-h-screen pb-16', palette.background]">
-            <div :class="['bg-gradient-to-r', palette.gradient, 'pb-24']">
-                <div class="mx-auto flex max-w-7xl flex-col gap-10 px-6 pt-10">
-                    <div class="flex flex-col gap-6 text-white md:flex-row md:items-center md:justify-between">
-                        <div class="flex items-center gap-4">
-                            <div class="flex h-16 w-16 items-center justify-center rounded-3xl bg-white/10">
-                                <MenuProductIcon class="h-8 w-8 text-white" />
-                            </div>
-                            <div class="space-y-2">
-                                <p :class="typography.heroKicker">Gestió de categories</p>
-                                <h1 :class="typography.heroTitle">Classifica el catàleg amb coherència</h1>
-                                <p :class="typography.heroSubtitle">
-                                    Organitza les línies de producte per facilitar la cerca i l'anàlisi de vendes.
-                                </p>
-                            </div>
-                        </div>
-                        <div class="flex justify-end">
-                            <Link
-                                :href="route('categories.create')"
-                                class="inline-flex items-center gap-2 rounded-full bg-white/10 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-amber-900/10 transition hover:bg-white/20"
-                            >
-                                <AddIcon class="h-5 w-5" />
-                                Nova categoria
-                            </Link>
-                        </div>
-                    </div>
+        <div class="min-h-screen bg-slate-100/80 py-12">
+            <div class="mx-auto flex max-w-7xl flex-col gap-10 px-6">
+                <CrudPageHeader
+                    title="Gestió de categories"
+                    description="Organitza les línies de producte per facilitar la cerca i l'anàlisi de vendes."
+                    :icon="MenuProductIcon"
+                >
+                    <template #actions>
+                        <Link
+                            :href="route('categories.create')"
+                            class="inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800"
+                        >
+                            <AddIcon class="h-5 w-5" />
+                            Nova categoria
+                        </Link>
+                    </template>
+                </CrudPageHeader>
 
-                    <div class="grid gap-6 md:grid-cols-3">
-                        <InventorySummaryCard label="Total categories" :value="totalCategories">
-                            <template #icon>
-                                <MenuProductIcon class="h-6 w-6" />
-                            </template>
-                        </InventorySummaryCard>
-                        <InventorySummaryCard label="Amb descripció" :value="withDescription">
-                            <template #icon>
-                                <InfoIcon class="h-6 w-6" />
-                            </template>
-                        </InventorySummaryCard>
-                        <InventorySummaryCard label="Sense descripció" :value="withoutDescription" description="Completa la fitxa per millorar el catàleg">
-                            <template #icon>
-                                <DeleteIcon class="h-6 w-6" />
-                            </template>
-                        </InventorySummaryCard>
-                    </div>
+                <div class="grid gap-6 md:grid-cols-3">
+                    <CrudStatCard label="Total categories" :value="totalCategories" :icon="MenuProductIcon" />
+                    <CrudStatCard label="Amb descripció" :value="withDescription" :icon="InfoIcon" icon-background="bg-emerald-500/10 text-emerald-600" />
+                    <CrudStatCard label="Sense descripció" :value="withoutDescription" :icon="DeleteIcon" icon-background="bg-amber-500/10 text-amber-600">
+                        <template #description>
+                            <p class="text-xs text-slate-500">Completa la fitxa per millorar el catàleg</p>
+                        </template>
+                    </CrudStatCard>
                 </div>
-            </div>
 
-            <div class="mx-auto flex max-w-7xl flex-col gap-8 px-6 -mt-16">
-                <InventoryFilterBar :columns="1">
+                <CrudFilterBar>
                     <div class="flex flex-1 flex-col gap-2">
                         <InputLabel for="category-search" value="Cerca" />
                         <TextInput
@@ -120,9 +101,9 @@ const typography = inventoryTypography;
                             Netejar filtres
                         </SecondaryButton>
                     </template>
-                </InventoryFilterBar>
+                </CrudFilterBar>
 
-                <InventoryResponsiveTable :is-empty="!filteredCategories.length">
+                <CrudTable>
                     <template #head>
                         <tr>
                             <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Nom</th>
@@ -136,21 +117,21 @@ const typography = inventoryTypography;
                         <td class="px-6 py-4 text-sm font-medium text-slate-700">{{ category.name }}</td>
                         <td class="px-6 py-4 text-sm text-slate-500">{{ category.description || '—' }}</td>
                         <td class="px-6 py-4 text-sm">
-                            <InventoryStatusBadge :status="category.description ? 'active' : 'inactive'">
+                            <span :class="descriptionBadgeClass(category)">
                                 {{ category.description ? 'Informació completa' : 'Pendents detalls' }}
-                            </InventoryStatusBadge>
+                            </span>
                         </td>
                         <td class="px-6 py-4">
                             <div class="flex items-center justify-end gap-2">
                                 <Link
                                     :href="route('categories.edit', category.id)"
-                                    class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-amber-500/10 text-amber-600 transition hover:bg-amber-500/20"
+                                    class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-amber-200 text-amber-600 transition hover:bg-amber-50"
                                 >
                                     <EditIcon class="h-5 w-5" />
                                 </Link>
                                 <button
                                     type="button"
-                                    class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-rose-500/10 text-rose-600 transition hover:bg-rose-500/20"
+                                    class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-rose-200 text-rose-600 transition hover:bg-rose-50"
                                     @click="deleteCategory(category.id)"
                                 >
                                     <DeleteIcon class="h-5 w-5" />
@@ -159,10 +140,12 @@ const typography = inventoryTypography;
                         </td>
                     </tr>
 
-                    <template #empty>
-                        Cap categoria coincideix amb la cerca actual.
-                    </template>
-                </InventoryResponsiveTable>
+                    <tr v-if="!filteredCategories.length">
+                        <td colspan="4" class="px-6 py-10 text-center text-sm text-slate-400">
+                            Cap categoria coincideix amb la cerca actual.
+                        </td>
+                    </tr>
+                </CrudTable>
             </div>
         </div>
     </AppLayout>

@@ -1,40 +1,31 @@
 <template>
     <AppLayout title="Editar gasto">
-        <div class="min-h-screen bg-slate-950">
-            <FinancePageHeader
-                eyebrow="Contabilidad"
-                :title="`Editar ${form.name || 'gasto'}`"
-                description="Actualiza los datos del gasto con una interfaz alineada al resto de la suite contable."
-                :metrics-columns="3"
-            >
-                <template #metrics>
-                    <FinanceSummaryCard
-                        label="Base imponible"
-                        :value="formatCurrency(form.amount)"
-                        :helper="form.date ? formatDate(form.date) : 'Fecha pendiente'"
-                    />
-                    <FinanceSummaryCard
-                        label="IVA recalculado"
-                        :value="formatCurrency(taxAmount)"
-                        :helper="`${form.iva || 0}% aplicado`"
-                    />
-                    <FinanceSummaryCard
-                        label="Total actualizado"
-                        :value="formatCurrency(totalAmount)"
-                        :helper="form.payment_method_id ? paymentMethodName : 'Método pendiente'"
-                    />
-                </template>
-            </FinancePageHeader>
+        <div class="min-h-screen bg-slate-100/80 py-12">
+            <div class="mx-auto flex max-w-5xl flex-col gap-10 px-6">
+                <CrudPageHeader
+                    :title="`Editar ${form.name || 'gasto'}`"
+                    description="Actualiza los datos del gasto con una interfaz alineada al resto de la suite contable."
+                />
 
-            <main class="max-w-5xl mx-auto px-6 -mt-16 pb-16 space-y-10">
-                <section class="rounded-3xl border border-white/10 bg-white/95 p-8 shadow-xl">
-                    <header class="mb-8 border-b border-slate-200 pb-4">
-                        <h2 class="text-xl font-semibold text-slate-800">Detalles del gasto</h2>
-                        <p class="mt-1 text-sm text-slate-500">
-                            Los cambios se reflejarán en informes, dashboards y en la ficha del gasto inmediatamente.
-                        </p>
-                    </header>
+                <div class="grid gap-6 md:grid-cols-3">
+                    <CrudStatCard label="Base imponible" :value="formatCurrency(form.amount)" icon-background="bg-sky-500/10 text-sky-600">
+                        <template #description>
+                            <p class="text-xs text-slate-500">{{ form.date ? formatDate(form.date) : 'Fecha pendiente' }}</p>
+                        </template>
+                    </CrudStatCard>
+                    <CrudStatCard label="IVA recalculado" :value="formatCurrency(taxAmount)" icon-background="bg-amber-500/10 text-amber-600">
+                        <template #description>
+                            <p class="text-xs text-slate-500">{{ `${form.iva || 0}% aplicado` }}</p>
+                        </template>
+                    </CrudStatCard>
+                    <CrudStatCard label="Total actualizado" :value="formatCurrency(totalAmount)" icon-background="bg-emerald-500/10 text-emerald-600">
+                        <template #description>
+                            <p class="text-xs text-slate-500">{{ form.payment_method_id ? paymentMethodName : 'Método pendiente' }}</p>
+                        </template>
+                    </CrudStatCard>
+                </div>
 
+                <Panel title="Detalles del gasto" description="Los cambios se reflejarán en informes, dashboards y en la ficha del gasto inmediatamente.">
                     <form @submit.prevent="submitForm" class="grid grid-cols-1 gap-6 sm:grid-cols-2">
                         <div>
                             <InputLabel for="date" value="Fecha" />
@@ -124,8 +115,8 @@
                             </NavLink>
                         </div>
                     </form>
-                </section>
-            </main>
+                </Panel>
+            </div>
         </div>
     </AppLayout>
 </template>
@@ -134,8 +125,9 @@
 import { computed, ref } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import FinancePageHeader from '@/Components/Finance/FinancePageHeader.vue';
-import FinanceSummaryCard from '@/Components/Finance/FinanceSummaryCard.vue';
+import CrudPageHeader from '@/Components/Crud/CrudPageHeader.vue';
+import CrudStatCard from '@/Components/Crud/CrudStatCard.vue';
+import Panel from '@/Components/UI/Panel.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import TextareaInput from '@/Components/TextareaInput.vue';
