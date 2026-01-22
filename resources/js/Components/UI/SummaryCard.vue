@@ -34,13 +34,14 @@ const props = defineProps({
 
 const variantStyles = {
     glass: {
-        wrapper: 'rounded-2xl border border-slate-200 bg-white p-6 text-slate-800',
-        eyebrow: 'text-slate-500',
-        description: 'text-slate-500',
+        wrapper: 'rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm',
+        eyebrow: 'text-emerald-100/80',
+        description: 'text-emerald-100/80',
     },
     light: {
-        wrapper: 'rounded-2xl border border-slate-200 bg-white p-6 text-slate-800',
-        eyebrow: 'text-slate-500',
+        wrapper: 'rounded-2xl border border-slate-200/80 bg-white/80 p-5 text-slate-800 shadow-sm',
+        eyebrow: 'text-emerald-500',
+
         description: 'text-slate-500',
     },
 };

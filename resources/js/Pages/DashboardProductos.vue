@@ -49,7 +49,7 @@
                     </InventoryChartCard>
                     <InventoryChartCard title="Alertes d'estoc crític" subtitle="Prioritza reposicions amb major impacte comercial." kicker="Prioritat">
                         <ul class="mt-6 space-y-3 max-h-80 overflow-y-auto pr-2 text-sm text-slate-600">
-                            <li v-for="product in lowStockProducts" :key="product.id" class="flex items-center justify-between rounded-2xl border border-slate-200/70 p-4">
+                            <li v-for="product in lowStockProducts" :key="product.id" class="flex items-center justify-between rounded-2xl border border-slate-200/70 bg-white/70 p-4">
                                 <div>
                                     <p class="font-semibold text-slate-700">{{ product.name }}</p>
                                     <p class="text-xs text-slate-400">Estoc actual: {{ product.stock ?? product.quantity ?? 0 }}</p>
@@ -58,7 +58,7 @@
                                     {{ product.category?.name ?? 'Sense categoria' }}
                                 </InventoryStatusBadge>
                             </li>
-                            <li v-if="lowStockProducts.length === 0" class="rounded-2xl border border-dashed border-slate-200 p-6 text-center text-sm text-slate-400">
+                            <li v-if="lowStockProducts.length === 0" class="rounded-2xl border border-dashed border-slate-200/80 bg-white/60 p-6 text-center text-sm text-slate-400">
                                 No hi ha productes amb estoc crític.
                             </li>
                         </ul>

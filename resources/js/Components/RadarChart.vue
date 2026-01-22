@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="rounded-2xl border border-slate-200/80 bg-slate-50/80 p-4">
         <canvas ref="radarChart"></canvas>
     </div>
 </template>

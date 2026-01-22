@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="rounded-2xl border border-slate-200/80 bg-slate-50/80 p-4">
         <canvas ref="pieChart"></canvas>
     </div>
 </template>
@@ -51,4 +51,3 @@ canvas {
     height: 300px;
 }
 </style>
-

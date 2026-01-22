@@ -9,12 +9,12 @@
                             <h1 class="text-3xl sm:text-4xl font-semibold text-white">Visión 360º de tu cartera</h1>
                             <p class="text-sm text-emerald-200 mt-2">Segmenta, analiza y toma decisiones informadas sobre tus relaciones comerciales.</p>
                         </div>
-                        <NavLink :href="route('clients.create')" class="inline-flex items-center gap-2 rounded-xl bg-white/10 px-4 py-2 text-sm font-semibold text-white shadow ring-1 ring-white/20 hover:bg-white/20 transition">
+                        <NavLink :href="route('clients.create')" class="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white hover:bg-white/20 transition">
                             <AddIcon class="w-4 h-4" /> Nuevo cliente
                         </NavLink>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 mt-10">
+                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mt-10">
                         <SummaryCard
                             v-for="card in summaryCards"
                             :key="card.eyebrow"
@@ -26,7 +26,7 @@
                 </div>
             </div>
 
-            <div class="max-w-7xl mx-auto px-6 -mt-16 pb-16 space-y-10">
+            <div class="max-w-7xl mx-auto px-6 -mt-16 pb-16 space-y-8">
                 <Panel title="Filtrado inteligente" description="Encuentra el cliente ideal combinando filtros avanzados.">
                     <template #actions>
                         <button @click="clearFilters" class="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition">
@@ -47,7 +47,7 @@
                     </div>
                 </Panel>
 
-                <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
                     <Panel
                         class="xl:col-span-2"
                         title="Clientes"
@@ -97,7 +97,7 @@
                         </DataTable>
                     </Panel>
 
-                    <div class="space-y-8">
+                    <div class="space-y-6">
                         <Panel title="Estado de la cartera" description="Visualiza la salud actual de tus relaciones comerciales." :header-border="false">
                             <div class="mt-5">
                                 <DoughnutChart :data="clientStatusChart" />

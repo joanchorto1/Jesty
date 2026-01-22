@@ -1,10 +1,10 @@
 export const inventoryPalette = {
     background: 'bg-slate-950',
     gradient: 'from-amber-500 via-orange-600 to-slate-950',
-    surface: 'bg-white',
-    surfaceMuted: 'bg-white/80 backdrop-blur',
-    border: 'border-amber-500/20',
-    shadow: 'shadow-xl shadow-amber-900/20',
+    surface: 'bg-white/80',
+    surfaceMuted: 'bg-white/70',
+    border: 'border-amber-200/30',
+    shadow: 'shadow-sm',
     text: {
         overGradient: 'text-amber-200',
         hero: 'text-white',
@@ -35,9 +35,9 @@ export const inventoryTypography = {
 export const inventoryLayout = {
     heroWrapper: 'bg-gradient-to-r pb-24 rounded-b-[2.5rem] md:rounded-b-[3rem]',
     heroContainer: 'max-w-7xl mx-auto px-6 pt-10',
-    kpiGrid: 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 mt-10',
-    bodyWrapper: 'max-w-7xl mx-auto px-6 -mt-16 pb-16 space-y-10',
-    sectionGrid: 'grid grid-cols-1 xl:grid-cols-3 gap-8',
+    kpiGrid: 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mt-10',
+    bodyWrapper: 'max-w-7xl mx-auto px-6 -mt-16 pb-16 space-y-8',
+    sectionGrid: 'grid grid-cols-1 xl:grid-cols-3 gap-6',
 };
 
 export const inventoryStatusMap = {

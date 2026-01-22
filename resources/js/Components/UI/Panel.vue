@@ -1,6 +1,7 @@
 <template>
-    <section :aria-labelledby="headingId" class="rounded-2xl border border-slate-200 bg-white p-6" role="region">
-        <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between" :class="headerBorder ? 'border-b border-slate-200 pb-5' : ''">
+    <section :aria-labelledby="headingId" class="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-sm" role="region">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4" :class="headerBorder ? 'border-b border-slate-200/70 pb-5' : ''">
+
             <div>
                 <h2 v-if="title" :id="headingId" class="text-lg font-semibold text-slate-900">{{ title }}</h2>
                 <p v-if="description" class="mt-1 text-sm text-slate-500">{{ description }}</p>

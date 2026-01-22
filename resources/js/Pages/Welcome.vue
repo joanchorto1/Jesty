@@ -37,7 +37,7 @@ defineProps({
             </Link>
         </div>
 
-        <div class="relative z-10 mx-auto flex max-w-6xl flex-col gap-24 px-6 pb-24 pt-12 sm:px-10 lg:px-16">
+        <div class="relative z-10 mx-auto flex max-w-6xl flex-col gap-20 px-6 pb-24 pt-12 sm:px-10 lg:px-16">
             <section class="grid grid-cols-1 items-center gap-12 lg:grid-cols-[1.1fr_0.9fr]">
                 <div class="space-y-8">
                     <ApplicationLogo class="w-full max-w-md" />
@@ -62,7 +62,7 @@ defineProps({
                 </div>
                 <div class="relative">
                     <div class="pointer-events-none absolute inset-0 rounded-3xl border border-white/10 bg-gradient-to-br from-white/10 via-white/5 to-transparent blur-md" />
-                    <div class="relative rounded-3xl border border-white/10 bg-white/10 p-8 backdrop-blur-xl shadow-2xl shadow-black/30">
+                    <div class="relative rounded-3xl border border-white/10 bg-white/5 p-8 shadow-sm">
                         <h2 class="text-xl font-semibold uppercase tracking-[0.3em] text-sky-200">Visió 360º</h2>
                         <p class="mt-4 text-base leading-relaxed text-slate-200">
                             Dashboards unificats, analítica en temps real i fluxos aprovats per JCT Agency per coordinar equips de màrqueting, vendes i operacions amb garanties de seguretat empresarial.
@@ -85,20 +85,20 @@ defineProps({
                 </div>
             </section>
 
-            <section class="grid gap-10 md:grid-cols-2 xl:grid-cols-3">
-                <div class="rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl shadow-lg shadow-black/30">
+            <section class="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
+                <div class="rounded-3xl border border-white/10 bg-white/5 p-8 shadow-sm">
                     <h3 class="text-lg font-semibold text-slate-50">Identitat Corporativa</h3>
                     <p class="mt-3 text-sm leading-relaxed text-slate-300">
                         Cada detall visual reflecteix l'ADN de JCT Agency. El nostre equip opera amb una interfície coherent que reforça la marca a cada interacció.
                     </p>
                 </div>
-                <div class="rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl shadow-lg shadow-black/30">
+                <div class="rounded-3xl border border-white/10 bg-white/5 p-8 shadow-sm">
                     <h3 class="text-lg font-semibold text-slate-50">Control Total Intern</h3>
                     <p class="mt-3 text-sm leading-relaxed text-slate-300">
                         Accés restringit i sense autroregistre extern. Gestionem equips i permisos des del nucli de l'agència per garantir confidencialitat i governança.
                     </p>
                 </div>
-                <div class="rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl shadow-lg shadow-black/30 md:col-span-2 xl:col-span-1">
+                <div class="rounded-3xl border border-white/10 bg-white/5 p-8 shadow-sm md:col-span-2 xl:col-span-1">
                     <h3 class="text-lg font-semibold text-slate-50">Tecnologia de confiança</h3>
                     <p class="mt-3 text-sm leading-relaxed text-slate-300">
                         Construïda sobre Laravel {{ laravelVersion }} i PHP {{ phpVersion }}, amb processos optimitzats per desplegar evolucions ràpides sense comprometre l'estabilitat.
@@ -108,4 +108,3 @@ defineProps({
         </div>
     </div>
 </template>
-
