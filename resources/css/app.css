@@ -7,13 +7,33 @@
 }
 
 @layer base {
+    :root {
+        --color-surface: #f8f7f4;
+        --color-surface-muted: #f0eee9;
+        --color-text: #27241f;
+        --color-text-muted: #5a544b;
+        --color-border: #e2dfd8;
+    }
+
+    body {
+        @apply bg-surface text-text antialiased;
+    }
+
+    ::selection {
+        @apply bg-accent-100 text-text;
+    }
+
+    :focus-visible {
+        @apply outline-none ring-2 ring-accent-200 ring-offset-2 ring-offset-surface;
+    }
+
     input,
     select,
     textarea,
     .form-input,
     .form-select,
     .form-textarea {
-        @apply text-slate-900;
+        @apply bg-surface text-text placeholder:text-neutral-400 border-neutral-200 shadow-soft;
     }
 }
 
