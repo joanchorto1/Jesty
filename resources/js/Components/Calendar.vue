@@ -1,9 +1,9 @@
 <template>
     <div class="calendar">
         <div class="calendar-header flex justify-between items-center mb-4">
-            <button @click="prevMonth" class="bg-blue-500 text-white p-2 rounded">Anterior</button>
+            <button @click="prevMonth" class="bg-emerald-500 text-white p-2 rounded">Anterior</button>
             <h2 class="text-lg font-bold text-gray-700">{{ formattedCurrentMonth }}</h2>
-            <button @click="nextMonth" class="bg-blue-500 text-white p-2 rounded">Siguiente</button>
+            <button @click="nextMonth" class="bg-emerald-500 text-white p-2 rounded">Siguiente</button>
         </div>
 
         <div class="grid grid-cols-7 gap-2 text-center">
@@ -12,8 +12,8 @@
             <div v-for="(day, index) in daysInMonth" :key="index" class="p-2 border rounded-lg text-center">
                 <span
                     :class="{
-                        'bg-blue-500 text-white rounded-full p-2': isToday(day),
-                        'cursor-pointer hover:bg-blue-100': !isToday(day),
+                        'bg-emerald-500 text-white rounded-full p-2': isToday(day),
+                        'cursor-pointer hover:bg-emerald-100': !isToday(day),
                     }"
                     @click="selectDay(day)"
                 >

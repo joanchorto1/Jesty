@@ -27,7 +27,7 @@ const hasHeader = computed(() => Boolean(slots.header));
 
 const headerWrapperClasses = computed(() => [
     'pb-24',
-    props.flushHeader ? 'bg-slate-950' : 'bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900',
+    props.flushHeader ? 'bg-slate-950' : 'bg-gradient-to-r from-slate-950 via-emerald-900 to-indigo-900',
 ]);
 
 const contentWrapperClasses = computed(() => [

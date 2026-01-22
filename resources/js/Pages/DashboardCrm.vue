@@ -1,33 +1,33 @@
 <template>
     <AppLayout>
         <div class="min-h-screen bg-slate-950">
-            <div class="bg-gradient-to-r from-violet-700 via-blue-700 to-slate-900 pb-24">
+            <div class="bg-gradient-to-r from-emerald-600 via-sky-600 to-indigo-700 pb-24">
                 <div class="max-w-7xl mx-auto px-6 pt-10">
                     <div class="space-y-2">
-                        <p class="text-violet-200 text-sm uppercase tracking-widest">CRM insights</p>
+                        <p class="text-emerald-100 text-sm uppercase tracking-widest">Jesty · CRM</p>
                         <h1 class="text-3xl sm:text-4xl font-semibold text-white">Rendimiento comercial en tiempo real</h1>
-                        <p class="text-sm text-violet-200">Mide el pulso de tus leads, oportunidades y actividades clave para acelerar ventas.</p>
+                        <p class="text-sm text-emerald-100">Mide el pulso de leads, oportunidades y actividades clave para acelerar ventas.</p>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mt-10">
                         <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
-                            <p class="text-xs uppercase tracking-[0.3em] text-violet-200">Leads</p>
+                            <p class="text-xs uppercase tracking-[0.3em] text-emerald-100">Leads</p>
                             <p class="text-3xl font-semibold mt-2">{{ totalLeads }}</p>
-                            <p class="text-sm text-violet-200 mt-3">Tasa de conversión {{ conversionRate }}%</p>
+                            <p class="text-sm text-emerald-100 mt-3">Tasa de conversión {{ conversionRate }}%</p>
                         </div>
                         <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
-                            <p class="text-xs uppercase tracking-[0.3em] text-violet-200">Oportunidades</p>
+                            <p class="text-xs uppercase tracking-[0.3em] text-emerald-100">Oportunidades</p>
                             <p class="text-3xl font-semibold mt-2">{{ totalOpportunities }}</p>
-                            <p class="text-sm text-violet-200 mt-3">{{ wonOpportunities }} ganadas</p>
+                            <p class="text-sm text-emerald-100 mt-3">{{ wonOpportunities }} ganadas</p>
                         </div>
                         <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
-                            <p class="text-xs uppercase tracking-[0.3em] text-violet-200">Notas</p>
+                            <p class="text-xs uppercase tracking-[0.3em] text-emerald-100">Notas</p>
                             <p class="text-3xl font-semibold mt-2">{{ totalNotes }}</p>
-                            <p class="text-sm text-violet-200 mt-3">Última nota {{ latestNoteDate }}</p>
+                            <p class="text-sm text-emerald-100 mt-3">Última nota {{ latestNoteDate }}</p>
                         </div>
                         <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
-                            <p class="text-xs uppercase tracking-[0.3em] text-violet-200">Actividades</p>
+                            <p class="text-xs uppercase tracking-[0.3em] text-emerald-100">Actividades</p>
                             <p class="text-3xl font-semibold mt-2">{{ totalActivities }}</p>
-                            <p class="text-sm text-violet-200 mt-3">{{ upcomingActivities.length }} próximas</p>
+                            <p class="text-sm text-emerald-100 mt-3">{{ upcomingActivities.length }} próximas</p>
                         </div>
                     </div>
                 </div>
@@ -51,7 +51,7 @@
                         <p class="text-sm text-slate-500">Organiza tu agenda comercial a corto plazo.</p>
                         <ul class="mt-6 space-y-4 max-h-80 overflow-y-auto pr-2 text-sm text-slate-600">
                             <li v-for="activity in upcomingActivities" :key="activity.id" class="flex items-start gap-3 rounded-2xl border border-slate-200/70 bg-white/70 p-4">
-                                <span class="mt-1 h-2 w-2 rounded-full bg-violet-500"></span>
+                                <span class="mt-1 h-2 w-2 rounded-full bg-emerald-500"></span>
                                 <div>
                                     <p class="font-semibold text-slate-700">{{ activity.title ?? 'Actividad sin título' }}</p>
                                     <p class="text-xs text-slate-400">{{ formatDate(activity.date) }}</p>
@@ -147,8 +147,8 @@ const monthlyActivitiesData = computed(() => {
         datasets: [
             {
                 label: 'Actividades',
-                backgroundColor: 'rgba(129, 140, 248, 0.4)',
-                borderColor: 'rgba(79, 70, 229, 1)',
+                backgroundColor: 'rgba(16, 185, 129, 0.4)',
+                borderColor: 'rgba(16, 185, 129, 1)',
                 borderWidth: 2,
                 tension: 0.4,
                 fill: false,
@@ -171,7 +171,7 @@ const leadSourceData = computed(() => {
         datasets: [
             {
                 data: Object.values(sourceCounts),
-                backgroundColor: ['#6366F1', '#34D399', '#FBBF24', '#F97316', '#EC4899'],
+                backgroundColor: ['#34D399', '#38BDF8', '#6366F1', '#F59E0B', '#F472B6'],
             },
         ],
     };
@@ -182,7 +182,7 @@ const opportunityConversionData = computed(() => ({
     datasets: [
         {
             label: 'Oportunidades',
-            backgroundColor: ['#10B981', '#F87171', '#38BDF8'],
+            backgroundColor: ['#34D399', '#F87171', '#38BDF8'],
             data: [
                 props.opportunities.filter(o => ['Ganada', 'won'].includes(o.status)).length,
                 props.opportunities.filter(o => ['Perdida', 'lost'].includes(o.status)).length,

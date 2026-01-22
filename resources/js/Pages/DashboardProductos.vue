@@ -4,9 +4,9 @@
             <div :class="['bg-gradient-to-r', palette.gradient, layout.heroWrapper]">
                 <div :class="layout.heroContainer">
                     <div class="space-y-2 text-white">
-                        <p :class="typography.heroKicker">Inventari estratègic</p>
+                        <p :class="typography.heroKicker">Jesty · Inventari</p>
                         <h1 :class="typography.heroTitle">Visió global del catàleg de productes</h1>
-                        <p :class="typography.heroSubtitle">Controla categories, estoc i rendiment per anticipar la demanda.</p>
+                        <p :class="typography.heroSubtitle">Controla categories, estoc i rendiment amb la nova experiència Jesty.</p>
                     </div>
                     <div :class="layout.kpiGrid">
                         <InventoryKpiCard label="Categories" :value="totalCategories">
@@ -119,8 +119,8 @@ const productsByCategoryData = computed(() => {
         datasets: [
             {
                 label: 'Productes per categoria',
-                backgroundColor: 'rgba(251, 191, 36, 0.5)',
-                borderColor: 'rgba(251, 191, 36, 1)',
+                backgroundColor: 'rgba(16, 185, 129, 0.45)',
+                borderColor: 'rgba(16, 185, 129, 1)',
                 borderWidth: 1,
                 data: categoryTotals.map(ct => ct.total),
             },
@@ -142,7 +142,7 @@ const productsCategoryDistributionData = computed(() => {
         datasets: [
             {
                 label: 'Distribució de productes',
-                backgroundColor: ['#FBBF24', '#F97316', '#FB7185', '#A855F7', '#6366F1'],
+                backgroundColor: ['#34D399', '#38BDF8', '#6366F1', '#F59E0B', '#F472B6'],
                 data: categoryTotals.map(ct => ct.total),
             },
         ],
@@ -165,8 +165,8 @@ const categorySalesRadar = computed(() => {
             {
                 label: 'Vendes estimades',
                 data: dataset.map(item => item.sales),
-                backgroundColor: 'rgba(251, 146, 60, 0.35)',
-                borderColor: 'rgba(249, 115, 22, 1)',
+                backgroundColor: 'rgba(56, 189, 248, 0.35)',
+                borderColor: 'rgba(56, 189, 248, 1)',
                 borderWidth: 2,
             },
         ],

@@ -1,12 +1,12 @@
 <template>
     <AppLayout>
         <div class="min-h-screen bg-slate-950">
-            <div class="bg-gradient-to-r from-fuchsia-600 via-purple-600 to-slate-900 pb-24">
+            <div class="bg-gradient-to-r from-emerald-600 via-sky-600 to-indigo-700 pb-24">
                 <div class="max-w-7xl mx-auto px-6 pt-10">
                     <div class="space-y-2">
-                        <p class="text-fuchsia-200 text-sm uppercase tracking-widest">Analítica TPV</p>
+                        <p class="text-emerald-100 text-sm uppercase tracking-widest">Jesty · TPV</p>
                         <h1 class="text-3xl sm:text-4xl font-semibold text-white">Actividad en punto de venta</h1>
-                        <p class="text-sm text-fuchsia-200">Monitoriza ventas, tickets y categorías para optimizar tu estrategia comercial.</p>
+                        <p class="text-sm text-emerald-100">Monitoriza ventas, tickets y categorías para optimizar tu estrategia comercial.</p>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-6 mt-10">
                         <KpiCard
@@ -209,8 +209,8 @@ const ticketMonthlyData = computed(() => {
         datasets: [
             {
                 label: 'Tickets',
-                backgroundColor: 'rgba(236, 72, 153, 0.35)',
-                borderColor: 'rgba(236, 72, 153, 1)',
+                backgroundColor: 'rgba(16, 185, 129, 0.35)',
+                borderColor: 'rgba(16, 185, 129, 1)',
                 borderWidth: 2,
                 tension: 0.4,
                 data: labels.map(label => monthlyTotals[label].tickets),
@@ -218,8 +218,8 @@ const ticketMonthlyData = computed(() => {
             },
             {
                 label: 'Ingresos',
-                backgroundColor: 'rgba(124, 58, 237, 0.15)',
-                borderColor: 'rgba(99, 102, 241, 1)',
+                backgroundColor: 'rgba(56, 189, 248, 0.2)',
+                borderColor: 'rgba(56, 189, 248, 1)',
                 borderWidth: 2,
                 tension: 0.4,
                 data: labels.map(label => monthlyTotals[label].revenue),
@@ -242,7 +242,7 @@ const ticketProductData = computed(() => {
         labels: Object.keys(productTotals),
         datasets: [
             {
-                backgroundColor: ['#EC4899', '#6366F1', '#22D3EE', '#FB7185', '#A855F7', '#F97316'],
+                backgroundColor: ['#34D399', '#38BDF8', '#6366F1', '#F59E0B', '#F472B6', '#A855F7'],
                 data: Object.values(productTotals),
             },
         ],
@@ -262,7 +262,7 @@ const productCategoryData = computed(() => {
         labels: Object.keys(categoryTotals),
         datasets: [
             {
-                backgroundColor: ['#C4B5FD', '#F9A8D4', '#FECACA', '#A5F3FC', '#E9D5FF'],
+                backgroundColor: ['#A7F3D0', '#BAE6FD', '#C7D2FE', '#FDE68A', '#FBCFE8'],
                 data: Object.values(categoryTotals),
             },
         ],
@@ -280,8 +280,8 @@ const topSellingProductsData = computed(() => {
         datasets: [
             {
                 label: 'Ventas',
-                backgroundColor: 'rgba(147, 51, 234, 0.45)',
-                borderColor: 'rgba(147, 51, 234, 1)',
+                backgroundColor: 'rgba(99, 102, 241, 0.45)',
+                borderColor: 'rgba(99, 102, 241, 1)',
                 borderWidth: 1,
                 data: productSales.map(p => p.sales),
             },
@@ -315,8 +315,8 @@ const revenueTrendChart = computed(() => {
                     acc.push(previous + value);
                     return acc;
                 }, []),
-                backgroundColor: 'rgba(236, 72, 153, 0.25)',
-                borderColor: 'rgba(236, 72, 153, 1)',
+                backgroundColor: 'rgba(16, 185, 129, 0.25)',
+                borderColor: 'rgba(16, 185, 129, 1)',
                 borderWidth: 2,
                 fill: true,
             },
