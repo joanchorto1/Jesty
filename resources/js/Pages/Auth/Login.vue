@@ -34,32 +34,32 @@ const submit = () => {
 
     <AuthenticationCard>
         <template #logo>
-            <div class="flex flex-col items-center gap-4 text-slate-200">
+            <div class="flex flex-col items-center gap-4 text-slate-700">
                 <AuthenticationCardLogo />
-                <p class="text-xs font-semibold uppercase tracking-[0.4em] text-sky-200/80">JCT Agency · Accés Intern</p>
+                <p class="text-xs font-semibold uppercase tracking-[0.4em] text-slate-400">JCT Agency · Accés Intern</p>
             </div>
         </template>
 
-        <div class="space-y-6 text-slate-200">
+        <div class="space-y-6 text-slate-700">
             <div class="space-y-2 text-center">
-                <h1 class="text-2xl font-semibold tracking-tight">Inicia sessió a la suite corporativa</h1>
-                <p class="text-sm leading-relaxed text-slate-300">
+                <h1 class="text-2xl font-semibold tracking-tight text-slate-800">Inicia sessió a la suite corporativa</h1>
+                <p class="text-sm leading-relaxed text-slate-500">
                     Accedeix a les eines internes de JCT Agency per coordinar projectes, equips i clients amb seguretat reforçada.
                 </p>
             </div>
 
-            <div v-if="status" class="rounded-xl border border-emerald-400/40 bg-emerald-500/10 px-4 py-3 text-sm font-medium text-emerald-200">
+            <div v-if="status" class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">
                 {{ status }}
             </div>
 
             <form class="space-y-6" @submit.prevent="submit">
                 <div>
-                    <InputLabel for="email" value="Correu electrònic" class="text-slate-200" />
+                    <InputLabel for="email" value="Correu electrònic" />
                     <TextInput
                         id="email"
                         v-model="form.email"
                         type="email"
-                        class="mt-2 block w-full rounded-2xl border-slate-600/70 bg-slate-900/40 px-4 py-3 text-slate-100 placeholder-slate-500 focus:border-sky-400 focus:ring-sky-400"
+                        class="mt-2 block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-800 shadow-sm placeholder-slate-400 focus:border-sky-500 focus:ring-sky-500"
                         required
                         autofocus
                         autocomplete="username"
@@ -69,12 +69,12 @@ const submit = () => {
                 </div>
 
                 <div>
-                    <InputLabel for="password" value="Contrasenya" class="text-slate-200" />
+                    <InputLabel for="password" value="Contrasenya" />
                     <TextInput
                         id="password"
                         v-model="form.password"
                         type="password"
-                        class="mt-2 block w-full rounded-2xl border-slate-600/70 bg-slate-900/40 px-4 py-3 text-slate-100 placeholder-slate-500 focus:border-sky-400 focus:ring-sky-400"
+                        class="mt-2 block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-800 shadow-sm placeholder-slate-400 focus:border-sky-500 focus:ring-sky-500"
                         required
                         autocomplete="current-password"
                         placeholder="••••••••"
@@ -82,16 +82,16 @@ const submit = () => {
                     <InputError class="mt-2" :message="form.errors.password" />
                 </div>
 
-                <div class="flex items-center justify-between">
-                    <label class="flex items-center gap-2 text-sm text-slate-300">
-                        <Checkbox v-model:checked="form.remember" name="remember" class="rounded border-slate-500 bg-slate-900/60 text-sky-400 focus:ring-sky-400" />
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <label class="flex items-center gap-2 text-sm text-slate-500">
+                        <Checkbox v-model:checked="form.remember" name="remember" class="rounded border-slate-300 text-sky-600 focus:ring-sky-500" />
                         Recorda'm
                     </label>
 
                     <Link
                         v-if="canResetPassword"
                         :href="route('password.request')"
-                        class="text-sm font-medium text-sky-200 transition hover:text-sky-100"
+                        class="text-sm font-medium text-slate-500 transition hover:text-sky-600"
                     >
                         Has oblidat la contrasenya?
                     </Link>
