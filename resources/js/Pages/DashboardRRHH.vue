@@ -8,23 +8,23 @@
                         <h1 class="text-3xl sm:text-4xl font-semibold text-white">Radiografía del equipo humano</h1>
                         <p class="text-sm text-cyan-200">Analiza la composición, crecimiento y distribución de tu organización.</p>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 mt-10">
-                        <div class="rounded-2xl border border-white/20 bg-white/10 backdrop-blur p-6 text-white shadow-lg">
+                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mt-10">
+                        <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
                             <p class="text-xs uppercase tracking-[0.3em] text-cyan-200">Empleados</p>
                             <p class="text-3xl font-semibold mt-2">{{ totalEmployees }}</p>
                             <p class="text-sm text-cyan-200 mt-3">{{ headcountGrowth }}% crecimiento anual</p>
                         </div>
-                        <div class="rounded-2xl border border-white/20 bg-white/10 backdrop-blur p-6 text-white shadow-lg">
+                        <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
                             <p class="text-xs uppercase tracking-[0.3em] text-cyan-200">Departamentos</p>
                             <p class="text-3xl font-semibold mt-2">{{ totalDepartments }}</p>
                             <p class="text-sm text-cyan-200 mt-3">{{ averageTeamSize }} personas promedio</p>
                         </div>
-                        <div class="rounded-2xl border border-white/20 bg-white/10 backdrop-blur p-6 text-white shadow-lg">
+                        <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
                             <p class="text-xs uppercase tracking-[0.3em] text-cyan-200">Salario medio</p>
                             <p class="text-3xl font-semibold mt-2">€{{ averageSalary.toFixed(2) }}</p>
                             <p class="text-sm text-cyan-200 mt-3">Brecha interdepartamental {{ salaryVariance }}%</p>
                         </div>
-                        <div class="rounded-2xl border border-white/20 bg-white/10 backdrop-blur p-6 text-white shadow-lg">
+                        <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
                             <p class="text-xs uppercase tracking-[0.3em] text-cyan-200">Activos</p>
                             <p class="text-3xl font-semibold mt-2">{{ totalEmployeesActive }}</p>
                             <p class="text-sm text-cyan-200 mt-3">{{ inactiveEmployees }} en pausa</p>
@@ -33,23 +33,23 @@
                 </div>
             </div>
 
-            <div class="max-w-7xl mx-auto px-6 -mt-16 pb-16 space-y-10">
-                <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
-                    <div class="bg-white rounded-3xl shadow-xl p-6">
+            <div class="max-w-7xl mx-auto px-6 -mt-16 pb-16 space-y-8">
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                    <div class="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-sm">
                         <h2 class="text-xl font-semibold text-slate-800">Empleados por departamento</h2>
                         <p class="text-sm text-slate-500">Balancea cargas de trabajo y dimensiona cada área.</p>
                         <div class="mt-6">
                             <PieChart :data="employeeDepartmentData" />
                         </div>
                     </div>
-                    <div class="bg-white rounded-3xl shadow-xl p-6">
+                    <div class="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-sm">
                         <h2 class="text-xl font-semibold text-slate-800">Contrataciones por año</h2>
                         <p class="text-sm text-slate-500">Evalúa el ritmo de incorporación de talento.</p>
                         <div class="mt-6">
                             <BarChart :data="employeeHiringYearData" />
                         </div>
                     </div>
-                    <div class="bg-white rounded-3xl shadow-xl p-6">
+                    <div class="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-sm">
                         <h2 class="text-xl font-semibold text-slate-800">Salario medio por departamento</h2>
                         <p class="text-sm text-slate-500">Identifica áreas con mayor inversión salarial.</p>
                         <div class="mt-6">
@@ -58,22 +58,22 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
-                    <div class="bg-white rounded-3xl shadow-xl p-6">
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                    <div class="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-sm">
                         <h2 class="text-xl font-semibold text-slate-800">Distribución de talento</h2>
                         <p class="text-sm text-slate-500">Relación de headcount por áreas funcionales.</p>
                         <div class="mt-6">
                             <PieChart :data="departmentEmployeeData" />
                         </div>
                     </div>
-                    <div class="bg-white rounded-3xl shadow-xl p-6">
+                    <div class="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-sm">
                         <h2 class="text-xl font-semibold text-slate-800">Departamentos por ubicación</h2>
                         <p class="text-sm text-slate-500">Comprende la huella geográfica del equipo.</p>
                         <div class="mt-6">
                             <BarChart :data="departmentLocationData" />
                         </div>
                     </div>
-                    <div class="bg-white rounded-3xl shadow-xl p-6">
+                    <div class="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-sm">
                         <h2 class="text-xl font-semibold text-slate-800">Proyectos activos por departamento</h2>
                         <p class="text-sm text-slate-500">Detecta áreas con mayor carga operativa.</p>
                         <div class="mt-6">

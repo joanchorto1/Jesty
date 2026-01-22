@@ -8,23 +8,23 @@
                         <h1 class="text-3xl sm:text-4xl font-semibold text-white">Rendimiento comercial en tiempo real</h1>
                         <p class="text-sm text-violet-200">Mide el pulso de tus leads, oportunidades y actividades clave para acelerar ventas.</p>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 mt-10">
-                        <div class="rounded-2xl border border-white/20 bg-white/10 backdrop-blur p-6 text-white shadow-lg">
+                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mt-10">
+                        <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
                             <p class="text-xs uppercase tracking-[0.3em] text-violet-200">Leads</p>
                             <p class="text-3xl font-semibold mt-2">{{ totalLeads }}</p>
                             <p class="text-sm text-violet-200 mt-3">Tasa de conversión {{ conversionRate }}%</p>
                         </div>
-                        <div class="rounded-2xl border border-white/20 bg-white/10 backdrop-blur p-6 text-white shadow-lg">
+                        <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
                             <p class="text-xs uppercase tracking-[0.3em] text-violet-200">Oportunidades</p>
                             <p class="text-3xl font-semibold mt-2">{{ totalOpportunities }}</p>
                             <p class="text-sm text-violet-200 mt-3">{{ wonOpportunities }} ganadas</p>
                         </div>
-                        <div class="rounded-2xl border border-white/20 bg-white/10 backdrop-blur p-6 text-white shadow-lg">
+                        <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
                             <p class="text-xs uppercase tracking-[0.3em] text-violet-200">Notas</p>
                             <p class="text-3xl font-semibold mt-2">{{ totalNotes }}</p>
                             <p class="text-sm text-violet-200 mt-3">Última nota {{ latestNoteDate }}</p>
                         </div>
-                        <div class="rounded-2xl border border-white/20 bg-white/10 backdrop-blur p-6 text-white shadow-lg">
+                        <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
                             <p class="text-xs uppercase tracking-[0.3em] text-violet-200">Actividades</p>
                             <p class="text-3xl font-semibold mt-2">{{ totalActivities }}</p>
                             <p class="text-sm text-violet-200 mt-3">{{ upcomingActivities.length }} próximas</p>
@@ -33,10 +33,10 @@
                 </div>
             </div>
 
-            <div class="max-w-7xl mx-auto px-6 -mt-16 pb-16 space-y-10">
-                <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
-                    <div class="xl:col-span-2 bg-white rounded-3xl shadow-xl p-6">
-                        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 border-b border-slate-100 pb-5">
+            <div class="max-w-7xl mx-auto px-6 -mt-16 pb-16 space-y-8">
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                    <div class="xl:col-span-2 rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-sm">
+                        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 border-b border-slate-200/70 pb-5">
                             <div>
                                 <h2 class="text-xl font-semibold text-slate-800">Actividad mensual</h2>
                                 <p class="text-sm text-slate-500">Seguimiento de reuniones, llamadas y tareas registradas.</p>
@@ -46,11 +46,11 @@
                             <LineChart :data="monthlyActivitiesData" />
                         </div>
                     </div>
-                    <div class="bg-white rounded-3xl shadow-xl p-6">
+                    <div class="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-sm">
                         <h2 class="text-xl font-semibold text-slate-800">Próximas acciones</h2>
                         <p class="text-sm text-slate-500">Organiza tu agenda comercial a corto plazo.</p>
                         <ul class="mt-6 space-y-4 max-h-80 overflow-y-auto pr-2 text-sm text-slate-600">
-                            <li v-for="activity in upcomingActivities" :key="activity.id" class="flex items-start gap-3 rounded-2xl border border-slate-200/70 p-4">
+                            <li v-for="activity in upcomingActivities" :key="activity.id" class="flex items-start gap-3 rounded-2xl border border-slate-200/70 bg-white/70 p-4">
                                 <span class="mt-1 h-2 w-2 rounded-full bg-violet-500"></span>
                                 <div>
                                     <p class="font-semibold text-slate-700">{{ activity.title ?? 'Actividad sin título' }}</p>
@@ -63,22 +63,22 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
-                    <div class="bg-white rounded-3xl shadow-xl p-6">
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                    <div class="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-sm">
                         <h2 class="text-xl font-semibold text-slate-800">Origen de leads</h2>
                         <p class="text-sm text-slate-500">Identifica los canales con mejor rendimiento.</p>
                         <div class="mt-6">
                             <PieChart :data="leadSourceData" />
                         </div>
                     </div>
-                    <div class="bg-white rounded-3xl shadow-xl p-6">
+                    <div class="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-sm">
                         <h2 class="text-xl font-semibold text-slate-800">Conversión de oportunidades</h2>
                         <p class="text-sm text-slate-500">Analiza el estado actual del pipeline comercial.</p>
                         <div class="mt-6">
                             <BarChart :data="opportunityConversionData" />
                         </div>
                     </div>
-                    <div class="bg-white rounded-3xl shadow-xl p-6">
+                    <div class="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-sm">
                         <h2 class="text-xl font-semibold text-slate-800">Embudo de progreso</h2>
                         <p class="text-sm text-slate-500">Comprende la transición de lead a oportunidad ganada.</p>
                         <div class="mt-6">

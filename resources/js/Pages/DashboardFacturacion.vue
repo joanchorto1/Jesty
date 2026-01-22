@@ -8,28 +8,28 @@
                         <h1 class="text-3xl sm:text-4xl font-semibold text-white">Control total de presupuestos e ingresos</h1>
                         <p class="text-sm text-sky-200">Identifica tendencias, clientes clave y oportunidades para acelerar los cobros.</p>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-5 mt-10">
-                        <div class="rounded-2xl border border-white/20 bg-white/10 backdrop-blur p-6 text-white shadow-lg xl:col-span-1">
+                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-6 mt-10">
+                        <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm xl:col-span-1">
                             <p class="text-xs uppercase tracking-[0.3em] text-sky-200">Presupuestos</p>
                             <p class="text-3xl font-semibold mt-2">{{ totalBudgets }}</p>
                             <p class="text-sm text-sky-200 mt-3">Importe medio €{{ averageBudget }}</p>
                         </div>
-                        <div class="rounded-2xl border border-white/20 bg-white/10 backdrop-blur p-6 text-white shadow-lg xl:col-span-1">
+                        <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm xl:col-span-1">
                             <p class="text-xs uppercase tracking-[0.3em] text-sky-200">Facturas</p>
                             <p class="text-3xl font-semibold mt-2">{{ totalInvoices }}</p>
                             <p class="text-sm text-sky-200 mt-3">Ticket medio €{{ averageInvoice }}</p>
                         </div>
-                        <div class="rounded-2xl border border-white/20 bg-white/10 backdrop-blur p-6 text-white shadow-lg xl:col-span-1">
+                        <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm xl:col-span-1">
                             <p class="text-xs uppercase tracking-[0.3em] text-sky-200">Clientes</p>
                             <p class="text-3xl font-semibold mt-2">{{ totalClients }}</p>
                             <p class="text-sm text-sky-200 mt-3">Top cliente {{ topClientName }}</p>
                         </div>
-                        <div class="rounded-2xl border border-white/20 bg-white/10 backdrop-blur p-6 text-white shadow-lg xl:col-span-1">
+                        <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm xl:col-span-1">
                             <p class="text-xs uppercase tracking-[0.3em] text-sky-200">Cobros pendientes</p>
                             <p class="text-3xl font-semibold mt-2">€{{ outstandingAmount }}</p>
                             <p class="text-sm text-sky-200 mt-3">{{ outstandingInvoices }} facturas en trámite</p>
                         </div>
-                        <div class="rounded-2xl border border-white/20 bg-white/10 backdrop-blur p-6 text-white shadow-lg xl:col-span-1">
+                        <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm xl:col-span-1">
                             <p class="text-xs uppercase tracking-[0.3em] text-sky-200">Cobrado</p>
                             <p class="text-3xl font-semibold mt-2">€{{ totalIncome }}</p>
                             <p class="text-sm text-sky-200 mt-3">{{ paidPercentage }}% facturas cobradas</p>
@@ -38,16 +38,16 @@
                 </div>
             </div>
 
-            <div class="max-w-7xl mx-auto px-6 -mt-16 pb-16 space-y-10">
-                <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
-                    <div class="bg-white rounded-3xl shadow-xl p-6">
+            <div class="max-w-7xl mx-auto px-6 -mt-16 pb-16 space-y-8">
+                <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                    <div class="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-sm">
                         <h2 class="text-xl font-semibold text-slate-800">Distribución de presupuestos</h2>
                         <p class="text-sm text-slate-500">Mira qué clientes concentran mayor inversión estimada.</p>
                         <div class="mt-6">
                             <PieChart :data="budgetClientData" class="h-48" />
                         </div>
                     </div>
-                    <div class="bg-white rounded-3xl shadow-xl p-6">
+                    <div class="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-sm">
                         <h2 class="text-xl font-semibold text-slate-800">Ingresos mensuales</h2>
                         <p class="text-sm text-slate-500">Evolución de la facturación cobrada a lo largo del año.</p>
                         <div class="mt-6">
@@ -56,16 +56,16 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
-                    <div class="bg-white rounded-3xl shadow-xl p-6 xl:col-span-2">
-                        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 border-b border-slate-100 pb-5">
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                    <div class="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-sm xl:col-span-2">
+                        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 border-b border-slate-200/70 pb-5">
                             <div>
                                 <h2 class="text-xl font-semibold text-slate-800">Presupuestos recientes</h2>
                                 <p class="text-sm text-slate-500">Últimas propuestas emitidas y su valor estimado.</p>
                             </div>
                             <NavLink href="/budgets" class="text-sm font-semibold text-blue-600 hover:text-blue-800">Ver todos</NavLink>
                         </div>
-                        <ul class="divide-y divide-slate-100 text-sm text-slate-600">
+                        <ul class="divide-y divide-slate-200/70 text-sm text-slate-600">
                             <li v-for="budget in recentBudgets" :key="budget.id" class="flex items-center justify-between py-4">
                                 <div>
                                     <p class="font-semibold text-slate-700">{{ getClientName(budget.client_id) }}</p>
@@ -76,7 +76,7 @@
                             <li v-if="recentBudgets.length === 0" class="py-4 text-center text-slate-400">No hay presupuestos registrados.</li>
                         </ul>
                     </div>
-                    <div class="bg-white rounded-3xl shadow-xl p-6">
+                    <div class="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-sm">
                         <h2 class="text-xl font-semibold text-slate-800">Estado de facturas</h2>
                         <p class="text-sm text-slate-500">Controla qué porcentaje está cobrado, pendiente o vencido.</p>
                         <div class="mt-6">
@@ -85,16 +85,16 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
-                    <div class="bg-white rounded-3xl shadow-xl p-6 xl:col-span-2">
-                        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 border-b border-slate-100 pb-5">
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                    <div class="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-sm xl:col-span-2">
+                        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 border-b border-slate-200/70 pb-5">
                             <div>
                                 <h2 class="text-xl font-semibold text-slate-800">Facturas recientes</h2>
                                 <p class="text-sm text-slate-500">Seguimiento de cobros generados en las últimas semanas.</p>
                             </div>
                             <NavLink href="/invoices" class="text-sm font-semibold text-blue-600 hover:text-blue-800">Ver todos</NavLink>
                         </div>
-                        <ul class="divide-y divide-slate-100 text-sm text-slate-600">
+                        <ul class="divide-y divide-slate-200/70 text-sm text-slate-600">
                             <li v-for="invoice in recentInvoices" :key="invoice.id" class="flex items-center justify-between py-4">
                                 <div>
                                     <p class="font-semibold text-slate-700">{{ getClientName(invoice.client_id) }}</p>
@@ -108,7 +108,7 @@
                             <li v-if="recentInvoices.length === 0" class="py-4 text-center text-slate-400">No hay facturas registradas.</li>
                         </ul>
                     </div>
-                    <div class="bg-white rounded-3xl shadow-xl p-6">
+                    <div class="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-sm">
                         <h2 class="text-xl font-semibold text-slate-800">Comparativa presupuestos vs facturación</h2>
                         <p class="text-sm text-slate-500">Evalúa la conversión de propuestas en ventas efectivas.</p>
                         <div class="mt-6">

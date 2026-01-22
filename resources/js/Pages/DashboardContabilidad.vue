@@ -8,23 +8,23 @@
                         <h1 class="text-3xl sm:text-4xl font-semibold text-white">Resumen contable integral</h1>
                         <p class="text-sm text-emerald-200">Comprende la evolución de ingresos, gastos y rentabilidad en un vistazo.</p>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 mt-10">
-                        <div class="rounded-2xl border border-white/20 bg-white/10 backdrop-blur p-6 text-white shadow-lg">
+                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mt-10">
+                        <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
                             <p class="text-xs uppercase tracking-[0.3em] text-emerald-200">Ingresos</p>
                             <p class="text-3xl font-semibold mt-2">€{{ totalIncomes }}</p>
                             <p class="text-sm text-emerald-200 mt-3">Promedio mensual €{{ averageIncome }}</p>
                         </div>
-                        <div class="rounded-2xl border border-white/20 bg-white/10 backdrop-blur p-6 text-white shadow-lg">
+                        <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
                             <p class="text-xs uppercase tracking-[0.3em] text-emerald-200">Gastos</p>
                             <p class="text-3xl font-semibold mt-2">€{{ totalExpenses }}</p>
                             <p class="text-sm text-emerald-200 mt-3">Coste medio €{{ averageExpense }}</p>
                         </div>
-                        <div class="rounded-2xl border border-white/20 bg-white/10 backdrop-blur p-6 text-white shadow-lg">
+                        <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
                             <p class="text-xs uppercase tracking-[0.3em] text-emerald-200">Beneficio neto</p>
                             <p class="text-3xl font-semibold mt-2">€{{ profit }}</p>
                             <p class="text-sm text-emerald-200 mt-3">Margen {{ profitMargin }}%</p>
                         </div>
-                        <div class="rounded-2xl border border-white/20 bg-white/10 backdrop-blur p-6 text-white shadow-lg">
+                        <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
                             <p class="text-xs uppercase tracking-[0.3em] text-emerald-200">Transacciones</p>
                             <p class="text-3xl font-semibold mt-2">{{ totalTransactions }}</p>
                             <p class="text-sm text-emerald-200 mt-3">{{ incomes.length }} ingresos • {{ expenses.length }} gastos</p>
@@ -33,9 +33,9 @@
                 </div>
             </div>
 
-            <div class="max-w-7xl mx-auto px-6 -mt-16 pb-16 space-y-10">
-                <div class="bg-white rounded-3xl shadow-xl p-6">
-                    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 border-b border-slate-100 pb-5">
+            <div class="max-w-7xl mx-auto px-6 -mt-16 pb-16 space-y-8">
+                <div class="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-sm">
+                    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 border-b border-slate-200/70 pb-5">
                         <div>
                             <h2 class="text-xl font-semibold text-slate-800">Ingresos acumulados</h2>
                             <p class="text-sm text-slate-500 mt-1">Sigue la evolución mensual filtrando por el año deseado.</p>
@@ -52,15 +52,15 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
-                    <div class="bg-white rounded-3xl shadow-xl p-6">
+                <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                    <div class="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-sm">
                         <h2 class="text-xl font-semibold text-slate-800">Balance mensual</h2>
                         <p class="text-sm text-slate-500">Comparativa entre ingresos y gastos con resultado neto.</p>
                         <div class="mt-6">
                             <AreaChart :data="monthlyBalanceChart" />
                         </div>
                     </div>
-                    <div class="bg-white rounded-3xl shadow-xl p-6">
+                    <div class="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-sm">
                         <h2 class="text-xl font-semibold text-slate-800">Indicadores clave</h2>
                         <p class="text-sm text-slate-500">Analiza métricas estratégicas de rentabilidad y actividad.</p>
                         <div class="mt-6">
@@ -69,7 +69,7 @@
                     </div>
                 </div>
 
-                <div class="bg-white rounded-3xl shadow-xl p-6">
+                <div class="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-sm">
                     <h2 class="text-xl font-semibold text-slate-800">Gastos mensuales</h2>
                     <p class="text-sm text-slate-500">Controla la distribución de costes a lo largo del año.</p>
                     <div class="mt-6">

@@ -8,7 +8,7 @@
                         <h1 class="text-3xl sm:text-4xl font-semibold text-white">Actividad en punto de venta</h1>
                         <p class="text-sm text-fuchsia-200">Monitoriza ventas, tickets y categorías para optimizar tu estrategia comercial.</p>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-5 mt-10">
+                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-6 mt-10">
                         <KpiCard
                             v-for="card in kpiCards"
                             :key="card.key"
@@ -22,7 +22,7 @@
                 </div>
             </div>
 
-            <div class="max-w-7xl mx-auto px-6 -mt-16 pb-16 space-y-10">
+            <div class="max-w-7xl mx-auto px-6 -mt-16 pb-16 space-y-8">
                 <section class="sr-only" aria-label="Documentación visual del panel TPV">
                     <h2 class="text-base font-semibold">Resumen de elementos visuales</h2>
                     <p>{{ visualDocumentation.summary }}</p>
@@ -44,15 +44,15 @@
                     </div>
                 </section>
 
-                <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
-                    <div class="bg-white rounded-3xl shadow-xl p-6 xl:col-span-2">
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                    <div class="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-sm xl:col-span-2">
                         <h2 class="text-xl font-semibold text-slate-800">Ventas mensuales</h2>
                         <p class="text-sm text-slate-500">Evolución del volumen de tickets y facturación.</p>
                         <div class="mt-6">
                             <LineChart :data="ticketMonthlyData" />
                         </div>
                     </div>
-                    <div class="bg-white rounded-3xl shadow-xl p-6">
+                    <div class="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-sm">
                         <h2 class="text-xl font-semibold text-slate-800">Distribución por productos</h2>
                         <p class="text-sm text-slate-500">Ventas agrupadas según cada referencia.</p>
                         <div class="mt-6">
@@ -61,15 +61,15 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
-                    <div class="bg-white rounded-3xl shadow-xl p-6">
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                    <div class="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-sm">
                         <h2 class="text-xl font-semibold text-slate-800">Ventas por categoría</h2>
                         <p class="text-sm text-slate-500">Comparativa entre familias de productos.</p>
                         <div class="mt-6">
                             <PieChart :data="productCategoryData" />
                         </div>
                     </div>
-                    <div class="bg-white rounded-3xl shadow-xl p-6 xl:col-span-2">
+                    <div class="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-sm xl:col-span-2">
                         <h2 class="text-xl font-semibold text-slate-800">Top productos vendidos</h2>
                         <p class="text-sm text-slate-500">Ranking de artículos con mayor rotación.</p>
                         <div class="mt-6">
@@ -78,7 +78,7 @@
                     </div>
                 </div>
 
-                <div class="bg-white rounded-3xl shadow-xl p-6">
+                <div class="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-sm">
                     <h2 class="text-xl font-semibold text-slate-800">Tendencia de ingresos acumulados</h2>
                     <p class="text-sm text-slate-500">Sigue cómo evolucionan los ingresos en el tiempo.</p>
                     <div class="mt-6">

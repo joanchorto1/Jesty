@@ -10,33 +10,33 @@
                             <p class="text-sm text-blue-200">Gestiona la cuenta, usuarios y configuración corporativa desde un único lugar.</p>
                         </div>
                         <div class="flex flex-wrap gap-4">
-                            <NavLink :href="route('companies.edit', company.id)" class="inline-flex items-center gap-2 rounded-xl bg-white/10 px-4 py-2 text-sm font-semibold text-white shadow ring-1 ring-white/20 hover:bg-white/20 transition">
+                            <NavLink :href="route('companies.edit', company.id)" class="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white hover:bg-white/20 transition">
                                 <EditIcon class="w-4 h-4" /> Editar compañía
                             </NavLink>
-                            <NavLink :href="route('email-configurations.edit', emailConfig.id)" v-if="emailConfig" class="inline-flex items-center gap-2 rounded-xl bg-white/10 px-4 py-2 text-sm font-semibold text-white shadow ring-1 ring-white/20 hover:bg-white/20 transition">
+                            <NavLink :href="route('email-configurations.edit', emailConfig.id)" v-if="emailConfig" class="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white hover:bg-white/20 transition">
                                 <EditIcon class="w-4 h-4" /> Editar correo
                             </NavLink>
                         </div>
                     </div>
 
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 mt-10">
-                        <div class="rounded-2xl border border-white/20 bg-white/10 backdrop-blur p-6 text-white shadow-lg">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mt-10">
+                        <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
                             <p class="text-xs uppercase tracking-[0.3em] text-blue-200">Usuarios</p>
                             <p class="text-3xl font-semibold mt-2">{{ totalUsers }}</p>
                             <p class="text-sm text-blue-200 mt-3">{{ activeRoles }} roles disponibles</p>
                         </div>
-                        <div class="rounded-2xl border border-white/20 bg-white/10 backdrop-blur p-6 text-white shadow-lg">
+                        <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
                             <p class="text-xs uppercase tracking-[0.3em] text-blue-200">Plan actual</p>
                             <p class="text-3xl font-semibold mt-2">{{ plan.name }}</p>
                             <p class="text-sm text-blue-200 mt-3">{{ plan.description }}</p>
                         </div>
-                        <div class="rounded-2xl border border-white/20 bg-white/10 backdrop-blur p-6 text-white shadow-lg">
+                        <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
                             <p class="text-xs uppercase tracking-[0.3em] text-blue-200">Características activas</p>
                             <p class="text-3xl font-semibold mt-2">{{ features.length }}</p>
                             <p class="text-sm text-blue-200 mt-3">{{ highlightedFeature }}</p>
                         </div>
-                        <div class="rounded-2xl border border-white/20 bg-white/10 backdrop-blur p-6 text-white shadow-lg">
+                        <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
                             <p class="text-xs uppercase tracking-[0.3em] text-blue-200">Estado de correo</p>
                             <p class="text-3xl font-semibold mt-2">{{ emailConfig ? 'Configurado' : 'Pendiente' }}</p>
                             <p class="text-sm text-blue-200 mt-3">{{ emailConfig ? emailConfig.from_email : 'Sin configuración SMTP' }}</p>
@@ -45,11 +45,11 @@
                     </div>
                 </div>
             </div>
-            <div class="max-w-7xl mx-auto px-6 -mt-16 pb-16 space-y-10">
-                <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
-                    <div class="space-y-8 xl:col-span-2">
-                        <div class="bg-white rounded-3xl shadow-xl p-6">
-                            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 border-b border-slate-100 pb-5">
+            <div class="max-w-7xl mx-auto px-6 -mt-16 pb-16 space-y-8">
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                    <div class="space-y-6 xl:col-span-2">
+                        <div class="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-sm">
+                            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 border-b border-slate-200/70 pb-5">
                                 <div>
                                     <h2 class="text-xl font-semibold text-slate-800">Resumen corporativo</h2>
                                     <p class="text-sm text-slate-500 mt-1">Información clave de la empresa y del plan contratado.</p>
@@ -60,14 +60,14 @@
                             </div>
                             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-6">
                                 <div class="space-y-3 text-sm text-slate-600">
-                                    <div class="rounded-2xl border border-slate-200/80 p-4">
+                                    <div class="rounded-2xl border border-slate-200/80 bg-white/70 p-4">
                                         <p class="text-xs uppercase tracking-widest text-slate-400">Datos de la empresa</p>
                                         <p class="font-semibold text-slate-700 mt-2">{{ company.name }}</p>
                                         <p class="mt-1">NIF: <span class="font-medium">{{ company.nif }}</span></p>
                                         <p class="mt-1">Teléfono: <span class="font-medium">{{ company.phone }}</span></p>
                                         <p class="mt-1">Dirección: <span class="font-medium">{{ company.address }}</span></p>
                                     </div>
-                                    <div class="rounded-2xl border border-slate-200/80 p-4">
+                                    <div class="rounded-2xl border border-slate-200/80 bg-white/70 p-4">
                                         <p class="text-xs uppercase tracking-widest text-slate-400">Claves API</p>
                                         <p class="mt-2 text-xs text-slate-500 break-all">Public: {{ company.public_key ?? 'No generada' }}</p>
                                         <p class="mt-2 text-xs text-slate-500 break-all">Private: {{ company.private_key ?? 'No generada' }}</p>
@@ -77,7 +77,7 @@
                                     </div>
                                 </div>
                                 <div class="space-y-3 text-sm text-slate-600">
-                                    <div class="rounded-2xl border border-slate-200/80 p-4">
+                                    <div class="rounded-2xl border border-slate-200/80 bg-white/70 p-4">
                                         <p class="text-xs uppercase tracking-widest text-slate-400">Plan actual</p>
                                         <p class="font-semibold text-slate-700 mt-2">{{ plan.name }}</p>
                                         <p class="text-slate-500 text-sm mt-1">{{ plan.description }}</p>
@@ -89,7 +89,7 @@
                                             <li v-if="features.length > 4" class="text-blue-600 font-medium">+ {{ features.length - 4 }} características más</li>
                                         </ul>
                                     </div>
-                                    <div class="rounded-2xl border border-slate-200/80 p-4">
+                                    <div class="rounded-2xl border border-slate-200/80 bg-white/70 p-4">
                                         <p class="text-xs uppercase tracking-widest text-slate-400">Correo transaccional</p>
                                         <p class="mt-2">Remitente: <span class="font-medium">{{ emailConfig?.from_name ?? 'Sin definir' }}</span></p>
                                         <p class="mt-1">SMTP host: <span class="font-medium">{{ emailConfig?.smtp_host ?? '—' }}</span></p>
@@ -99,8 +99,8 @@
                             </div>
                         </div>
 
-                        <div class="bg-white rounded-3xl shadow-xl p-6">
-                            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 border-b border-slate-100 pb-5">
+                        <div class="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-sm">
+                            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 border-b border-slate-200/70 pb-5">
                                 <div>
                                     <h2 class="text-xl font-semibold text-slate-800">Usuarios y actividad</h2>
                                     <p class="text-sm text-slate-500 mt-1">Evolución de la base de usuarios y distribución por roles.</p>
@@ -119,12 +119,12 @@
                         </div>
                     </div>
 
-                    <div class="space-y-8">
-                        <div class="bg-white rounded-3xl shadow-xl p-6">
+                    <div class="space-y-6">
+                        <div class="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-sm">
                             <h2 class="text-xl font-semibold text-slate-800">Roles disponibles</h2>
                             <p class="text-sm text-slate-500">Organiza los permisos del equipo y asigna accesos clave.</p>
                             <ul class="mt-4 space-y-3 text-sm text-slate-600 max-h-72 overflow-y-auto pr-2">
-                                <li v-for="role in roles" :key="role.id" class="flex items-start gap-3 rounded-2xl border border-slate-200/80 p-3">
+                                <li v-for="role in roles" :key="role.id" class="flex items-start gap-3 rounded-2xl border border-slate-200/80 bg-white/70 p-3">
                                     <span class="mt-1 h-2 w-2 rounded-full bg-indigo-500"></span>
                                     <div>
                                         <p class="font-semibold text-slate-700">{{ role.name }}</p>
@@ -135,7 +135,7 @@
                             </ul>
                         </div>
 
-                        <div class="bg-white rounded-3xl shadow-xl p-6 space-y-4">
+                        <div class="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-sm space-y-4">
                             <div>
                                 <h2 class="text-xl font-semibold text-slate-800">Acciones rápidas</h2>
                                 <p class="text-sm text-slate-500">Simplifica la gestión del equipo y la compañía.</p>
@@ -152,7 +152,7 @@
                             </div>
                         </div>
 
-                        <div class="bg-white rounded-3xl shadow-xl p-6 space-y-4">
+                        <div class="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-sm space-y-4">
                             <div>
                                 <h2 class="text-xl font-semibold text-rose-600">Dar de baja la empresa</h2>
                                 <p class="text-sm text-slate-500">Esta acción elimina todos los datos asociados a la compañía de forma irreversible.</p>

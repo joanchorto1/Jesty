@@ -8,27 +8,27 @@
                             <p class="text-blue-200 text-sm uppercase tracking-widest">Panel personal</p>
                             <h1 class="text-3xl sm:text-4xl font-semibold text-white mt-2">Hola {{ user.name }}, esto es lo que está pasando hoy</h1>
                         </div>
-                        <NavLink :href="route('user_tasks.create')" class="inline-flex items-center justify-center rounded-xl bg-white/10 px-5 py-3 text-sm font-semibold text-white shadow-lg ring-1 ring-white/20 hover:bg-white/20 transition">
+                        <NavLink :href="route('user_tasks.create')" class="inline-flex items-center justify-center rounded-xl border border-white/20 bg-white/10 px-5 py-3 text-sm font-semibold text-white hover:bg-white/20 transition">
                             Crear nueva tarea
                         </NavLink>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 mt-10">
-                        <div class="bg-white/10 backdrop-blur rounded-2xl p-5 text-white shadow-lg">
+                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mt-10">
+                        <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
                             <p class="text-xs uppercase tracking-widest text-blue-200">Tareas abiertas</p>
                             <p class="text-3xl font-semibold mt-2">{{ openTasks }}</p>
                             <p class="text-sm text-blue-200 mt-3">{{ inProgressTasks }} en progreso • {{ pendingTasks }} pendientes</p>
                         </div>
-                        <div class="bg-white/10 backdrop-blur rounded-2xl p-5 text-white shadow-lg">
+                        <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
                             <p class="text-xs uppercase tracking-widest text-blue-200">Entregas de hoy</p>
                             <p class="text-3xl font-semibold mt-2">{{ tasksDueToday }}</p>
                             <p class="text-sm text-blue-200 mt-3">{{ overdueTasks }} atrasadas sin finalizar</p>
                         </div>
-                        <div class="bg-white/10 backdrop-blur rounded-2xl p-5 text-white shadow-lg">
+                        <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
                             <p class="text-xs uppercase tracking-widest text-blue-200">Tareas finalizadas</p>
                             <p class="text-3xl font-semibold mt-2">{{ completedTasks }}</p>
                             <p class="text-sm text-blue-200 mt-3">{{ completionRate }}% de avance</p>
                         </div>
-                        <div class="bg-white/10 backdrop-blur rounded-2xl p-5 text-white shadow-lg">
+                        <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
                             <p class="text-xs uppercase tracking-widest text-blue-200">Alertas</p>
                             <p class="text-3xl font-semibold mt-2">{{ unreadNotifications }}</p>
                             <p class="text-sm text-blue-200 mt-3">Notificaciones pendientes por revisar</p>
@@ -37,11 +37,11 @@
                 </div>
             </div>
 
-            <div class="max-w-7xl mx-auto px-6 -mt-16 pb-16 space-y-10">
-                <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
-                    <div class="xl:col-span-2 space-y-8">
-                        <div class="bg-white rounded-3xl shadow-xl p-6">
-                            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 border-b border-slate-100 pb-5">
+            <div class="max-w-7xl mx-auto px-6 -mt-16 pb-16 space-y-8">
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                    <div class="xl:col-span-2 space-y-6">
+                        <div class="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-sm">
+                            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 border-b border-slate-200/70 pb-5">
                                 <div>
                                     <h2 class="text-xl font-semibold text-slate-800">Agenda y prioridades</h2>
                                     <p class="text-sm text-slate-500 mt-1">Consulta tu calendario y organiza tus próximos compromisos</p>
@@ -52,13 +52,13 @@
                                 </div>
                             </div>
                             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-6">
-                                <div class="rounded-2xl border border-dashed border-slate-200 p-4">
+                                <div class="rounded-2xl border border-dashed border-slate-200/80 bg-white/60 p-4">
                                     <Calendar id="calendar" class="w-full" />
                                 </div>
                                 <div class="flex flex-col">
                                     <h3 class="text-sm font-semibold text-slate-600 mb-3">Próximas entregas</h3>
                                     <ul class="flex-1 space-y-3 overflow-y-auto pr-2">
-                                        <li v-for="task in upcomingTasks" :key="`upcoming-${task.id}`" class="flex items-start gap-3 rounded-2xl border border-slate-200/60 p-4">
+                                        <li v-for="task in upcomingTasks" :key="`upcoming-${task.id}`" class="flex items-start gap-3 rounded-2xl border border-slate-200/70 bg-white/70 p-4">
                                             <div :class="['mt-1 h-2.5 w-2.5 rounded-full', task.status === 'completed' ? 'bg-emerald-500' : task.status === 'in_progress' ? 'bg-blue-500' : 'bg-amber-500']"></div>
                                             <div>
                                                 <p class="text-sm font-semibold text-slate-700">{{ task.title }}</p>
@@ -72,8 +72,8 @@
                             </div>
                         </div>
 
-                        <div class="bg-white rounded-3xl shadow-xl p-6">
-                            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 border-b border-slate-100 pb-5">
+                        <div class="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-sm">
+                            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 border-b border-slate-200/70 pb-5">
                                 <div>
                                     <h2 class="text-xl font-semibold text-slate-800">Panel de tareas</h2>
                                     <p class="text-sm text-slate-500 mt-1">Gestiona tus pendientes, cambia estados y mantén el foco</p>
@@ -89,8 +89,8 @@
                                             <th class="pb-3 text-right">Acciones</th>
                                         </tr>
                                     </thead>
-                                    <tbody class="divide-y divide-slate-100 text-sm text-slate-600">
-                                        <tr v-for="task in orderedTasks" :key="task.id" class="hover:bg-slate-50/80 transition">
+                                    <tbody class="divide-y divide-slate-200/70 text-sm text-slate-600">
+                                        <tr v-for="task in orderedTasks" :key="task.id" class="hover:bg-slate-50/70 transition">
                                             <td class="py-4">
                                                 <p class="font-medium text-slate-700">{{ task.title }}</p>
                                                 <p v-if="task.description" class="text-xs text-slate-400 mt-1 line-clamp-2">{{ task.description }}</p>
@@ -124,8 +124,8 @@
                         </div>
                     </div>
 
-                    <div class="space-y-8">
-                        <div class="bg-white rounded-3xl shadow-xl p-6">
+                    <div class="space-y-6">
+                        <div class="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-sm">
                             <h2 class="text-xl font-semibold text-slate-800">Resumen visual</h2>
                             <p class="text-sm text-slate-500 mb-4">Estado de tus tareas y carga mensual</p>
                             <div class="space-y-8">
@@ -140,11 +140,11 @@
                             </div>
                         </div>
 
-                        <div class="bg-white rounded-3xl shadow-xl p-6">
+                        <div class="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-sm">
                             <h2 class="text-xl font-semibold text-slate-800">Notificaciones</h2>
                             <p class="text-sm text-slate-500 mb-4">Actualizaciones relevantes para mantenerte al día</p>
                             <ul class="space-y-4 max-h-80 overflow-y-auto pr-2">
-                                <li v-for="notification in notifications" :key="notification.id" class="rounded-2xl border border-slate-200/70 p-4">
+                                <li v-for="notification in notifications" :key="notification.id" class="rounded-2xl border border-slate-200/70 bg-white/70 p-4">
                                     <div class="flex items-start justify-between gap-3">
                                         <div>
                                             <p class="text-sm font-semibold text-slate-700">{{ notification.title }}</p>
