@@ -25,32 +25,32 @@ const submit = () => {
 
     <AuthenticationCard>
         <template #logo>
-            <div class="flex flex-col items-center gap-4 text-slate-200">
+            <div class="flex flex-col items-center gap-4 text-slate-700">
                 <AuthenticationCardLogo />
-                <p class="text-xs font-semibold uppercase tracking-[0.4em] text-sky-200/80">Recuperació d'accés</p>
+                <p class="text-xs font-semibold uppercase tracking-[0.4em] text-slate-400">Recuperació d'accés</p>
             </div>
         </template>
 
-        <div class="space-y-6 text-slate-200">
+        <div class="space-y-6 text-slate-700">
             <div class="space-y-3 text-center">
-                <h1 class="text-2xl font-semibold">Restableix la teva contrasenya</h1>
-                <p class="text-sm leading-relaxed text-slate-300">
+                <h1 class="text-2xl font-semibold text-slate-800">Restableix la teva contrasenya</h1>
+                <p class="text-sm leading-relaxed text-slate-500">
                     Introdueix el teu correu corporatiu i t'enviarem un enllaç segur per crear una nova contrasenya per a la suite JCT Agency.
                 </p>
             </div>
 
-            <div v-if="status" class="rounded-xl border border-sky-400/40 bg-sky-500/10 px-4 py-3 text-sm font-medium text-sky-200">
+            <div v-if="status" class="rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm font-medium text-sky-700">
                 {{ status }}
             </div>
 
             <form class="space-y-6" @submit.prevent="submit">
                 <div>
-                    <InputLabel for="email" value="Correu electrònic" class="text-slate-200" />
+                    <InputLabel for="email" value="Correu electrònic" />
                     <TextInput
                         id="email"
                         v-model="form.email"
                         type="email"
-                        class="mt-2 block w-full rounded-2xl border-slate-600/70 bg-slate-900/40 px-4 py-3 text-slate-100 placeholder-slate-500 focus:border-sky-400 focus:ring-sky-400"
+                        class="mt-2 block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-800 shadow-sm placeholder-slate-400 focus:border-sky-500 focus:ring-sky-500"
                         required
                         autofocus
                         autocomplete="username"
