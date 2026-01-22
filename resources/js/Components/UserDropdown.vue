@@ -1,11 +1,11 @@
 <template>
     <Dropdown align="right" width="48">
         <template #trigger>
-            <button v-if="$page.props.jetstream.managesProfilePhotos" class="flex text-sm border-2 border-transparent rounded-full focus:outline-none focus:border-gray-300 transition">
+            <button v-if="$page.props.jetstream.managesProfilePhotos" class="flex rounded-full border border-slate-200 text-sm transition focus:outline-none focus:ring-2 focus:ring-slate-200 focus:ring-offset-2">
                 <img class="h-8 w-8 rounded-full object-cover" :src="$page.props.auth.user.profile_photo_url" :alt="$page.props.auth.user.name">
             </button>
             <span v-else class="inline-flex rounded-md">
-                <button type="button" class="inline-flex items-center bg-blue-500 text-gray-50 rounded-2xl  px-3 py-2 border border-transparent text-sm leading-4 font-medium hover:text-gray-200 focus:outline-none focus:bg-blue-700 focus:text-gray-200 active:bg-gray-50 transition ease-in-out duration-150">
+                <button type="button" class="inline-flex items-center rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-200 focus:ring-offset-2">
                     {{ $page.props.auth.user.name }}
                     <svg class="ms-2 -me-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />

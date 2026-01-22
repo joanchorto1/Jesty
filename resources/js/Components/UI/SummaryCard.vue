@@ -1,10 +1,10 @@
 <template>
     <div :class="wrapperClass">
         <p v-if="eyebrow" class="text-xs uppercase tracking-[0.3em]" :class="eyebrowClass">{{ eyebrow }}</p>
-        <p class="text-3xl font-semibold mt-2">
+        <p class="mt-2 text-3xl font-semibold">
             <slot name="value">{{ value }}</slot>
         </p>
-        <p v-if="description || hasDescriptionSlot" class="text-sm mt-3" :class="descriptionClass">
+        <p v-if="description || hasDescriptionSlot" class="mt-3 text-sm" :class="descriptionClass">
             <slot name="description">{{ description }}</slot>
         </p>
     </div>
@@ -34,13 +34,13 @@ const props = defineProps({
 
 const variantStyles = {
     glass: {
-        wrapper: 'rounded-2xl border border-white/20 bg-white/10 backdrop-blur p-6 text-white shadow-lg',
-        eyebrow: 'text-emerald-200',
-        description: 'text-emerald-200',
+        wrapper: 'rounded-2xl border border-slate-200 bg-white p-6 text-slate-800',
+        eyebrow: 'text-slate-500',
+        description: 'text-slate-500',
     },
     light: {
-        wrapper: 'rounded-2xl border border-slate-200 bg-white p-6 text-slate-800 shadow-lg',
-        eyebrow: 'text-emerald-500',
+        wrapper: 'rounded-2xl border border-slate-200 bg-white p-6 text-slate-800',
+        eyebrow: 'text-slate-500',
         description: 'text-slate-500',
     },
 };
