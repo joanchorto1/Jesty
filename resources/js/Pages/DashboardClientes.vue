@@ -1,32 +1,31 @@
 <template>
     <AppLayout>
-        <div class="min-h-screen bg-slate-950">
-            <div class="bg-gradient-to-r from-emerald-600 via-blue-700 to-slate-900 pb-24">
-                <div class="max-w-7xl mx-auto px-6 pt-10">
-                    <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
-                        <div>
-                            <p class="text-emerald-200 text-sm uppercase tracking-widest">Inteligencia de clientes</p>
-                            <h1 class="text-3xl sm:text-4xl font-semibold text-white">Visión 360º de tu cartera</h1>
-                            <p class="text-sm text-emerald-200 mt-2">Segmenta, analiza y toma decisiones informadas sobre tus relaciones comerciales.</p>
-                        </div>
-                        <NavLink :href="route('clients.create')" class="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white hover:bg-white/20 transition">
-                            <AddIcon class="w-4 h-4" /> Nuevo cliente
-                        </NavLink>
+        <div class="min-h-screen bg-slate-100/80 py-12">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+                    <div>
+                        <p class="text-slate-400 text-sm uppercase tracking-widest">Clientes</p>
+                        <h1 class="text-3xl sm:text-4xl font-semibold text-slate-900">Visión 360º de tu cartera</h1>
+                        <p class="text-sm text-slate-500 mt-2">Segmenta, analiza y toma decisiones con una vista clara de tus relaciones comerciales.</p>
                     </div>
+                    <NavLink :href="route('clients.create')" class="inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-800 transition">
+                        <AddIcon class="w-4 h-4" /> Nuevo cliente
+                    </NavLink>
+                </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mt-10">
-                        <SummaryCard
-                            v-for="card in summaryCards"
-                            :key="card.eyebrow"
-                            :eyebrow="card.eyebrow"
-                            :value="card.value"
-                            :description="card.description"
-                        />
-                    </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mt-8">
+                    <SummaryCard
+                        v-for="card in summaryCards"
+                        :key="card.eyebrow"
+                        :eyebrow="card.eyebrow"
+                        :value="card.value"
+                        :description="card.description"
+                        variant="light"
+                    />
                 </div>
             </div>
 
-            <div class="max-w-7xl mx-auto px-6 -mt-16 pb-16 space-y-8">
+            <div class="max-w-7xl mx-auto px-6 mt-10 pb-16 space-y-8">
                 <Panel title="Filtrado inteligente" description="Encuentra el cliente ideal combinando filtros avanzados.">
                     <template #actions>
                         <button @click="clearFilters" class="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition">
@@ -71,7 +70,7 @@
                                     <div class="flex items-center justify-end gap-3 text-slate-500">
                                         <NavLink
                                             :href="route('clients.show', client.id)"
-                                            class="hover:text-blue-500 transition"
+                                            class="hover:text-emerald-500 transition"
                                             aria-label="Ver detalles del cliente"
                                         >
                                             <InfoIcon class="w-5 h-5" />
@@ -240,7 +239,7 @@ const clientStatusChart = computed(() => {
         labels: Object.keys(data),
         datasets: [
             {
-                backgroundColor: ['#10B981', '#F97316', '#CBD5F5'],
+                backgroundColor: ['#34D399', '#F59E0B', '#CBD5F5'],
                 data: Object.values(data),
             },
         ],
@@ -270,8 +269,8 @@ const revenueByClientChart = computed(() => {
         datasets: [
             {
                 label: 'Ingresos',
-                backgroundColor: 'rgba(52, 211, 153, 0.45)',
-                borderColor: 'rgba(52, 211, 153, 1)',
+                backgroundColor: 'rgba(16, 185, 129, 0.45)',
+                borderColor: 'rgba(16, 185, 129, 1)',
                 borderWidth: 1,
                 data,
             },

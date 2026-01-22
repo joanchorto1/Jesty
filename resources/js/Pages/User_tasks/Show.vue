@@ -4,11 +4,11 @@
             <template #header>
                 <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
                     <div class="space-y-2">
-                        <p class="text-blue-200 text-sm uppercase tracking-widest">Tareas</p>
-                        <h1 class="text-3xl sm:text-4xl font-semibold text-white">Detalle de la tarea</h1>
-                        <p class="text-sm text-blue-200 max-w-2xl">Consulta la información actualizada y gestiona el seguimiento.</p>
+                        <p class="text-slate-400 text-sm uppercase tracking-widest">Tareas</p>
+                        <h1 class="text-3xl sm:text-4xl font-semibold text-slate-900">Detalle de la tarea</h1>
+                        <p class="text-sm text-slate-500 max-w-2xl">Consulta la información actualizada y gestiona el seguimiento.</p>
                     </div>
-                    <NavLink :href="route('user_tasks.index')" class="inline-flex items-center gap-2 rounded-xl border border-white/30 px-4 py-2 text-sm font-semibold text-white/80 backdrop-blur transition hover:bg-white/10">
+                    <NavLink :href="route('user_tasks.index')" class="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50">
                         Volver al listado
                     </NavLink>
                 </div>
@@ -31,12 +31,12 @@
                         </div>
                         <div>
                             <p class="text-xs uppercase tracking-widest text-slate-400">Estado</p>
-                            <p class="mt-1 inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-blue-700">{{ task.status ?? 'Sin estado' }}</p>
+                            <p class="mt-1 inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-700">{{ task.status ?? 'Sin estado' }}</p>
                         </div>
                     </div>
                 </div>
                 <template #actions>
-                    <NavLink :href="route('user_tasks.edit', task.id)" class="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-slate-700 transition">
+                    <NavLink :href="route('user_tasks.edit', task.id)" class="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-slate-800 transition">
                         Editar tarea
                     </NavLink>
                 </template>

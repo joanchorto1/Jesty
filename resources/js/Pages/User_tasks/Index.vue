@@ -4,11 +4,11 @@
             <template #header>
                 <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
                     <div class="space-y-2">
-                        <p class="text-blue-200 text-sm uppercase tracking-widest">Tareas</p>
-                        <h1 class="text-3xl sm:text-4xl font-semibold text-white">Gestión de tareas</h1>
-                        <p class="text-sm text-blue-200">Controla el flujo de trabajo del equipo y consulta el estado de las asignaciones.</p>
+                        <p class="text-slate-400 text-sm uppercase tracking-widest">Tareas</p>
+                        <h1 class="text-3xl sm:text-4xl font-semibold text-slate-900">Gestión de tareas</h1>
+                        <p class="text-sm text-slate-500">Controla el flujo de trabajo del equipo y consulta el estado de las asignaciones.</p>
                     </div>
-                    <NavLink :href="route('user_tasks.adminCreate')" class="inline-flex items-center gap-2 rounded-xl bg-white/10 px-4 py-2 text-sm font-semibold text-white shadow ring-1 ring-white/20 transition hover:bg-white/20">
+                    <NavLink :href="route('user_tasks.adminCreate')" class="inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800">
                         Nueva tarea
                     </NavLink>
                 </div>

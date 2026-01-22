@@ -1,7 +1,7 @@
 <template>
-    <div class="min-h-screen bg-slate-950">
+    <div class="min-h-screen bg-slate-100/80 py-12">
         <div v-if="!flushHeader || $slots.header" :class="headerWrapperClasses">
-            <div class="max-w-7xl mx-auto px-6 pt-10">
+            <div class="max-w-7xl mx-auto px-6">
                 <slot name="header" />
             </div>
         </div>
@@ -26,12 +26,12 @@ const slots = useSlots();
 const hasHeader = computed(() => Boolean(slots.header));
 
 const headerWrapperClasses = computed(() => [
-    'pb-24',
-    props.flushHeader ? 'bg-slate-950' : 'bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900',
+    'mb-10',
+    props.flushHeader ? 'bg-transparent' : 'bg-transparent',
 ]);
 
 const contentWrapperClasses = computed(() => [
     'max-w-7xl mx-auto px-6 pb-16 space-y-10',
-    hasHeader.value ? '-mt-16' : 'pt-10',
+    hasHeader.value ? 'pt-0' : 'pt-4',
 ]);
 </script>

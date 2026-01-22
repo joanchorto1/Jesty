@@ -1,39 +1,37 @@
 <template>
     <AppLayout>
-        <div class="min-h-screen bg-slate-950">
-            <div class="bg-gradient-to-r from-cyan-700 via-blue-700 to-indigo-700 pb-24">
-                <div class="max-w-7xl mx-auto px-6 pt-10">
-                    <div class="space-y-2">
-                        <p class="text-cyan-200 text-sm uppercase tracking-widest">Talento y cultura</p>
-                        <h1 class="text-3xl sm:text-4xl font-semibold text-white">Radiografía del equipo humano</h1>
-                        <p class="text-sm text-cyan-200">Analiza la composición, crecimiento y distribución de tu organización.</p>
+        <div class="min-h-screen bg-slate-100/80 py-12">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="space-y-2">
+                    <p class="text-slate-400 text-sm uppercase tracking-widest">RRHH</p>
+                    <h1 class="text-3xl sm:text-4xl font-semibold text-slate-900">Radiografía del equipo humano</h1>
+                    <p class="text-sm text-slate-500">Analiza la composición, crecimiento y distribución de tu organización.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mt-8">
+                    <div class="rounded-2xl border border-slate-200/80 bg-white/90 p-5 text-slate-700 shadow-sm">
+                        <p class="text-xs uppercase tracking-[0.3em] text-slate-400">Empleados</p>
+                        <p class="text-3xl font-semibold mt-2 text-slate-900">{{ totalEmployees }}</p>
+                        <p class="text-sm text-slate-500 mt-3">{{ headcountGrowth }}% crecimiento anual</p>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mt-10">
-                        <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
-                            <p class="text-xs uppercase tracking-[0.3em] text-cyan-200">Empleados</p>
-                            <p class="text-3xl font-semibold mt-2">{{ totalEmployees }}</p>
-                            <p class="text-sm text-cyan-200 mt-3">{{ headcountGrowth }}% crecimiento anual</p>
-                        </div>
-                        <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
-                            <p class="text-xs uppercase tracking-[0.3em] text-cyan-200">Departamentos</p>
-                            <p class="text-3xl font-semibold mt-2">{{ totalDepartments }}</p>
-                            <p class="text-sm text-cyan-200 mt-3">{{ averageTeamSize }} personas promedio</p>
-                        </div>
-                        <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
-                            <p class="text-xs uppercase tracking-[0.3em] text-cyan-200">Salario medio</p>
-                            <p class="text-3xl font-semibold mt-2">€{{ averageSalary.toFixed(2) }}</p>
-                            <p class="text-sm text-cyan-200 mt-3">Brecha interdepartamental {{ salaryVariance }}%</p>
-                        </div>
-                        <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
-                            <p class="text-xs uppercase tracking-[0.3em] text-cyan-200">Activos</p>
-                            <p class="text-3xl font-semibold mt-2">{{ totalEmployeesActive }}</p>
-                            <p class="text-sm text-cyan-200 mt-3">{{ inactiveEmployees }} en pausa</p>
-                        </div>
+                    <div class="rounded-2xl border border-slate-200/80 bg-white/90 p-5 text-slate-700 shadow-sm">
+                        <p class="text-xs uppercase tracking-[0.3em] text-slate-400">Departamentos</p>
+                        <p class="text-3xl font-semibold mt-2 text-slate-900">{{ totalDepartments }}</p>
+                        <p class="text-sm text-slate-500 mt-3">{{ averageTeamSize }} personas promedio</p>
+                    </div>
+                    <div class="rounded-2xl border border-slate-200/80 bg-white/90 p-5 text-slate-700 shadow-sm">
+                        <p class="text-xs uppercase tracking-[0.3em] text-slate-400">Salario medio</p>
+                        <p class="text-3xl font-semibold mt-2 text-slate-900">€{{ averageSalary.toFixed(2) }}</p>
+                        <p class="text-sm text-slate-500 mt-3">Brecha interdepartamental {{ salaryVariance }}%</p>
+                    </div>
+                    <div class="rounded-2xl border border-slate-200/80 bg-white/90 p-5 text-slate-700 shadow-sm">
+                        <p class="text-xs uppercase tracking-[0.3em] text-slate-400">Activos</p>
+                        <p class="text-3xl font-semibold mt-2 text-slate-900">{{ totalEmployeesActive }}</p>
+                        <p class="text-sm text-slate-500 mt-3">{{ inactiveEmployees }} en pausa</p>
                     </div>
                 </div>
             </div>
 
-            <div class="max-w-7xl mx-auto px-6 -mt-16 pb-16 space-y-8">
+            <div class="max-w-7xl mx-auto px-6 mt-10 pb-16 space-y-8">
                 <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
                     <div class="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-sm">
                         <h2 class="text-xl font-semibold text-slate-800">Empleados por departamento</h2>
@@ -160,7 +158,7 @@ const employeeDepartmentData = computed(() => {
         datasets: [
             {
                 label: 'Empleados por departamento',
-                backgroundColor: ['#06B6D4', '#2563EB', '#7C3AED', '#14B8A6', '#EC4899'],
+                backgroundColor: ['#34D399', '#38BDF8', '#6366F1', '#F59E0B', '#F472B6'],
                 data: Object.values(departmentTotals),
             },
         ],
@@ -181,8 +179,8 @@ const employeeHiringYearData = computed(() => {
         datasets: [
             {
                 label: 'Altas',
-                backgroundColor: 'rgba(14, 165, 233, 0.5)',
-                borderColor: 'rgba(14, 165, 233, 1)',
+                backgroundColor: 'rgba(16, 185, 129, 0.5)',
+                borderColor: 'rgba(16, 185, 129, 1)',
                 borderWidth: 1,
                 data: Object.values(hiringYearTotals),
             },
@@ -204,8 +202,8 @@ const departmentSalaryComparisonData = computed(() => {
         datasets: [
             {
                 label: 'Salario medio',
-                backgroundColor: 'rgba(37, 99, 235, 0.45)',
-                borderColor: 'rgba(37, 99, 235, 1)',
+                backgroundColor: 'rgba(56, 189, 248, 0.45)',
+                borderColor: 'rgba(56, 189, 248, 1)',
                 borderWidth: 1,
                 data: Object.values(departmentSalaryTotals),
             },
@@ -225,7 +223,7 @@ const departmentEmployeeData = computed(() => {
         datasets: [
             {
                 label: 'Empleados',
-                backgroundColor: ['#06B6D4', '#2563EB', '#7C3AED', '#14B8A6', '#EC4899'],
+                backgroundColor: ['#34D399', '#38BDF8', '#6366F1', '#F59E0B', '#F472B6'],
                 data: Object.values(departmentEmployeeTotals),
             },
         ],
@@ -245,8 +243,8 @@ const departmentLocationData = computed(() => {
         datasets: [
             {
                 label: 'Departamentos',
-                backgroundColor: 'rgba(59, 130, 246, 0.5)',
-                borderColor: 'rgba(59, 130, 246, 1)',
+                backgroundColor: 'rgba(16, 185, 129, 0.5)',
+                borderColor: 'rgba(16, 185, 129, 1)',
                 borderWidth: 1,
                 data: Object.values(locationTotals),
             },
@@ -266,7 +264,7 @@ const departmentProjectComparisonData = computed(() => {
         datasets: [
             {
                 label: 'Proyectos activos',
-                backgroundColor: 'rgba(129, 140, 248, 0.45)',
+                backgroundColor: 'rgba(99, 102, 241, 0.45)',
                 borderColor: 'rgba(99, 102, 241, 1)',
                 borderWidth: 1,
                 data: Object.values(projectTotals),

@@ -4,15 +4,15 @@
             <template #header>
                 <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
                     <div class="space-y-2">
-                        <p class="text-blue-200 text-sm uppercase tracking-widest">Panel administrativo</p>
-                        <h1 class="text-3xl sm:text-4xl font-semibold text-white">Resumen general</h1>
-                        <p class="text-sm text-blue-200">Gestiona compañías, usuarios y monitoriza la actividad desde un mismo lugar.</p>
+                        <p class="text-slate-400 text-sm uppercase tracking-widest">Panel administrativo</p>
+                        <h1 class="text-3xl sm:text-4xl font-semibold text-slate-900">Resumen general</h1>
+                        <p class="text-sm text-slate-500">Gestiona compañías, usuarios y monitoriza la actividad desde un mismo lugar.</p>
                     </div>
                     <div class="flex flex-wrap items-center gap-3">
-                        <NavLink :href="route('companies.create')" class="inline-flex items-center gap-2 rounded-xl bg-white/10 px-4 py-2 text-sm font-semibold text-white shadow ring-1 ring-white/20 transition hover:bg-white/20">
+                        <NavLink :href="route('companies.create')" class="inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800">
                             Crear compañía
                         </NavLink>
-                        <NavLink :href="route('users.adminCreate')" class="inline-flex items-center gap-2 rounded-xl border border-white/30 px-4 py-2 text-sm font-semibold text-white/80 backdrop-blur transition hover:bg-white/10">
+                        <NavLink :href="route('users.adminCreate')" class="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50">
                             Crear usuario
                         </NavLink>
                     </div>
@@ -103,7 +103,7 @@ onMounted(() => {
                     {
                         label: 'Compañías',
                         data: monthlyCompanies.value.values,
-                        backgroundColor: 'rgba(59, 130, 246, 0.45)',
+                        backgroundColor: 'rgba(16, 185, 129, 0.45)',
                         borderRadius: 12,
                     },
                 ],
@@ -132,7 +132,7 @@ onMounted(() => {
                     {
                         label: 'Usuarios',
                         data: userStatusDistribution.value.values,
-                        backgroundColor: ['#6366F1', '#22D3EE', '#F97316', '#A855F7', '#14B8A6'],
+                        backgroundColor: ['#34D399', '#38BDF8', '#6366F1', '#F59E0B', '#F472B6'],
                     },
                 ],
             },

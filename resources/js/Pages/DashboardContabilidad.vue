@@ -1,39 +1,37 @@
 <template>
     <AppLayout>
-        <div class="min-h-screen bg-slate-950">
-            <div class="bg-gradient-to-r from-slate-900 via-emerald-700 to-blue-900 pb-24">
-                <div class="max-w-7xl mx-auto px-6 pt-10">
-                    <div class="space-y-2">
-                        <p class="text-emerald-200 text-sm uppercase tracking-widest">Salud financiera</p>
-                        <h1 class="text-3xl sm:text-4xl font-semibold text-white">Resumen contable integral</h1>
-                        <p class="text-sm text-emerald-200">Comprende la evolución de ingresos, gastos y rentabilidad en un vistazo.</p>
+        <div class="min-h-screen bg-slate-100/80 py-12">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="space-y-2">
+                    <p class="text-slate-400 text-sm uppercase tracking-widest">Contabilidad</p>
+                    <h1 class="text-3xl sm:text-4xl font-semibold text-slate-900">Resumen contable integral</h1>
+                    <p class="text-sm text-slate-500">Comprende la evolución de ingresos, gastos y rentabilidad en un vistazo.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mt-8">
+                    <div class="rounded-2xl border border-slate-200/80 bg-white/90 p-5 text-slate-700 shadow-sm">
+                        <p class="text-xs uppercase tracking-[0.3em] text-slate-400">Ingresos</p>
+                        <p class="text-3xl font-semibold mt-2 text-slate-900">€{{ totalIncomes }}</p>
+                        <p class="text-sm text-slate-500 mt-3">Promedio mensual €{{ averageIncome }}</p>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mt-10">
-                        <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
-                            <p class="text-xs uppercase tracking-[0.3em] text-emerald-200">Ingresos</p>
-                            <p class="text-3xl font-semibold mt-2">€{{ totalIncomes }}</p>
-                            <p class="text-sm text-emerald-200 mt-3">Promedio mensual €{{ averageIncome }}</p>
-                        </div>
-                        <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
-                            <p class="text-xs uppercase tracking-[0.3em] text-emerald-200">Gastos</p>
-                            <p class="text-3xl font-semibold mt-2">€{{ totalExpenses }}</p>
-                            <p class="text-sm text-emerald-200 mt-3">Coste medio €{{ averageExpense }}</p>
-                        </div>
-                        <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
-                            <p class="text-xs uppercase tracking-[0.3em] text-emerald-200">Beneficio neto</p>
-                            <p class="text-3xl font-semibold mt-2">€{{ profit }}</p>
-                            <p class="text-sm text-emerald-200 mt-3">Margen {{ profitMargin }}%</p>
-                        </div>
-                        <div class="rounded-2xl border border-white/15 bg-white/5 p-5 text-white shadow-sm">
-                            <p class="text-xs uppercase tracking-[0.3em] text-emerald-200">Transacciones</p>
-                            <p class="text-3xl font-semibold mt-2">{{ totalTransactions }}</p>
-                            <p class="text-sm text-emerald-200 mt-3">{{ incomes.length }} ingresos • {{ expenses.length }} gastos</p>
-                        </div>
+                    <div class="rounded-2xl border border-slate-200/80 bg-white/90 p-5 text-slate-700 shadow-sm">
+                        <p class="text-xs uppercase tracking-[0.3em] text-slate-400">Gastos</p>
+                        <p class="text-3xl font-semibold mt-2 text-slate-900">€{{ totalExpenses }}</p>
+                        <p class="text-sm text-slate-500 mt-3">Coste medio €{{ averageExpense }}</p>
+                    </div>
+                    <div class="rounded-2xl border border-slate-200/80 bg-white/90 p-5 text-slate-700 shadow-sm">
+                        <p class="text-xs uppercase tracking-[0.3em] text-slate-400">Beneficio neto</p>
+                        <p class="text-3xl font-semibold mt-2 text-slate-900">€{{ profit }}</p>
+                        <p class="text-sm text-slate-500 mt-3">Margen {{ profitMargin }}%</p>
+                    </div>
+                    <div class="rounded-2xl border border-slate-200/80 bg-white/90 p-5 text-slate-700 shadow-sm">
+                        <p class="text-xs uppercase tracking-[0.3em] text-slate-400">Transacciones</p>
+                        <p class="text-3xl font-semibold mt-2 text-slate-900">{{ totalTransactions }}</p>
+                        <p class="text-sm text-slate-500 mt-3">{{ incomes.length }} ingresos • {{ expenses.length }} gastos</p>
                     </div>
                 </div>
             </div>
 
-            <div class="max-w-7xl mx-auto px-6 -mt-16 pb-16 space-y-8">
+            <div class="max-w-7xl mx-auto px-6 mt-10 pb-16 space-y-8">
                 <div class="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-sm">
                     <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 border-b border-slate-200/70 pb-5">
                         <div>
@@ -168,8 +166,8 @@ const metricsComparisonData = computed(() => ({
             label: 'Indicadores',
             data: [parseFloat(totalIncomes.value), parseFloat(totalExpenses.value), parseFloat(profit.value), totalTransactions.value],
             fill: false,
-            borderColor: 'rgba(59, 130, 246, 1)',
-            backgroundColor: 'rgba(59, 130, 246, 0.2)',
+            borderColor: 'rgba(56, 189, 248, 1)',
+            backgroundColor: 'rgba(56, 189, 248, 0.2)',
             borderWidth: 2,
         },
     ],
@@ -240,8 +238,8 @@ const monthlyBalanceChart = computed(() => {
                 label: 'Resultado neto',
                 data: net,
                 fill: false,
-                borderColor: 'rgba(14, 165, 233, 1)',
-                backgroundColor: 'rgba(14, 165, 233, 0.25)',
+                borderColor: 'rgba(56, 189, 248, 1)',
+                backgroundColor: 'rgba(56, 189, 248, 0.25)',
                 borderWidth: 2,
             },
         ],

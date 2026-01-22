@@ -3,9 +3,9 @@
         <AdminPage>
             <template #header>
                 <div class="space-y-3">
-                    <p class="text-blue-200 text-sm uppercase tracking-widest">Tareas</p>
-                    <h1 class="text-3xl sm:text-4xl font-semibold text-white">Editar tarea personal</h1>
-                    <p class="text-sm text-blue-200 max-w-2xl">Revisa y actualiza el progreso de tu tarea.</p>
+                    <p class="text-slate-400 text-sm uppercase tracking-widest">Tareas</p>
+                    <h1 class="text-3xl sm:text-4xl font-semibold text-slate-900">Editar tarea personal</h1>
+                    <p class="text-sm text-slate-500 max-w-2xl">Revisa y actualiza el progreso de tu tarea.</p>
                 </div>
             </template>
 
@@ -25,7 +25,7 @@
                     </div>
                     <div class="flex justify-end gap-3">
                         <NavLink :href="route('user_tasks.index')" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-50">Cancelar</NavLink>
-                        <button type="submit" class="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-slate-700 transition">
+                        <button type="submit" class="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-slate-800 transition">
                             Actualizar tarea
                         </button>
                     </div>
@@ -47,7 +47,7 @@ const props = defineProps({
     task: Object,
 });
 
-const inputClasses = 'w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/40 focus:outline-none transition';
+const inputClasses = 'w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/40 focus:outline-none transition';
 
 const form = reactive({
     title: props.task.title,

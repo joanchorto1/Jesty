@@ -48,8 +48,8 @@ const props = defineProps({
     },
 });
 
-const subtitleClass = computed(() => props.gradient ? 'text-fuchsia-100/80' : 'text-slate-500');
+const subtitleClass = computed(() => props.gradient ? 'text-emerald-100/80' : 'text-slate-500');
 const valueClass = computed(() => props.gradient ? 'text-white' : 'text-slate-900');
-const descriptionClass = computed(() => props.gradient ? 'text-fuchsia-100/70' : 'text-slate-500');
+const descriptionClass = computed(() => props.gradient ? 'text-emerald-100/70' : 'text-slate-500');
 
 </script>
