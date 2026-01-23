@@ -15,13 +15,13 @@
             font-family: 'DejaVu Sans', Arial, sans-serif;
             font-size: 10px;
             color: #111827;
-            background-color: #f9fafb;
-            margin: 32px;
+            background-color: #f3f4f6;
+            margin: 18px;
         }
 
         header, footer {
             text-align: center;
-            margin-bottom: 24px;
+            margin-bottom: 14px;
         }
 
         h1, h2, h3, p {
@@ -29,8 +29,24 @@
         }
 
         h1 {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 600;
+        }
+
+        .meta {
+            margin-top: 6px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            font-size: 9px;
+            color: #6b7280;
+        }
+
+        .meta span {
+            display: inline-flex;
+            gap: 6px;
+            align-items: center;
         }
 
         .container {
@@ -38,7 +54,7 @@
             max-width: 850px;
             margin: 0 auto;
             background: #ffffff;
-            padding: 28px;
+            padding: 18px;
             border-radius: 12px;
             border: 1px solid #e5e7eb;
         }
@@ -46,24 +62,24 @@
         .details {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 20px;
-            margin-bottom: 24px;
+            gap: 12px;
+            margin-bottom: 16px;
         }
 
         .items, .totals {
-            margin-bottom: 24px;
+            margin-bottom: 16px;
         }
 
         .panel {
             border: 1px solid #e5e7eb;
-            padding: 14px;
+            padding: 10px 12px;
             border-radius: 10px;
             background: #fff;
         }
 
         .panel-heading {
             font-weight: 600;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             color: #6b7280;
             text-transform: uppercase;
             letter-spacing: 0.12em;
@@ -77,7 +93,7 @@
         }
 
         th, td {
-            padding: 10px 12px;
+            padding: 8px 10px;
             border-bottom: 1px solid #e5e7eb;
             text-align: left;
         }
@@ -96,7 +112,7 @@
         }
 
         .totals {
-            max-width: 320px;
+            max-width: 300px;
             margin-left: auto;
         }
 
@@ -123,11 +139,14 @@
 </head>
 <body>
 <header>
-    <h1>Presupuesto #{{ $budget->id }}</h1>
-    <p><strong>Fecha:</strong> {{ $budget->date }}</p>
-    @if($budget->due_date)
-        <p><strong>Vencimiento:</strong> {{ $budget->due_date }}</p>
-    @endif
+    <h1>Pressupost</h1>
+    <div class="meta">
+        <span><strong>Data:</strong> {{ $budget->date }}</span>
+        @if($budget->due_date)
+            <span><strong>Venciment:</strong> {{ $budget->due_date }}</span>
+        @endif
+        <span><strong>Núm.:</strong> {{ $budget->id }}</span>
+    </div>
 </header>
 
 <div class="container">
