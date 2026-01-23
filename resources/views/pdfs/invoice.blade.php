@@ -11,11 +11,12 @@
 
         body {
             margin: 0;
-            padding: 32px;
+            padding: 18px;
             font-family: 'Inter', 'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif;
-            background: #f9fafb;
+            background: #f3f4f6;
             color: #111827;
-            line-height: 1.6;
+            line-height: 1.45;
+            font-size: 11px;
         }
 
         @font-face {
@@ -33,7 +34,7 @@
         }
 
         @page {
-            margin: 24px;
+            margin: 16px;
         }
 
         .page {
@@ -41,19 +42,24 @@
             margin: 0 auto;
             background: #ffffff;
             border: 1px solid #e5e7eb;
-            border-radius: 16px;
-            padding: 32px;
+            border-radius: 12px;
+            padding: 20px;
             page-break-inside: avoid;
         }
 
         header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            justify-content: space-between;
             border-bottom: 1px solid #e5e7eb;
-            padding-bottom: 16px;
+            padding-bottom: 12px;
+            gap: 8px;
         }
 
         h1 {
             margin: 0;
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 600;
             color: #111827;
         }
@@ -63,7 +69,7 @@
             display: flex;
             gap: 12px;
             flex-wrap: wrap;
-            font-size: 12px;
+            font-size: 10px;
             color: #6b7280;
         }
 
@@ -75,16 +81,16 @@
 
         .grid {
             display: grid;
-            gap: 16px;
+            gap: 12px;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            margin-top: 28px;
+            margin-top: 16px;
             page-break-inside: avoid;
         }
 
         .card {
             border: 1px solid #e5e7eb;
             border-radius: 12px;
-            padding: 18px 20px;
+            padding: 12px 16px;
             page-break-inside: avoid;
         }
 
@@ -100,9 +106,9 @@
         .card ul {
             list-style: none;
             padding: 0;
-            margin: 12px 0 0;
+            margin: 8px 0 0;
             color: #6b7280;
-            font-size: 12px;
+            font-size: 10px;
         }
 
         .card ul li + li {
@@ -110,7 +116,7 @@
         }
 
         .card .title {
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 600;
             color: #111827;
             margin: 0 0 6px;
@@ -119,10 +125,10 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 24px;
+            margin-top: 12px;
             border-radius: 12px;
             overflow: hidden;
-            font-size: 12px;
+            font-size: 10px;
             page-break-inside: auto;
         }
 
@@ -135,7 +141,7 @@
         }
 
         th, td {
-            padding: 12px;
+            padding: 8px 10px;
             text-align: left;
         }
 
@@ -180,9 +186,9 @@
         }
 
         .totals-grid {
-            margin-top: 24px;
+            margin-top: 16px;
             display: grid;
-            gap: 16px;
+            gap: 12px;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             page-break-inside: avoid;
         }
@@ -190,21 +196,21 @@
         .totals-card {
             border: 1px solid #e5e7eb;
             border-radius: 12px;
-            padding: 20px;
+            padding: 14px 16px;
             height: 100%;
             page-break-inside: avoid;
         }
 
         .totals-card dl {
-            margin: 16px 0 0;
+            margin: 10px 0 0;
             padding: 0;
         }
 
         .totals-card dt,
         .totals-card dd {
-            font-size: 12px;
+            font-size: 10px;
             margin: 0;
-            padding: 8px 0;
+            padding: 6px 0;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -223,20 +229,20 @@
 
         .badge {
             display: inline-block;
-            padding: 6px 10px;
+            padding: 4px 8px;
             border-radius: 999px;
             background: #f3f4f6;
             color: #111827;
             font-weight: 600;
-            font-size: 10px;
+            font-size: 9px;
         }
 
         .notes {
             border: 1px dashed #e5e7eb;
             border-radius: 12px;
-            padding: 18px 20px;
+            padding: 12px 16px;
             color: #6b7280;
-            font-size: 12px;
+            font-size: 10px;
             line-height: 1.5;
             page-break-inside: avoid;
         }
@@ -250,11 +256,11 @@
         }
 
         footer {
-            margin-top: 28px;
-            padding-top: 16px;
+            margin-top: 16px;
+            padding-top: 10px;
             border-top: 1px solid #e5e7eb;
             text-align: center;
-            font-size: 11px;
+            font-size: 9px;
             color: #9ca3af;
         }
 
@@ -313,7 +319,7 @@
                 <span><strong>Venciment:</strong> {{ $invoice->due_date }}</span>
             @endif
             @if($invoice->name || $invoice->number)
-                <span><strong>Núm. de factura:</strong> {{ $invoice->name ?? $invoice->number }}</span>
+                <span><strong>Núm.:</strong> {{ $invoice->name ?? $invoice->number }}</span>
             @endif
         </div>
     </header>
@@ -342,12 +348,12 @@
     </section>
 
     <section>
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 24px;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 14px;">
             <p class="eyebrow" style="color: #9ca3af;">Detall de línies</p>
             <span class="badge">{{ count($items) }} productes</span>
         </div>
 
-        <div style="border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; margin-top: 12px;">
+        <div style="border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; margin-top: 8px;">
             <table>
                 <thead>
                     <tr>
@@ -365,7 +371,7 @@
                         <td>
                             <div style="font-weight: 600; color: #111827;">{{ optional($item->product)->name ?? '—' }}</div>
                             @if(!empty($item->description))
-                                <div class="muted" style="font-size: 11px; margin-top: 4px;">{{ $item->description }}</div>
+                                <div class="muted" style="font-size: 9px; margin-top: 3px;">{{ $item->description }}</div>
                             @endif
                         </td>
                         <td class="text-center">{{ $item->quantity }}</td>
@@ -379,7 +385,7 @@
                         </td>
                         <td class="text-center">
                             <div style="font-weight: 600; color: #111827;">{{ $formatRate($item->iva) }}</div>
-                            <div class="muted" style="font-size: 11px;">{{ $formatCurrency(($item->total ?? 0) * ($item->iva ?? 0) / 100) }}</div>
+                            <div class="muted" style="font-size: 9px;">{{ $formatCurrency(($item->total ?? 0) * ($item->iva ?? 0) / 100) }}</div>
                         </td>
                         <td class="text-right subtotal">{{ $formatCurrency($item->total) }}</td>
                     </tr>
@@ -401,19 +407,18 @@
                 <dd>{{ $formatCurrency($invoice->base_imponible ?? 0) }}</dd>
 
                 <dt>IVA desglossat</dt>
-                <dd style="border-bottom: none; justify-content: flex-start; display: block; padding: 0;">
+                <dd style="border-bottom: none; justify-content: flex-start; display: block; padding: 4px 0 0;">
                     @if(count($taxBreakdown))
-                        @foreach($taxBreakdown as $tier)
-                            <div style="margin: 10px 0; padding: 10px 12px; border: 1px solid #e5e7eb; border-radius: 12px; background: #f9fafb;">
-                                <div style="display: flex; justify-content: space-between; font-weight: 600; color: #111827;">
-                                    <span>IVA {{ $formatRate($tier['rate']) }}</span>
-                                    <span>{{ $formatCurrency($tier['tax']) }}</span>
-                                </div>
-                                <div class="muted" style="font-size: 11px; margin-top: 4px;">Base: {{ $formatCurrency($tier['base']) }}</div>
-                            </div>
-                        @endforeach
+                        <ul style="list-style: none; margin: 0; padding: 0;">
+                            @foreach($taxBreakdown as $tier)
+                                <li style="display: flex; justify-content: space-between; gap: 8px; padding: 4px 0;">
+                                    <span>IVA {{ $formatRate($tier['rate']) }} · Base {{ $formatCurrency($tier['base']) }}</span>
+                                    <span style="font-weight: 600; color: #111827;">{{ $formatCurrency($tier['tax']) }}</span>
+                                </li>
+                            @endforeach
+                        </ul>
                     @else
-                        <p class="muted" style="padding: 10px 0 0 0;">Sense IVA aplicat a les línies actuals.</p>
+                        <p class="muted" style="padding: 4px 0 0 0;">Sense IVA aplicat a les línies actuals.</p>
                     @endif
                 </dd>
 
@@ -422,8 +427,8 @@
                     <dd style="color: #9ca3af;">− {{ $formatCurrency($retencionIrpf) }}</dd>
                 @endif
 
-                <dt style="border-bottom: none; font-size: 14px; font-weight: 600;">Total a pagar</dt>
-                <dd style="border-bottom: none; font-size: 14px;">{{ $formatCurrency($invoice->total ?? $totalFinal) }}</dd>
+                <dt style="border-bottom: none; font-size: 12px; font-weight: 600;">Total a pagar</dt>
+                <dd style="border-bottom: none; font-size: 12px;">{{ $formatCurrency($invoice->total ?? $totalFinal) }}</dd>
             </dl>
         </article>
 
