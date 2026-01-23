@@ -1,42 +1,42 @@
 <template>
-    <div class="min-h-screen bg-slate-100 py-10 print:bg-white print:py-0">
+    <div class="min-h-screen bg-slate-100 py-8 print:bg-white print:py-0">
         <div
             id="invoice"
-            class="mx-auto w-full max-w-3xl rounded-3xl border border-slate-200 bg-white px-10 py-12 shadow-2xl print:max-w-[190mm] print:rounded-none print:border-0 print:px-6 print:py-8 print:shadow-none"
+            class="mx-auto w-full max-w-3xl rounded-2xl border border-slate-200 bg-white px-6 py-6 shadow-xl print:max-w-[190mm] print:rounded-none print:border-0 print:px-4 print:py-4 print:shadow-none"
         >
-            <header class="border-b border-slate-200 pb-6">
-
-                <h1 class="text-2xl font-semibold text-slate-900">Factura</h1>
-                
-                <p class="mt-2 text-sm text-slate-500">
-                    <span class="font-semibold text-slate-600">Data:</span>
-                    {{ formatDate(invoice.date) }}
-                </p>
-                <p v-if="invoice.due_date" class="text-sm text-slate-500">
-                    <span class="font-semibold text-slate-600">Venciment:</span>
-                    {{ formatDate(invoice.due_date) }}
-                </p>
-                <p v-if="invoice.name" class="text-sm text-slate-500">
-                    <span class="font-semibold text-slate-600">Núm. de factura:</span>
-                    {{ invoice.name }}
-                </p>
+            <header class="flex flex-wrap items-start justify-between gap-2 border-b border-slate-200 pb-3">
+                <h1 class="text-lg font-semibold text-slate-900">Factura</h1>
+                <div class="mt-1 flex flex-wrap gap-3 text-[11px] text-slate-500">
+                    <span>
+                        <span class="font-semibold text-slate-600">Data:</span>
+                        {{ formatDate(invoice.date) }}
+                    </span>
+                    <span v-if="invoice.due_date">
+                        <span class="font-semibold text-slate-600">Venciment:</span>
+                        {{ formatDate(invoice.due_date) }}
+                    </span>
+                    <span v-if="invoice.name || invoice.number">
+                        <span class="font-semibold text-slate-600">Núm.:</span>
+                        {{ invoice.name ?? invoice.number }}
+                    </span>
+                </div>
             </header>
 
-            <section class="mt-10 grid gap-6 md:grid-cols-2">
-                <article class="rounded-2xl border border-slate-200 px-6 py-5 shadow-sm">
-                    <p class="text-xs font-semibold uppercase tracking-[0.28em] text-blue-600">Detalls de l'empresa</p>
-                    <div class="mt-3 space-y-1 text-sm text-slate-600">
-                        <p class="text-base font-semibold text-slate-800">{{ company.name }}</p>
+            <section class="mt-6 grid gap-3 md:grid-cols-2">
+                <article class="rounded-xl border border-slate-200 px-4 py-4 shadow-sm">
+                    <p class="text-[9px] font-semibold uppercase tracking-[0.28em] text-slate-500">Detalls de l'empresa</p>
+                    <div class="mt-2 space-y-1 text-[11px] text-slate-600">
+                        <p class="text-[12px] font-semibold text-slate-800">{{ company.name }}</p>
                         <p v-if="company.address">{{ company.address }}</p>
                         <p v-if="company.phone">Tel. {{ company.phone }}</p>
                         <p v-if="company.email">{{ company.email }}</p>
                         <p v-if="company.nif">NIF: {{ company.nif }}</p>
                     </div>
                 </article>
-                <article class="rounded-2xl border border-slate-200 px-6 py-5 shadow-sm">
-                    <p class="text-xs font-semibold uppercase tracking-[0.28em] text-blue-600">Detalls del client</p>
-                    <div class="mt-3 space-y-1 text-sm text-slate-600">
-                        <p class="text-base font-semibold text-slate-800">{{ client.name }}</p>
+                <article class="rounded-xl border border-slate-200 px-4 py-4 shadow-sm">
+                    <p class="text-[9px] font-semibold uppercase tracking-[0.28em] text-slate-500">Detalls del client</p>
+                    <div class="mt-2 space-y-1 text-[11px] text-slate-600">
+                        <p class="text-[12px] font-semibold text-slate-800">{{ client.name }}</p>
                         <p v-if="client.address">{{ client.address }}</p>
                         <p v-if="client.phone">Tel. {{ client.phone }}</p>
                         <p v-if="client.email">{{ client.email }}</p>
@@ -45,49 +45,49 @@
                 </article>
             </section>
 
-            <section class="mt-12 print:mt-8">
+            <section class="mt-6 print:mt-5">
                 <div class="flex items-center justify-between">
-                    <h2 class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">Detall de línies</h2>
-                    <span class="text-xs font-medium uppercase tracking-[0.2em] text-slate-400">
+                    <h2 class="text-[10px] font-semibold uppercase tracking-[0.3em] text-slate-500">Detall de línies</h2>
+                    <span class="rounded-full bg-slate-100 px-2 py-1 text-[9px] font-semibold uppercase tracking-[0.2em] text-slate-500">
                         {{ items.length }} productes
                     </span>
                 </div>
-                <div class="mt-4 overflow-hidden rounded-2xl border border-slate-200 print:rounded-xl print:overflow-visible">
-                    <table class="w-full border-collapse text-xs leading-5 text-slate-600 print:text-[11px]">
+                <div class="mt-2 overflow-hidden rounded-xl border border-slate-200 print:rounded-lg print:overflow-visible">
+                    <table class="w-full border-collapse text-[10px] leading-4 text-slate-600 print:text-[10px]">
                         <thead>
-                            <tr class="bg-slate-50 text-[11px] uppercase tracking-[0.2em] text-blue-600">
-                                <th class="px-3 py-3 text-left">Producte</th>
-                                <th class="px-3 py-3 text-center">Quantitat</th>
-                                <th class="px-3 py-3 text-center">Preu unitari</th>
-                                <th class="px-3 py-3 text-center">Descompte</th>
-                                <th class="px-3 py-3 text-center">IVA</th>
-                                <th class="px-3 py-3 text-right pr-print-edge">Subtotal</th>
+                            <tr class="bg-slate-50 text-[10px] uppercase tracking-[0.2em] text-slate-500">
+                                <th class="px-2.5 py-2 text-left">Producte</th>
+                                <th class="px-2.5 py-2 text-center">Quantitat</th>
+                                <th class="px-2.5 py-2 text-center">Preu unitari</th>
+                                <th class="px-2.5 py-2 text-center">Descompte</th>
+                                <th class="px-2.5 py-2 text-center">IVA</th>
+                                <th class="px-2.5 py-2 text-right pr-print-edge">Subtotal</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr v-for="item in items" :key="item.id" class="border-t border-slate-200">
-                                <td class="px-3 py-3 text-left text-slate-700">
+                                <td class="px-2.5 py-2 text-left text-slate-700">
                                     <span class="block font-medium text-slate-800">{{ item.productName }}</span>
-                                    <span v-if="item.description" class="mt-1 block text-[11px] text-slate-500 print:text-[10px]">
+                                    <span v-if="item.description" class="mt-1 block text-[9px] text-slate-500 print:text-[9px]">
                                         {{ item.description }}
                                     </span>
                                 </td>
-                                <td class="px-3 py-3 text-center whitespace-nowrap">{{ item.quantity }}</td>
-                                <td class="px-3 py-3 text-center whitespace-nowrap">{{ formatCurrency(item.unit_price) }}</td>
-                                <td class="px-3 py-3 text-center whitespace-nowrap">
+                                <td class="px-2.5 py-2 text-center whitespace-nowrap">{{ item.quantity }}</td>
+                                <td class="px-2.5 py-2 text-center whitespace-nowrap">{{ formatCurrency(item.unit_price) }}</td>
+                                <td class="px-2.5 py-2 text-center whitespace-nowrap">
                                     <span v-if="item.hasDiscount">{{ formatRate(item.discount) }}</span>
                                     <span v-else class="text-slate-400">—</span>
                                 </td>
-                                <td class="px-3 py-3 text-center">
+                                <td class="px-2.5 py-2 text-center">
                                     <span class="block font-medium text-slate-700">{{ formatRate(item.iva) }}</span>
-                                    <span class="block text-[11px] text-slate-500 print:text-[10px]">{{ formatCurrency(item.ivaAmount) }}</span>
+                                    <span class="block text-[9px] text-slate-500 print:text-[9px]">{{ formatCurrency(item.ivaAmount) }}</span>
                                 </td>
-                                <td class="px-3 py-3 text-right font-medium text-slate-700 whitespace-nowrap pr-print-edge">
+                                <td class="px-2.5 py-2 text-right font-medium text-slate-700 whitespace-nowrap pr-print-edge">
                                     {{ formatCurrency(item.total) }}
                                 </td>
                             </tr>
                             <tr v-if="items.length === 0">
-                                <td colspan="7" class="px-4 py-6 text-center text-sm text-slate-400">
+                                <td colspan="7" class="px-4 py-5 text-center text-[11px] text-slate-400">
                                     Encara no hi ha línies associades a aquesta factura.
                                 </td>
                             </tr>
@@ -96,53 +96,50 @@
                 </div>
             </section>
 
-            <section id="totals-section" class="mt-10 flex flex-col gap-4 md:flex-row md:items-start md:justify-between print:mt-8 no-break-inside">
-                <div class="rounded-2xl border border-slate-200 px-6 py-5 shadow-sm md:w-1/2 no-break-inside">
-                    <h2 class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">Resum econòmic</h2>
-                    <dl class="mt-4 space-y-3 text-sm text-slate-600">
+            <section id="totals-section" class="mt-6 flex flex-col gap-3 md:flex-row md:items-start md:justify-between print:mt-5 no-break-inside">
+                <div class="rounded-xl border border-slate-200 px-4 py-4 shadow-sm md:w-1/2 no-break-inside">
+                    <h2 class="text-[10px] font-semibold uppercase tracking-[0.3em] text-slate-500">Resum econòmic</h2>
+                    <dl class="mt-3 space-y-2 text-[11px] text-slate-600">
                         <div class="flex items-center justify-between">
                             <dt>Base imposable</dt>
                             <dd class="font-medium text-slate-800">{{ formatCurrency(invoice.base_imponible) }}</dd>
                         </div>
                         <div>
-                            <dt class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">IVA desglossat</dt>
-                            <div v-if="taxBreakdown.length" class="mt-2 space-y-2">
-                                <div v-for="tier in taxBreakdown" :key="tier.rate" class="rounded-xl border border-slate-100 bg-slate-50 px-3 py-2">
-                                    <p class="flex items-center justify-between text-sm text-slate-700">
-                                        <span class="font-medium text-slate-800">IVA {{ formatRate(tier.rate) }}</span>
-                                        <span>{{ formatCurrency(tier.tax) }}</span>
-                                    </p>
-                                    <p class="text-xs text-slate-500">Base: {{ formatCurrency(tier.base) }}</p>
-                                </div>
-                            </div>
-                            <p v-else class="mt-2 text-xs text-slate-400">Sense IVA aplicat a les línies actuals.</p>
+                            <dt class="text-[9px] font-semibold uppercase tracking-[0.2em] text-slate-400">IVA desglossat</dt>
+                            <ul v-if="taxBreakdown.length" class="mt-2 space-y-1 text-[10px] text-slate-600">
+                                <li v-for="tier in taxBreakdown" :key="tier.rate" class="flex items-center justify-between gap-3">
+                                    <span>IVA {{ formatRate(tier.rate) }} · Base {{ formatCurrency(tier.base) }}</span>
+                                    <span class="font-semibold text-slate-800">{{ formatCurrency(tier.tax) }}</span>
+                                </li>
+                            </ul>
+                            <p v-else class="mt-2 text-[10px] text-slate-400">Sense IVA aplicat a les línies actuals.</p>
                         </div>
-                        <div class="flex items-center justify-between">
-                            <dt>Retenció IRPF (15%)</dt>
-                            <dd class="font-medium text-rose-600">− {{ formatCurrency(retencionIrpf) }}</dd>
+                        <div v-if="retencionIrpf > 0" class="flex items-center justify-between">
+                            <dt>Retenció IRPF ({{ formatRate(irpfRate) }})</dt>
+                            <dd class="font-medium text-slate-500">− {{ formatCurrency(retencionIrpf) }}</dd>
                         </div>
-                        <div class="flex items-center justify-between text-base font-semibold text-slate-900">
+                        <div class="flex items-center justify-between text-sm font-semibold text-slate-900">
                             <dt>Total a pagar</dt>
                             <dd>{{ formatCurrency(totalFinal) }}</dd>
                         </div>
                     </dl>
                 </div>
-                <div class="flex-1 rounded-2xl border border-dashed border-slate-200 px-6 py-5 text-sm text-slate-500 shadow-sm no-break-inside">
-                    <p class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Observacions</p>
-                    <p class="mt-3 leading-relaxed" v-if="invoice.notes">{{ invoice.notes }}</p>
-                    <p v-else class="mt-3 text-slate-400">No hi ha observacions addicionals per a aquesta factura.</p>
+                <div class="flex-1 rounded-xl border border-dashed border-slate-200 px-4 py-4 text-[11px] text-slate-500 shadow-sm no-break-inside">
+                    <p class="text-[9px] font-semibold uppercase tracking-[0.3em] text-slate-400">Observacions</p>
+                    <p class="mt-2 leading-relaxed" v-if="invoice.notes">{{ invoice.notes }}</p>
+                    <p v-else class="mt-2 text-slate-400">No hi ha observacions addicionals per a aquesta factura.</p>
                 </div>
             </section>
 
-            <footer class="mt-12 border-t border-slate-200 pt-6 text-center text-xs text-slate-400">
+            <footer class="mt-6 border-t border-slate-200 pt-3 text-center text-[10px] text-slate-400">
                 <p>Gràcies per confiar en nosaltres.</p>
                 <p>© {{ new Date().getFullYear() }} {{ company.name }}</p>
             </footer>
 
-            <div class="mt-8 flex justify-end print:hidden">
+            <div class="mt-6 flex justify-end print:hidden">
                 <button
                     id="print-button"
-                    class="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-blue-700"
+                    class="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-lg transition hover:bg-blue-700"
                     @click="downloadInvoice"
                 >
                     <span>Descarregar PDF</span>
@@ -226,9 +223,24 @@ const items = props.invoiceItems.map((item, index) => {
     };
 });
 
-const irpfRate = 0.15;
-const retencionIrpf = +(invoice.base_imponible * irpfRate).toFixed(2);
-const totalFinal = +(invoice.base_imponible + invoice.monto_iva - retencionIrpf).toFixed(2);
+const irpfRate = numberFrom(props.invoice.irpf_tax);
+const resolveIrpfRetention = () => {
+    const explicit = numberFrom(props.invoice.total_irpf, Number.NaN);
+
+    if (Number.isFinite(explicit)) {
+        return explicit;
+    }
+
+    if (irpfRate <= 0) {
+        return 0;
+    }
+
+    return +((invoice.base_imponible * irpfRate) / 100).toFixed(2);
+};
+
+const retencionIrpf = resolveIrpfRetention();
+const fallbackTotal = +(invoice.base_imponible + invoice.monto_iva - retencionIrpf).toFixed(2);
+const totalFinal = numberFrom(props.invoice.total, fallbackTotal);
 
 const buildTaxBreakdown = (lineItems) => {
     const map = new Map();
@@ -308,4 +320,3 @@ const downloadInvoice = () => {
     }
 }
 </style>
-
