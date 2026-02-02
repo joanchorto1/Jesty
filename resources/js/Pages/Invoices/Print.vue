@@ -29,6 +29,7 @@
 
                 <p><strong>Data:</strong> {{ invoice.date }}</p>
                 <p><strong>Nº Factura:</strong> {{ invoice.name }}</p>
+                <p><strong>Retenció IRPF aplicada:</strong> 15%</p>
 <!--                <p><strong>ID:</strong> F{{ invoice.id }}</p>-->
             </div>
         </div>
@@ -107,18 +108,16 @@ const invoiceItems = props.invoiceItems.map((item) => {
 
 // Calcular IRPF
 const irpfRate = 0.15;
-const retencionIrpf = +(props.invoice.base_imponible * irpfRate).toFixed(2);
-const totalFinal = +(
-    props.invoice.base_imponible +
-    props.invoice.monto_iva -
-    retencionIrpf
-).toFixed(2);
+const baseImponible = Number(props.invoice.base_imponible) || 0;
+const montoIva = Number(props.invoice.monto_iva) || 0;
+const retencionIrpf = +(baseImponible * irpfRate).toFixed(2);
+const totalFinal = +(baseImponible + montoIva - retencionIrpf).toFixed(2);
 
 // Format invoice fields
 const invoice = {
     ...props.invoice,
-    base_imponible: props.invoice.base_imponible.toFixed(2),
-    monto_iva: props.invoice.monto_iva.toFixed(2),
+    base_imponible: baseImponible.toFixed(2),
+    monto_iva: montoIva.toFixed(2),
     total: props.invoice.total.toFixed(2),
 };
 
@@ -147,4 +146,3 @@ const printBudget = () => {
 
 <style scoped>
 </style>
-
