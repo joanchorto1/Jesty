@@ -223,24 +223,9 @@ const items = props.invoiceItems.map((item, index) => {
     };
 });
 
-const irpfRate = numberFrom(props.invoice.irpf_tax);
-const resolveIrpfRetention = () => {
-    const explicit = numberFrom(props.invoice.total_irpf, Number.NaN);
-
-    if (Number.isFinite(explicit)) {
-        return explicit;
-    }
-
-    if (irpfRate <= 0) {
-        return 0;
-    }
-
-    return +((invoice.base_imponible * irpfRate) / 100).toFixed(2);
-};
-
-const retencionIrpf = resolveIrpfRetention();
-const fallbackTotal = +(invoice.base_imponible + invoice.monto_iva - retencionIrpf).toFixed(2);
-const totalFinal = numberFrom(props.invoice.total, fallbackTotal);
+const irpfRate = 15;
+const retencionIrpf = +((invoice.base_imponible * irpfRate) / 100).toFixed(2);
+const totalFinal = +(invoice.base_imponible + invoice.monto_iva - retencionIrpf).toFixed(2);
 
 const buildTaxBreakdown = (lineItems) => {
     const map = new Map();
