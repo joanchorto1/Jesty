@@ -43,10 +43,15 @@
                     :icon="MenuBudgetIcon"
                 >
                     <template #actions>
-                        <NavLink :href="route('budgets.create')" class="inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800">
-                            <AddIcon class="w-5 h-5" />
-                            Nuevo presupuesto
-                        </NavLink>
+                        <div class="flex flex-wrap items-center gap-3">
+                            <NavLink :href="route('budgets.create')" class="inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800">
+                                <AddIcon class="w-5 h-5" />
+                                Nuevo presupuesto
+                            </NavLink>
+                            <a :href="route('migration.export.budgets')" class="inline-flex items-center gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-3 text-sm font-semibold text-emerald-700 shadow-sm transition hover:bg-emerald-100">
+                                Exportar CSV
+                            </a>
+                        </div>
                     </template>
                 </CrudPageHeader>
 

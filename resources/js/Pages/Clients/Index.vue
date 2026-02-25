@@ -13,6 +13,9 @@
                             <NavLink :href="route('clients.create')" class="inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800">
                                 <AddIcon class="w-4 h-4" /> Nuevo cliente
                             </NavLink>
+                            <a :href="route('migration.export.clients')" class="inline-flex items-center gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700 shadow-sm transition hover:bg-emerald-100">
+                                Exportar CSV
+                            </a>
                             <NavLink :href="route('dashboard.clients')" class="inline-flex items-center gap-2 rounded-2xl border border-white/40 bg-white/10 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-white/20">
                                 <DashboardIcon class="w-4 h-4" /> Ver dashboard
                             </NavLink>

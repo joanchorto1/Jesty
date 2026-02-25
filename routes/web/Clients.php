@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\CsvMigrationExportController;
 use App\Models\Client;
 use App\Models\Invoice;
 use Illuminate\Support\Facades\Auth;
@@ -32,5 +33,8 @@ Route::resource('clients', ClientController::class)
         'update' => 'clients.update',
         'destroy' => 'clients.destroy',
     ]);
+
+Route::get('/migration/export/clients', [CsvMigrationExportController::class, 'clients'])
+    ->name('migration.export.clients');
 
 });

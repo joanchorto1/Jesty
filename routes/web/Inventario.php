@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\CsvMigrationExportController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\StockEntryController;
 use App\Http\Controllers\SupplierController;
@@ -41,6 +42,9 @@ Route::middleware(['route.features.access:3'])->group(function () {
             'update' => 'products.update',
             'destroy' => 'products.destroy',
         ]);
+
+    Route::get('/migration/export/products', [CsvMigrationExportController::class, 'products'])
+        ->name('migration.export.products');
 
 
     Route::get('/suppliers', [SupplierController::class, 'index'])->name('suppliers.index');

@@ -8,6 +8,7 @@ use App\Http\Controllers\InvoiceItemController;
 use App\Http\Controllers\BudgetController;
 use App\Http\Controllers\BudgetItemController;
 use App\Http\Controllers\CreditNoteController;
+use App\Http\Controllers\CsvMigrationExportController;
 use App\Http\Controllers\PartController;
 use App\Http\Controllers\RecurringInvoiceController;
 
@@ -39,6 +40,7 @@ Route::middleware(['route.features.access:1'])->group(function() {
     Route::patch('invoices/{invoice}/status', [InvoiceController::class, 'updateStatus'])->name('invoices.updateStatus');
     Route::post('/invoices/create-from-budget/{budget}', [InvoiceController::class, 'createFromBudget'])->name('invoices.create-from-budget');
     Route::post('/invoices/store-with-items', [InvoiceController::class, 'storeWithItems'])->name('invoices.storeWithItems');
+    Route::get('/migration/export/invoices', [CsvMigrationExportController::class, 'invoices'])->name('migration.export.invoices');
     Route::get('/invoices/{invoice}/print', [InvoiceController::class, 'print'])->name('invoices.print');
     Route::get('/invoices/copy/{invoice}', [InvoiceController::class, 'copy'])->name('invoices.copy');
 
@@ -74,6 +76,7 @@ Route::middleware(['route.features.access:1'])->group(function() {
             'destroy' => 'budgets.destroy',
         ]);
     Route::patch('budgets/{budget}/status', [BudgetController::class, 'updateStatus'])->name('budgets.updateStatus');
+    Route::get('/migration/export/budgets', [CsvMigrationExportController::class, 'budgets'])->name('migration.export.budgets');
 
     Route::post('/budgets/store-with-items', [BudgetController::class, 'storeWithItems'])->name('budgets.storeWithItems');
     Route::get('/budgets/{budget}/print', [BudgetController::class, 'print'])->name('budgets.print');
